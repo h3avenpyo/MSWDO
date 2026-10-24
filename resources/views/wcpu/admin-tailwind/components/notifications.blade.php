@@ -319,6 +319,7 @@
             <button 
                 id="markAllReadBtn"
                 class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors"
+                @if(request()->routeIs('desk-officer.cases.show')) style="background: #ffffff !important; color: #C41E3A !important;" @endif
             >
                 Mark all as read
             </button>

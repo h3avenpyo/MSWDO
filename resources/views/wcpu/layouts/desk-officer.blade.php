@@ -45,7 +45,10 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
     @if($persistsDeskOfficerSidebar)
     <script>
         try {
-            document.documentElement.classList.toggle('bcpc-desk-sidebar-collapsed', localStorage.getItem(@json($deskOfficerSidebarStateKey)) === 'true');
+            if (window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches) {
+                document.documentElement.classList.add('tablet-sidebar-loading');
+            }
+            document.documentElement.classList.toggle('bcpc-desk-sidebar-collapsed', window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches || localStorage.getItem(@json($deskOfficerSidebarStateKey)) === 'true');
         } catch (e) {}
     </script>
     @endif
@@ -356,6 +359,64 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             width: 1.25rem;
             min-width: 1.25rem;
             text-align: center;
+        }
+
+        /* Reference-sized dropdown chevrons for the existing tablet range only. */
+        @media screen and (min-width: 48rem) and (max-width: 80rem) {
+            html body.portal-ui #sidebar nav .sidebar-link > i.fa-chevron-down.sidebar-text {
+                align-self: center;
+                margin-left: auto !important;
+                margin-right: 0 !important;
+                font-size: .625rem !important;
+                font-weight: 900;
+                line-height: 1 !important;
+                text-align: center;
+                transform-origin: center;
+            }
+        }
+
+        /* Match regular link icon alignment in the collapsed tablet landscape rail. */
+        @media screen and (min-width: 48rem) and (max-width: 80rem) and (orientation: landscape) {
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav .sidebar-link {
+                justify-content: center !important;
+                gap: 0 !important;
+            }
+
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav .sidebar-link > div {
+                display: flex !important;
+                flex: 0 0 1.25rem !important;
+                width: 1.25rem !important;
+                min-width: 0 !important;
+                gap: 0 !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav .sidebar-link .sidebar-text {
+                display: none !important;
+            }
+        }
+
+        /* Keep the admin-style nesting while leaving room around submenu highlights. */
+        @media screen and (min-width: 48rem) and (max-width: 80rem) {
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav [x-show] {
+                box-sizing: border-box;
+                width: 100% !important;
+                padding-left: 1rem !important;
+                padding-right: 0 !important;
+            }
+
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav [x-show] > :is(a, button) {
+                justify-content: center !important;
+                gap: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav [x-show] > :is(a, button) > i:not(.sidebar-text) {
+                position: static;
+                left: auto;
+            }
         }
 
         /* Sidebar header */
@@ -781,10 +842,10 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
 
         /* Keep shared Desk Officer pages stable across tablet portrait and landscape. */
         @media (min-width: 40.0625rem) and (max-width: 80rem) {
-            .portal-ui #mainContent {
+            /* .portal-ui #mainContent {
                 padding-left: .75rem !important;
                 padding-right: .75rem !important;
-            }
+            } */
 
             #mainContent .tablet-header-row {
                 grid-template-columns: minmax(0, 1fr) auto !important;
@@ -1509,11 +1570,52 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         }
 
         @endif
+
+        @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment())
+        @media screen and (min-width: 48rem) and (max-width: 80rem) {
+            /* Collapsed: below the logo. Expanded: centered on the sidebar's right edge. */
+            body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-header {
+                min-height: 7rem !important;
+                padding-left: .75rem !important;
+                padding-right: .75rem !important;
+                padding-bottom: 3rem !important;
+                justify-content: center !important;
+                flex-shrink: 0;
+            }
+
+            body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-header > div {
+                width: 100%;
+                justify-content: center !important;
+                gap: 0;
+            }
+
+            body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-header .sidebar-text {
+                display: none !important;
+            }
+
+            body.portal-ui #sidebar ~ #sidebarToggleBtn {
+                display: flex !important;
+                top: 2.75rem !important;
+                left: 18rem !important;
+                transform: translate(-50%, -50%) !important;
+            }
+
+            body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) ~ #sidebarToggleBtn {
+                top: 5.5rem !important;
+                left: 2.25rem !important;
+            }
+        }
+        @endif
     </style>
 
     <script>
         document.documentElement.classList.add('js');
     </script>
+    @if(request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'case-profiles.index', 'desk-officer.cases.index', 'desk-officer.cases.create', 'desk-officer.cases.show', 'desk-officer.referrals', 'desk-officer.referrals.archived', 'desk-officer.calendar*', 'desk-officer.quarterly-reports.index', 'desk-officer.quarterly-reports.create', 'desk-officer.quarterly-reports.show', 'desk-officer.quarterly-reports.edit', 'desk-officer.quarterly-reports.archived', 'desk-officer.bcpc-case-monitoring.edit', 'desk-officer.archived-barangay-cases.index'))
+    <link rel="stylesheet"
+        href="{{ asset('css/bcpc-dashboard-portrait-sidebar.css') }}?v={{ filemtime(public_path('css/bcpc-dashboard-portrait-sidebar.css')) }}"
+        media="screen and (min-width: 48rem) and (max-width: 80rem) and (orientation: portrait)">
+    @endif
     <link rel="stylesheet"
         href="{{ asset('css/portal-modals.css') }}?v={{ filemtime(public_path('css/portal-modals.css')) }}">
     <script
@@ -1526,6 +1628,24 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
     <script
         src="{{ asset('js/portal-modal-presentation.js') }}?v={{ filemtime(public_path('js/portal-modal-presentation.js')) }}"
         defer></script>
+    <style>
+        @media (min-width: 48rem) and (max-width: 80rem) {
+            html.tablet-sidebar-loading body.portal-ui #sidebar#sidebar {
+                width: 4.5rem !important;
+                min-width: 4.5rem !important;
+                max-width: 4.5rem !important;
+            }
+            html.tablet-sidebar-loading body.portal-ui #sidebar#sidebar,
+            html.tablet-sidebar-loading body.portal-ui #sidebar#sidebar *,
+            html.tablet-sidebar-loading body.portal-ui #sidebarToggleBtn#sidebarToggleBtn,
+            html.tablet-sidebar-loading body.portal-ui #sidebarToggleBtn#sidebarToggleBtn *,
+            html.tablet-sidebar-loading body.portal-ui #sidebarOverlay#sidebarOverlay,
+            html.tablet-sidebar-loading body.portal-ui #mainContent#mainContent {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body
@@ -1576,7 +1696,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
     $isArchivesOpen = $isArchiveListPage || $isArchiveDetailPage;
     @endphp
 
-    @unless($isArchivedReportPreview)
+    @unless($isArchivedReportPreview || request()->routeIs('desk-officer.quarterly-reports.show', 'desk-officer.quarterly-reports.edit', 'desk-officer.bcpc-case-monitoring.edit'))
     <!-- Mobile Sticky Top Bar -->
     <div id="mobileTopBar"
         class="lg:hidden sticky top-0 z-30 relative bg-purple-900 text-white flex items-center justify-between px-4 py-2.5 shadow-md border-b border-purple-800">
@@ -1604,6 +1724,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             @endif
         </div>
     </div>
+    @endunless
 
     <!-- Sidebar Overlay (Mobile) -->
     <div id="sidebarOverlay"
@@ -1835,7 +1956,6 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         <i class="fas fa-chevron-left text-gray-600 text-xs transition-transform duration-300"></i>
     </button>
 
-    @endunless
     <!-- Main Content -->
     <div id="mainContent" data-page-title="@yield('title', '')"
         class="lg:ml-72 min-h-screen sidebar-transition overflow-x-hidden">
@@ -2123,10 +2243,11 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
         const sidebarStateKey = @json($deskOfficerSidebarStateKey);
-        const isDashboardDrawer = () => ((document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-desk-mobile-nav') || document.body.classList.contains('view-cases-desk-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-calendar-mobile-nav') || document.body.classList.contains('desk-officer-quarterly-reports-mobile-nav') || document.body.classList.contains('desk-officer-archived-cases-mobile-nav') || document.body.classList.contains('desk-officer-bcpc-monitoring-mobile-nav') || document.body.classList.contains('desk-officer-create-case-mobile-nav') || document.body.classList.contains('desk-officer-cases-view-mobile-nav') || document.body.classList.contains('desk-officer-page-mobile-nav')) && window.matchMedia('(max-width: 47.9375rem)').matches);
+        const isQuarterlyReportDetail = @json(request()->routeIs('desk-officer.quarterly-reports.show'));
+        const isDashboardDrawer = () => ((isQuarterlyReportDetail || document.body.classList.contains('desk-officer-dashboard-mobile-nav') || document.body.classList.contains('case-profiles-desk-mobile-nav') || document.body.classList.contains('view-cases-desk-mobile-nav') || document.body.classList.contains('desk-officer-referrals-mobile-nav') || document.body.classList.contains('desk-officer-calendar-mobile-nav') || document.body.classList.contains('desk-officer-quarterly-reports-mobile-nav') || document.body.classList.contains('desk-officer-archived-cases-mobile-nav') || document.body.classList.contains('desk-officer-bcpc-monitoring-mobile-nav') || document.body.classList.contains('desk-officer-create-case-mobile-nav') || document.body.classList.contains('desk-officer-cases-view-mobile-nav') || document.body.classList.contains('desk-officer-page-mobile-nav')) && window.matchMedia('(max-width: 47.9375rem)').matches);
         
         @if($persistsDeskOfficerSidebar)
-        if (sidebar) sidebar.classList.toggle('sidebar-collapsed', localStorage.getItem(sidebarStateKey) === 'true');
+        if (sidebar) sidebar.classList.toggle('sidebar-collapsed', window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches || localStorage.getItem(sidebarStateKey) === 'true');
         @elseif(auth()->user()?->position === 'Desk Officer' && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
         if (sidebar) sidebar.classList.add('sidebar-collapsed');
         localStorage.setItem(sidebarStateKey, 'true');
@@ -2138,7 +2259,18 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             sidebarToggleBtn.setAttribute('aria-expanded', String(!sidebar.classList.contains('sidebar-collapsed')));
         }
 
+        // Back/forward navigation can restore an expanded sidebar from the page cache.
+        window.addEventListener('pageshow', function(event) {
+            if (!event.persisted || !window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches) return;
+            sidebar?.classList.add('sidebar-collapsed');
+            sidebar?.classList.remove('sidebar-open');
+            document.documentElement.classList.add('bcpc-desk-sidebar-collapsed');
+            sidebarToggleBtn?.setAttribute('aria-expanded', 'false');
+            closeMobileSidebar();
+        });
+
         function collapseSidebar() {
+            if (sidebar?.classList.contains('sidebar-collapsed')) return;
             if (sidebar) sidebar.classList.add('sidebar-collapsed');
             if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'false');
             localStorage.setItem(sidebarStateKey, 'true');
@@ -2151,6 +2283,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         }
         
         function expandSidebar() {
+            document.documentElement.classList.remove('tablet-sidebar-loading');
             if (sidebar) sidebar.classList.remove('sidebar-collapsed');
             if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'true');
             localStorage.setItem(sidebarStateKey, 'false');
@@ -2178,6 +2311,29 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             });
         }
         
+        // Selecting the current tablet page dismisses navigation without reloading it.
+        sidebar?.addEventListener('click', function(event) {
+            if (!window.matchMedia('(min-width: 48rem) and (max-width: 80rem)').matches
+                || event.defaultPrevented || event.button !== 0
+                || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+            const link = event.target.closest('a[href]');
+            if (!link || !sidebar.contains(link) || link.hasAttribute('download')
+                || (link.target && link.target !== '_self')) return;
+            const destination = new URL(link.href, location.href);
+            const current = new URL(location.href);
+            if (destination.origin !== current.origin || destination.pathname !== current.pathname
+                || destination.hash) return;
+            const defaultType = @json(strtolower(auth()->user()?->defaultCaseDepartment() ?? 'vawc'));
+            const destinationType = (destination.searchParams.get('type') || defaultType).toLowerCase();
+            const currentType = (current.searchParams.get('type') || defaultType).toLowerCase();
+            if (destinationType !== currentType) return;
+            event.preventDefault();
+            if (!sidebar.classList.contains('sidebar-collapsed')
+                && !sidebar.classList.contains('sidebar-collapsed-init')) {
+                collapseSidebar();
+            }
+        });
+
         // Mobile toggle - open sidebar
         if (mobileMenuToggles.length) {
             mobileMenuToggles.forEach(function(menuToggle) {
@@ -2243,7 +2399,14 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         }
         
         if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+            sidebarOverlay.addEventListener('click', function() {
+                if (window.matchMedia('(min-width: 48rem) and (max-width: 80rem) and (orientation: portrait)').matches
+                    && document.querySelector('link[href*="bcpc-dashboard-portrait-sidebar.css"]')) {
+                    collapseSidebar();
+                    return;
+                }
+                closeMobileSidebar();
+            });
         }
         
         if (sidebarCloseBtn) {
@@ -2260,6 +2423,13 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         });
 
         document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape'
+                && window.matchMedia('(min-width: 48rem) and (max-width: 80rem) and (orientation: portrait)').matches
+                && document.querySelector('link[href*="bcpc-dashboard-portrait-sidebar.css"]')
+                && sidebar && !sidebar.classList.contains('sidebar-collapsed')) {
+                collapseSidebar();
+                return;
+            }
             if (event.key === 'Escape' && sidebar?.classList.contains('sidebar-open')) {
                 closeMobileSidebar();
             }
@@ -2350,6 +2520,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
     });
     </script>
 
+    <script src="{{ asset('js/desk-officer-pagination.js') }}?v={{ filemtime(public_path('js/desk-officer-pagination.js')) }}"></script>
     @stack('scripts')
     @if(Auth::user()?->position === 'Desk Officer' && in_array($defaultCaseDepartment, ['VAWC', 'BCPC'], true) &&
     $isArchiveListPage)

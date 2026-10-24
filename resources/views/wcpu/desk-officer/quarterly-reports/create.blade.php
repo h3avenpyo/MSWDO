@@ -7,17 +7,48 @@
 
 @section('title', 'Generate ' . ($displayType ? $displayType . ' ' : '') . 'Quarterly Report')
 
+@push('styles')
+<style>
+    @media (max-width: 80rem) {
+        #mainContent > .quarterly-create-content {
+            padding-top: .75rem !important;
+            margin-top: 0 !important;
+        }
+        #mainContent > .quarterly-create-content > .quarterly-create-navigation {
+            margin-top: 0 !important;
+            margin-bottom: 1rem;
+        }
+        #mainContent .quarterly-create-content .quarterly-create-back {
+            display: inline-flex;
+            align-items: center;
+            min-height: 2.5rem;
+            margin-top: 0 !important;
+        }
+    }
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mobileTopBar,
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent #mobileMenuToggle {
+            display: none !important;
+        }
+
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle {
+            display: inline-flex !important;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 @include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Generate ' . ($displayType ? $displayType . ' ' : '') . 'Quarterly Report', 'subtitle' => 'Create a ' . ($displayType ? $displayType . ' ' : '') . 'compliance monitoring report for ' . ($barangay->name ?? 'Acacia')])
-<div class="max-w-3xl mx-auto py-4 px-2 sm:px-4">
+<div class="quarterly-create-content max-w-3xl mx-auto py-4 px-2 sm:px-4">
     <!-- Header -->
-    <div class="mb-6">
+    <div class="quarterly-create-navigation mb-6">
         @unless(auth()->user()?->position === 'Desk Officer' && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
         <h1 class="text-2xl font-bold text-gray-800">Generate {{ $displayType ? $displayType . ' ' : '' }}Quarterly Report</h1>
         <p class="text-gray-500 text-sm mt-1">Create a {{ $displayType ? $displayType . ' ' : '' }}compliance monitoring report for {{ $barangay->name ?? 'Acacia' }}</p>
         @endunless
         <a href="{{ route('desk-officer.quarterly-reports.index') }}" 
-           class="inline-flex items-center gap-2 text-purple-600 hover:text-purple-800 transition mt-4 ml-3 sm:ml-4">
+           class="quarterly-create-back inline-flex items-center gap-2 text-purple-600 hover:text-purple-800 transition mt-4 ml-3 sm:ml-4">
             <i class="fas fa-arrow-left"></i> Back to Reports
         </a>
     </div>

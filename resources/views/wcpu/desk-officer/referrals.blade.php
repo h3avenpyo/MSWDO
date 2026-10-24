@@ -23,11 +23,66 @@
 @endif
 @push('styles')
 <style>
-    /* Android tablets (600px–1280px): the shared Desk Officer navigation is
-       a drawer; the referral registry keeps all columns in its own scroll area. */
-    @media (min-width: 37.5rem) and (max-width: 80rem) {
-        #desk-referrals-content .referrals-table-view { display: block !important; }
-        #desk-referrals-content .referrals-table-view + .md\:hidden { display: none !important; }
+    /* Reuse the case-style cards on phones and tablets in either orientation. */
+    @media (max-width: 47.9375rem) {
+        #desk-referrals-content [data-pagination-label] {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center !important;
+        }
+
+        #desk-referrals-content [data-pagination-label] > div {
+            width: 100%;
+            text-align: center !important;
+        }
+
+        #desk-referrals-content [data-pagination-label] > div:last-child {
+            display: flex !important;
+            flex-wrap: wrap;
+            justify-content: center !important;
+            max-width: 100%;
+        }
+    }
+
+    @media screen and (max-width: 80rem) {
+        #desk-referrals-content .referrals-table-view { display: none !important; }
+        #desk-referrals-content .referral-mobile-cards {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 1rem;
+        }
+        #desk-referrals-content .referral-mobile-cards > * {
+            min-width: 0;
+            margin: 0 !important;
+            overflow-wrap: anywhere;
+        }
+        #desk-referrals-content .referral-mobile-cards > article {
+            display: flex;
+            flex-direction: column;
+        }
+        #desk-referrals-content .referral-mobile-cards dl > div { min-width: 0; }
+        #desk-referrals-content .referral-mobile-cards .referral-card-actions { margin-top: auto; }
+    }
+
+    @media screen and (min-width: 48rem) and (max-width: 80rem) {
+        #desk-referrals-content .referral-mobile-cards {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        #desk-referrals-content .referral-mobile-cards > .referral-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            min-width: 0;
+            padding: 2rem 1rem;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+    }
+
+    @media screen and (min-width: 37.5rem) and (max-width: 80rem) {
         #desk-referrals-content {
             max-width: none;
             padding: clamp(1rem, 2vw, 1.5rem) !important;
@@ -35,27 +90,9 @@
         #desk-referrals-content > .referrals-toolbar {
             margin-bottom: clamp(.75rem, 1.5vw, 1rem);
         }
-        #desk-referrals-content .printable-referrals-table table {
-            min-width: 56rem;
-        }
-        #desk-referrals-content .printable-referrals-table :is(th, td) {
-            padding: .75rem clamp(.625rem, 1.2vw, 1rem) !important;
-            font-size: clamp(.6875rem, 1.15vw, .8125rem);
-        }
-        #desk-referrals-content .actions-column > div {
-            gap: .375rem;
-            flex-wrap: nowrap;
-        }
-        #desk-referrals-content .actions-column :is(button, a) {
-            flex: 0 0 auto;
-            width: 2.25rem;
-            min-width: 2.25rem;
-            height: 2.25rem;
-            padding: 0 !important;
-        }
     }
 
-    @media (max-width: 47.9375rem) {
+    @media screen and (max-width: 80rem) {
         #desk-referrals-content .referral-mobile-cards .referral-card-actions {
             display: grid !important;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -159,7 +196,7 @@
             justify-content: center !important;
             margin: 0 !important;
         }
-        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header.portal-page-header button[aria-label="Notifications"] {
+        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header#desk-officer-dashboard-header.portal-page-header button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
             min-width: 2.5rem !important;
@@ -174,21 +211,26 @@
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
+            align-self: center !important;
             position: relative !important;
             margin: 0 !important;
             line-height: 1 !important;
         }
-        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header.portal-page-header button[aria-label="Notifications"]:hover {
+        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header#desk-officer-dashboard-header.portal-page-header button[aria-label="Notifications"]:hover {
             background: #8f0202 !important;
         }
-        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header.portal-page-header button[aria-label="Notifications"] > i {
+        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header#desk-officer-dashboard-header.portal-page-header button[aria-label="Notifications"] > i {
             display: inline-flex !important;
-            font-size: 1.05rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            font-size: 1rem !important;
             line-height: 1 !important;
             color: #ffffff !important;
             margin: 0 !important;
+            vertical-align: middle !important;
         }
-        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header.portal-page-header :is(#notifications-unread-count, [data-unread-badge], .notification-badge) {
+        html body.portal-ui.desk-officer-referrals-mobile-nav #mainContent > header#desk-officer-dashboard-header.portal-page-header :is(#notifications-unread-count, [data-unread-badge], .notification-badge) {
             position: absolute !important;
             width: 1.25rem !important;
             height: 1.25rem !important;
@@ -201,7 +243,7 @@
             color: #ffffff !important;
             font-weight: 700 !important;
             border-radius: 9999px !important;
-            display: flex !important;
+            display: flex;
             align-items: center !important;
             justify-content: center !important;
             padding: 0 !important;
@@ -294,13 +336,12 @@
         }
     }
 
-    /* Tablet view: collapsed rail, full-width content and clean white header. */
+    /* Keep the tablet header while using the shared collapsible sidebar. */
     @media (min-width: 48rem) and (max-width: 80rem) {
         body.desk-officer-referrals-mobile-nav #mobileTopBar,
         body.desk-officer-referrals-mobile-nav #mobileMenuToggle,
         body.desk-officer-referrals-mobile-nav #pageMobileMenuToggle,
-        body.desk-officer-referrals-mobile-nav #sidebarCloseBtn,
-        body.desk-officer-referrals-mobile-nav #sidebarToggleBtn { display: none !important; }
+        body.desk-officer-referrals-mobile-nav #sidebarCloseBtn { display: none !important; }
         body.desk-officer-referrals-mobile-nav #sidebarOverlay {
             display: none !important;
             pointer-events: none !important;
@@ -318,39 +359,6 @@
             min-height: 4.25rem !important;
             padding-left: 1.5rem !important;
             padding-right: 1.5rem !important;
-        }
-        body.desk-officer-referrals-mobile-nav #sidebar {
-            inset: 0 auto 0 0 !important;
-            top: 0 !important;
-            left: 0 !important;
-            bottom: 0 !important;
-            right: auto !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            max-height: none !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            transform: none !important;
-            background: #C41E3A !important;
-            border-radius: 0 !important;
-            z-index: 40 !important;
-            width: 4.5rem !important;
-            min-width: 4.5rem !important;
-            max-width: 4.5rem !important;
-            transition: width 0.3s ease !important;
-        }
-        body.desk-officer-referrals-mobile-nav #sidebar .sidebar-header {
-            display: flex !important;
-            min-height: 4.25rem !important;
-            padding-left: 0.75rem !important;
-            padding-right: 0.5rem !important;
-            justify-content: flex-start !important;
-        }
-        body.desk-officer-referrals-mobile-nav #sidebar:not(.sidebar-expanded) .sidebar-text { display: none !important; }
-        body.desk-officer-referrals-mobile-nav #sidebar ~ #mainContent {
-            width: calc(100% - 4.5rem) !important;
-            min-width: 0 !important;
-            margin-left: 4.5rem !important;
         }
     }
 </style>
@@ -392,6 +400,7 @@
     <!-- Referrals Table (Desktop) -->
     <div class="{{ $isMultiroleDeskOfficer ? 'space-y-6' : 'bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100' }}">
         @foreach($referralGroups as $department => $referrals)
+        <div data-ajax-pagination="referrals-{{ $department ?: 'all' }}" data-ajax-page="{{ $referrals->getPageName() }}">
         @if($isMultiroleDeskOfficer)
         <section class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
         <h2 class="px-6 py-4 text-lg font-semibold text-[#991b1b]">{{ $department === 'VAWC' ? 'SWD' : $department }} Referrals</h2>
@@ -497,7 +506,7 @@
             </table>
         </div>
 
-        <!-- Phone-only case-style referral cards -->
+        <!-- Case-style referral cards for phones and tablets -->
         <div class="referral-mobile-cards md:hidden space-y-3 p-3">
             @forelse($referrals as $referral)
             @php
@@ -531,8 +540,11 @@
                 </div>
             </article>
             @empty
-            <div class="rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">No referrals found.</div>
+            <div class="referral-empty-state rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">No referrals found.</div>
             @endforelse
+            @if($referrals->isNotEmpty())
+            <div class="referral-empty-state referral-search-empty hidden rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">No results found.</div>
+            @endif
         </div>
 
         @if($referrals->hasPages())
@@ -541,6 +553,7 @@
         @if($isMultiroleDeskOfficer)
         </section>
         @endif
+        </div>
         @endforeach
     </div>
     </div>
@@ -571,26 +584,22 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const phoneScreenWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
-    const isPhoneReferralView = window.matchMedia('(max-width: 47.9375rem)').matches
-        || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneScreenWidth <= 480);
-    document.querySelectorAll('.referrals-table-view').forEach(view => {
-        view.style.display = isPhoneReferralView ? 'none' : '';
-    });
-    document.querySelectorAll('.referral-mobile-cards').forEach(cards => {
-        cards.style.display = isPhoneReferralView ? 'grid' : '';
-    });
     const referralsSearchInput = document.getElementById('referrals-search-input');
     referralsSearchInput?.addEventListener('input', function () {
         const query = this.value.trim().toLowerCase();
         document.querySelectorAll('.referral-searchable').forEach(item => {
             item.style.display = !query || item.textContent.toLowerCase().includes(query) ? '' : 'none';
         });
+        document.querySelectorAll('#desk-referrals-content .referral-mobile-cards').forEach(group => {
+            const emptyState = group.querySelector('.referral-search-empty');
+            const hasMatch = Array.from(group.querySelectorAll('.referral-searchable')).some(item => item.style.display !== 'none');
+            emptyState?.classList.toggle('hidden', !query || hasMatch);
+        });
     });
     const modal = new bootstrap.Modal(document.getElementById('referralDetailsModal'));
     const directReferralPopups = @json($isMultiroleDeskOfficer || $isBcpcDeskOfficer || $isSwdDeskOfficer);
     let referralPopupRequest = 0;
-    document.querySelectorAll('.view-referral-btn').forEach(function(btn) {
+    window.portalPaginationElements('.view-referral-btn').forEach(function(btn) {
         btn.addEventListener('click', function(event) {
             event.preventDefault();
             event.stopPropagation();
@@ -630,7 +639,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     // Edit button: load edit form into the same modal
-    document.querySelectorAll('.edit-referral-btn').forEach(function(btn) {
+    window.portalPaginationElements('.edit-referral-btn').forEach(function(btn) {
         btn.addEventListener('click', function(event) {
             event.preventDefault();
             event.stopPropagation();

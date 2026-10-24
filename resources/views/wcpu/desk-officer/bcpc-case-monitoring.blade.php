@@ -9,15 +9,44 @@
     .bcpc-monitoring-actions > * > span { display: none !important; }
     .bcpc-monitoring-actions > :is(a, button) { background-color: #C41E3A !important; border-color: #C41E3A !important; color: #ffffff !important; transition: none !important; }
     .bcpc-monitoring-actions > :is(a, button):is(:hover, :focus, :active) { background-color: #A01830 !important; border-color: #A01830 !important; color: #ffffff !important; }
-    .monitoring-filter-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
-    @media (max-width: 47.9375rem) {
+    #bcpc-monitoring-filters .monitoring-filter-actions {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+        align-items: stretch;
+        flex: 1 1 24rem;
+        min-width: 0;
+        width: 100%;
+        gap: .75rem;
+    }
+    #bcpc-monitoring-filters .monitoring-filter-actions > :is(a, button) {
+        width: 100%;
+        min-width: 0;
+        min-height: 2.75rem;
+        padding: .625rem .75rem;
+        border-radius: .5rem;
+        line-height: 1.25;
+        text-align: center;
+    }
+    #bcpc-monitoring-filters .monitoring-filter-actions > :is(a, button) > i { flex-shrink: 0; }
+    @media (max-width: 39.9375rem) {
+        #bcpc-monitoring-filters .monitoring-filter-actions {
+            flex: 0 0 auto;
+            grid-auto-flow: row;
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    @media screen and (max-width: 80rem) {
         .bcpc-monitoring-table-view { display: none !important; }
-        .bcpc-monitoring-mobile-cards { display: grid !important; gap: .75rem; padding: .75rem; }
+        .bcpc-monitoring-mobile-cards { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: .75rem; padding: .75rem; }
+        .bcpc-monitoring-mobile-cards > :not(article) { grid-column: 1 / -1; }
         .bcpc-monitoring-mobile-card { min-width: 0; padding: 1rem; }
         .bcpc-monitoring-mobile-card .bcpc-monitoring-actions { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; padding-top: .75rem; }
         .bcpc-monitoring-mobile-card .bcpc-monitoring-actions > :is(a, button) { width: 100% !important; height: 3rem !important; min-width: 3rem !important; min-height: 3rem !important; padding: 0 !important; }
     }
-    @media (min-width: 37.5rem) and (max-width: 80rem) { .bcpc-monitoring-table-view { display: block !important; } .bcpc-monitoring-mobile-cards { display: none !important; } }
+    @media screen and (min-width: 48rem) and (max-width: 80rem) {
+        .bcpc-monitoring-mobile-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
 
     /* Dashboard-style red navbar for mobile/tablet, matching Case Profiles */
     @media (max-width: 80rem) {
@@ -66,6 +95,7 @@
             text-align: left !important;
         }
         html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+            font-size: 1.125rem !important;
             position: relative !important;
             left: 0 !important;
             margin-left: 0 !important;
@@ -84,6 +114,10 @@
         }
         html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) i {
             color: inherit !important;
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) :is(h1, h2, h3),
         html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header :is(h1, h2, h3) {
@@ -111,8 +145,7 @@
             flex: 0 0 auto !important;
             flex-wrap: nowrap !important;
         }
-        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header button[aria-label="Notifications"],
-        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"] {
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header#desk-officer-dashboard-header button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
             min-width: 2.5rem !important;
@@ -120,21 +153,48 @@
             min-height: 2.5rem !important;
             padding: 0 !important;
             border-radius: .625rem !important;
-        }
-        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header button[aria-label="Notifications"] > i,
-        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"] > i {
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
             margin: 0 !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header#desk-officer-dashboard-header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header#desk-officer-dashboard-header button[aria-label="Notifications"] > i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
             font-size: 1rem !important;
             line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
         }
-        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header #notifications-unread-count,
-        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #desk-officer-dashboard-header #notifications-unread-count {
+        html body.portal-ui.desk-officer-bcpc-monitoring-mobile-nav #mainContent > header#desk-officer-dashboard-header #notifications-unread-count {
+            position: absolute !important;
             width: 1.25rem !important;
             height: 1.25rem !important;
+            min-width: 1.25rem !important;
             top: -.25rem !important;
             right: -.25rem !important;
+            padding: 0 !important;
             font-size: .75rem !important;
             line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
         }
 
         /* Sidebar dropdown drawer below header */
@@ -267,7 +327,7 @@
     @endif
 
     <!-- Filters -->
-    <form method="GET" action="{{ route('desk-officer.bcpc-case-monitoring.edit') }}" class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 mb-6">
+    <form id="bcpc-monitoring-filters" method="GET" action="{{ route('desk-officer.bcpc-case-monitoring.edit') }}" class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 mb-6">
         <div class="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 flex-wrap">
             <div class="w-full sm:w-40">
                 <label for="monitoring-quarter" class="block text-sm font-medium text-gray-600 mb-1">Quarter</label>
@@ -278,7 +338,8 @@
                     @endforeach
                 </select>
             </div>
-            <div class="w-full sm:w-40">
+            <div class="flex w-full min-w-0 items-end gap-3 sm:w-auto">
+            <div class="min-w-0 flex-1 sm:w-40 sm:flex-none">
                 <label for="monitoring-year" class="block text-sm font-medium text-gray-600 mb-1">Year</label>
                 <select id="monitoring-year" name="year" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm">
                     <option value="">All Years</option>
@@ -287,15 +348,16 @@
                     @endforeach
                 </select>
             </div>
+            <a href="{{ route('desk-officer.bcpc-case-monitoring.edit') }}" class="inline-flex shrink-0 items-center justify-center gap-2 px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-medium shadow-sm transition">
+                <i class="fas fa-times"></i>
+                <span>Clear</span>
+            </a>
+            </div>
             <div class="monitoring-filter-actions">
             <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg text-sm font-medium shadow-sm transition w-full sm:w-auto">
                 <i class="fas fa-sync-alt"></i>
                 <span>Load Monitoring</span>
             </button>
-            <a href="{{ route('desk-officer.bcpc-case-monitoring.edit') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-medium shadow-sm transition w-full sm:w-auto">
-                <i class="fas fa-times"></i>
-                <span>Clear</span>
-            </a>
             @if(auth()->user()?->position === 'Desk Officer' && (auth()->user()?->defaultCaseDepartment() === 'BCPC' || auth()->user()?->isMultiCaseDepartment()))
             <button type="button" onclick="resetAddMonitoringForm(); document.getElementById('addMonitoringModal').classList.remove('hidden')" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-sm font-medium shadow-sm transition w-full sm:w-auto">
                 <i class="fas fa-plus"></i>
@@ -307,7 +369,7 @@
     </form>
 
     <!-- Monitoring Table & Cards -->
-    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
+    <div data-ajax-pagination="monitoring" data-ajax-page="page" class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
         <!-- Desktop Table View -->
         <div class="bcpc-monitoring-table-view overflow-x-auto hidden md:block">
             <table class="w-full text-sm">
@@ -403,7 +465,7 @@
             </table>
         </div>
 
-        <!-- Mobile Cards View -->
+        <!-- Phone and Tablet Cards View -->
         <div class="bcpc-monitoring-mobile-cards md:hidden">
             @forelse($monitorings as $monitoring)
                 <article class="bcpc-monitoring-mobile-card border border-gray-100 rounded-xl bg-white shadow-sm hover:shadow-md transition">
@@ -558,12 +620,6 @@
      data-validation-errors='@json($errors->all())'
      hidden></div>
 <script>
-const monitoringPhoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
-const isMonitoringPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
-    || (/Android|iPhone|iPod/i.test(navigator.userAgent) && monitoringPhoneWidth <= 480);
-document.querySelectorAll('.bcpc-monitoring-table-view').forEach(view => { view.style.display = isMonitoringPhoneView ? 'none' : ''; });
-document.querySelectorAll('.bcpc-monitoring-mobile-cards').forEach(cards => { cards.style.display = isMonitoringPhoneView ? 'grid' : ''; });
-
 document.addEventListener('DOMContentLoaded', () => {
     @if(auth()->user()->defaultCaseDepartment() === 'BCPC' && !auth()->user()->isMultiCaseDepartment())
     const existingPeriods = @json($existingMonitoringPeriods ?? []);

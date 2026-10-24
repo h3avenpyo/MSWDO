@@ -47,7 +47,7 @@ class CaseProfileController extends Controller
             $paginate = function ($profiles, $pageName) use ($request) {
                 $page = max(1, (int) $request->input($pageName, 1));
                 return (new \Illuminate\Pagination\LengthAwarePaginator(
-                    $profiles->values()->forPage($page, 5)->values(), $profiles->count(), 5, $page,
+                    $profiles->values()->forPage($page, 4)->values(), $profiles->count(), 4, $page,
                     ['path' => $request->url(), 'pageName' => $pageName]
                 ))->withQueryString();
             };

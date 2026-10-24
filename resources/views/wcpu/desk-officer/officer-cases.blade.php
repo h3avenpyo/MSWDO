@@ -46,7 +46,7 @@
           @endif
         </div>
       </div>
-      
+
       <!-- Content area -->
       <div class="p-4 overflow-auto flex-1" x-html="content">
         <!-- content loaded dynamically via fetch when opening -->
@@ -228,6 +228,10 @@
         }
 
         /* Mobile view (< 48rem / < 768px): Show case cards using mobile spacing */
+        #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-creator-prefix {
+            display: none;
+        }
+
         @media (max-width: 47.999rem), (max-width: 767.98px) {
             #desk-officer-cases-content #mobile-case-cards,
             .cases-list-section #mobile-case-cards {
@@ -238,10 +242,266 @@
             }
             #desk-officer-cases-content #mobile-case-cards .bcpc-case-referred-badge {
                 display: inline-flex !important;
-                align-items: center !important;
+                align-items: flex-start !important;
                 justify-content: center !important;
                 text-align: center !important;
                 line-height: 1.25 !important;
+            }
+
+            /* Multi-role mobile cards: keep the compact reference layout scoped to this page. */
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card {
+                display: flex !important;
+                flex-direction: column !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                background: #ffffff !important;
+                border: 1px solid #e5e7eb !important;
+                border-radius: 0.75rem !important;
+                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+                overflow: hidden !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 {
+                display: flex !important;
+                flex: 1 1 auto !important;
+                flex-direction: column !important;
+                gap: 0.25rem !important;
+                padding: 0.75rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 > div:first-child {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 0.5rem !important;
+                min-width: 0 !important;
+                margin: 0 0 0.125rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 > div:first-child a {
+                min-width: 0 !important;
+                overflow: hidden !important;
+                color: #C41E3A !important;
+                font-size: 0.8125rem !important;
+                font-weight: 700 !important;
+                line-height: 1.25 !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 > div:first-child > span {
+                flex: 0 0 auto !important;
+                font-size: 0.6875rem !important;
+                line-height: 1.25 !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card h3 {
+                min-width: 0 !important;
+                margin: 0 !important;
+                overflow: hidden !important;
+                color: #1f2937 !important;
+                font-size: 0.875rem !important;
+                font-weight: 600 !important;
+                line-height: 1.35 !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 0.25rem !important;
+                margin: 0.375rem 0 0.25rem !important;
+                padding: 0.5rem 0 !important;
+                border-top: 1px solid #f3f4f6 !important;
+                border-bottom: 1px solid #f3f4f6 !important;
+                color: #64748b !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details > div {
+                display: flex !important;
+                align-items: center !important;
+                min-width: 0 !important;
+                gap: 0.375rem !important;
+                font-size: 0.75rem !important;
+                line-height: 1.3 !important;
+                color: #64748b !important;
+                overflow-wrap: anywhere !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details > div i {
+                flex: 0 0 0.875rem !important;
+                width: 0.875rem !important;
+                margin: 0 !important;
+                color: #C41E3A !important;
+                font-size: 0.6875rem !important;
+                text-align: center !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-date {
+                order: 1 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-creator {
+                order: 2 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details > div:first-child {
+                order: 3 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-updated {
+                display: none !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-creator span {
+                color: #C41E3A !important;
+                font-weight: 500 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
+                gap: 0.375rem !important;
+                width: 100% !important;
+                margin-top: auto !important;
+                padding-top: 0.25rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > *,
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions form {
+                flex: 0 0 2.25rem !important;
+                width: 2.25rem !important;
+                min-width: 2.25rem !important;
+                margin: 0 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > :is(a, button, span),
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions form > button {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 2.25rem !important;
+                height: 2.25rem !important;
+                min-width: 2.25rem !important;
+                padding: 0 !important;
+                border-radius: 0.5rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions .case-card-action-label {
+                display: none !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions .view-case,
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions form > button:not(:disabled) {
+                background-color: #C41E3A !important;
+                border-color: #C41E3A !important;
+                color: #ffffff !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions .edit-case:not(:disabled) {
+                background-color: #fee2e2 !important;
+                border-color: #fecaca !important;
+                color: #C41E3A !important;
+                box-shadow: 0 1px 2px rgba(196, 30, 58, 0.12) !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions .edit-case:not(:disabled):is(:hover, :focus, :active) {
+                background-color: #fecaca !important;
+                border-color: #fca5a5 !important;
+                color: #A01830 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions .case-card-icon-action[aria-disabled="true"],
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > span[aria-disabled="true"] {
+                background-color: #fee2e2 !important;
+                border-color: #fecaca !important;
+                color: #C41E3A !important;
+            }
+
+            /* Match the reference card hierarchy without changing tablet or desktop markup. */
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 {
+                position: relative !important;
+                min-height: 10.5rem !important;
+                padding-bottom: 3.25rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card h3 {
+                margin-top: 0.625rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details {
+                display: block !important;
+                min-height: 1.25rem !important;
+                margin: 0.25rem 0 0 !important;
+                padding: 0 !important;
+                border: 0 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-date {
+                position: absolute !important;
+                top: 2.3rem !important;
+                left: 0.75rem !important;
+                display: flex !important;
+                gap: 0 !important;
+                color: #64748b !important;
+                font-size: 0.6875rem !important;
+                line-height: 1.2 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-date i {
+                display: none !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-creator {
+                display: flex !important;
+                margin-top: 0.125rem !important;
+                color: #9ca3af !important;
+                font-size: 0.75rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-creator-prefix {
+                display: inline !important;
+                color: #9ca3af !important;
+                font-weight: 400 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-creator > span:not(.case-card-creator-prefix) {
+                color: #C41E3A !important;
+                font-weight: 500 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-category {
+                position: absolute !important;
+                bottom: 0.75rem !important;
+                left: 0.75rem !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                width: auto !important;
+                min-height: 1.375rem !important;
+                padding: 0.125rem 0.5rem !important;
+                border-radius: 9999px !important;
+                background: #f1f3f5 !important;
+                color: #6b7280 !important;
+                font-size: 0.6875rem !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-category i {
+                display: none !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions {
+                position: absolute !important;
+                right: 0.75rem !important;
+                bottom: 0.625rem !important;
+                width: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
         }
 
@@ -254,6 +514,38 @@
             #desk-officer-cases-content #mobile-case-cards,
             .cases-list-section #mobile-case-cards {
                 display: none !important;
+            }
+        }
+
+        @media (min-width: 48rem) and (max-width: 80rem) {
+            #desk-officer-cases-content #mobile-case-cards {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.875rem !important;
+                padding: 1rem !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards > * {
+                min-width: 0;
+                margin: 0 !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards > :not(.case-card) {
+                grid-column: 1 / -1;
+            }
+            #desk-officer-cases-content #mobile-case-cards > .case-list-empty-state,
+            #desk-officer-cases-content #mobile-case-cards > #mobile-search-empty {
+                width: 100%;
+                padding-right: 1rem;
+                padding-left: 1rem;
+                text-align: center;
+                overflow-wrap: anywhere;
+            }
+            #desk-officer-cases-content #mobile-case-cards .case-card-header-row {
+                flex-wrap: wrap;
+                gap: .5rem;
+            }
+            #desk-officer-cases-content #mobile-case-cards .case-card-details > div {
+                min-width: 0;
+                overflow-wrap: anywhere;
             }
         }
 
@@ -274,12 +566,6 @@
         .multirole-cases-page .swd-desk-table td { padding: 1rem 1.5rem; }
         /* Tablet Case Cards: Card presentation on tablet screens (768px–1280px / 48rem–80rem) */
         @media (min-width: 48rem) and (max-width: 80rem) {
-            #desk-officer-cases-content #mobile-case-cards {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 0.875rem !important;
-                padding: 1rem !important;
-            }
             #desk-officer-cases-content #mobile-case-cards .case-card {
                 margin: 0 !important;
                 background: #ffffff;
@@ -353,12 +639,6 @@
             }
         }
 
-        /* 4-column details on wider tablet landscape (1024px to 1280px) */
-        @media (min-width: 64rem) and (max-width: 80rem) {
-            #desk-officer-cases-content #mobile-case-cards .case-card-details {
-                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-            }
-        }
         @endif
         @if($isDeskOfficer)
         .swd-desk-cases-page .swd-desk-case-controls > * { flex: 0 0 auto; }
@@ -462,6 +742,7 @@
                 flex: 1 1 auto !important;
             }
             html body.portal-ui :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+                font-size: 1.125rem !important;
                 position: relative !important;
                 left: 0 !important;
                 margin-left: 0 !important;
@@ -484,6 +765,10 @@
             }
             html body.portal-ui :is(#dashboardMenuToggle, #pageMobileMenuToggle) > i {
                 color: inherit !important;
+                font-size: inherit !important;
+                line-height: 1 !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
             html body.portal-ui #desk-officer-dashboard-header > div > div:first-child > div {
                 width: auto !important;
@@ -950,6 +1235,41 @@
             }
         }
 
+        /* Align search and toolbar controls on tablet landscape. */
+        @media (min-width: 48rem) and (max-width: 80rem) and (orientation: landscape) {
+            #desk-officer-cases-content .case-controls-section {
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: .75rem 1rem;
+                margin-bottom: 1rem !important;
+            }
+
+            #desk-officer-cases-content .case-search-wrapper {
+                flex: 1 1 12rem;
+                width: auto;
+                max-width: 22rem;
+                margin: 0;
+            }
+
+            #desk-officer-cases-content .case-actions-toolbar {
+                flex: 0 1 auto;
+                width: auto;
+                margin: 0;
+                margin-left: auto;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+            #desk-officer-cases-content :is(#case-search, .case-action-btn) {
+                box-sizing: border-box;
+                height: 2.5rem;
+                min-height: 2.5rem;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+        }
+
         /* Retain Case Cards actions and list heading on tablet/mobile */
         .swd-desk-cases-page .cases-list-heading { padding: .875rem 1rem; }
         .swd-desk-cases-page #mobile-case-cards .case-card { margin-top: .75rem; }
@@ -1021,8 +1341,793 @@
             #mobile-case-cards .case-card-icon-action { gap: 0 !important; }
             #mobile-case-cards .case-card-icon-action .case-card-action-label { display: none !important; }
             #mobile-case-cards .case-card-icon-action i { margin: 0 !important; }
+
+            /* Final cascade override for the Multi-Role mobile reference buttons. */
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions {
+                display: flex !important;
+                grid-template-columns: none !important;
+                position: absolute !important;
+                right: 0.75rem !important;
+                bottom: 0.625rem !important;
+                width: auto !important;
+                gap: 0.5rem !important;
+                margin: 0 !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > *,
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > form.inline-flex {
+                flex: 0 0 2.25rem !important;
+                width: 2.25rem !important;
+                min-width: 2.25rem !important;
+                height: 2.25rem !important;
+                min-height: 2.25rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > form > button {
+                width: 2.25rem !important;
+                height: 2.25rem !important;
+                min-width: 2.25rem !important;
+                min-height: 2.25rem !important;
+                padding: 0 !important;
+            }
+
+            /* Keep Multi-Role cards geometrically consistent with admin barangay-case cards. */
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 {
+                position: relative !important;
+                box-sizing: border-box !important;
+                min-width: 0 !important;
+                padding: 0.75rem 0.75rem 3.5rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 > div:first-child {
+                flex-wrap: wrap !important;
+                gap: 0.5rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card > .p-4 > div:first-child > a {
+                flex: 1 1 auto !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                white-space: normal !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-header-row {
+                align-items: flex-start !important;
+                min-width: 0 !important;
+                margin-bottom: 0.25rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-header-primary {
+                display: flex !important;
+                flex: 1 1 auto !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                min-width: 0 !important;
+                overflow-wrap: anywhere !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-header-primary .case-card-date {
+                position: static !important;
+                display: block !important;
+                margin-top: 0.125rem !important;
+                color: #64748b !important;
+                font-size: 0.6875rem !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-header-primary .case-card-date i {
+                display: none !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-details .case-card-category {
+                bottom: 0.875rem !important;
+                left: 0.75rem !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions {
+                right: 0.75rem !important;
+                bottom: 0.625rem !important;
+                gap: 0.5rem !important;
+                flex-wrap: nowrap !important;
+            }
+
+            /* Exact mobile action-button treatment from the reference image. */
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions {
+                gap: 8px !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > :is(a, button, span),
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > form,
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > form > button {
+                flex: 0 0 35px !important;
+                width: 35px !important;
+                min-width: 35px !important;
+                height: 35px !important;
+                min-height: 35px !important;
+                box-sizing: border-box !important;
+                border-radius: 8px !important;
+                padding: 0 !important;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12) !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > form > button {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions .view-case,
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions > form > button:not(:disabled) {
+                background: #C41E3A !important;
+                border: 1px solid #C41E3A !important;
+                color: #ffffff !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions .edit-case,
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions .case-card-icon-action[aria-disabled="true"] {
+                background: #fee2e2 !important;
+                border: 1px solid #fecaca !important;
+                color: #C41E3A !important;
+            }
+
+            #desk-officer-cases-content.multirole-cases-page #mobile-case-cards .case-card-actions :is(.view-case, .edit-case, form > button) i {
+                margin: 0 !important;
+                color: inherit !important;
+                font-size: 13px !important;
+            }
         }
         
+        /* Match admin barangay-case actions for BCPC and VAWC mobile cards. */
+        @media (max-width: 767px) {
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card > .p-4 {
+                position: relative !important;
+                padding-bottom: 3.5rem !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions {
+                display: flex !important;
+                position: absolute !important;
+                right: .75rem !important;
+                bottom: .625rem !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
+                flex-wrap: nowrap !important;
+                gap: .5rem !important;
+                width: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > *,
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > form.inline-flex,
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > form > button {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex: 0 0 2.25rem !important;
+                width: 2.25rem !important;
+                min-width: 2.25rem !important;
+                height: 2.25rem !important;
+                min-height: 2.25rem !important;
+                box-sizing: border-box !important;
+                border-radius: .5rem !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .view-case,
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > form > button:not(:disabled) {
+                background: #C41E3A !important;
+                border: 1px solid #C41E3A !important;
+                color: #fff !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions :is(.view-case, form > button):is(:hover, :focus) {
+                background: #A01830 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions :is(.view-case, form > button):active {
+                background: #8B1429 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .edit-case:not(:disabled) {
+                background: #fff !important;
+                border: 1px solid #9ca3af !important;
+                color: #4b5563 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .edit-case:not(:disabled):is(:hover, :focus, :active) {
+                background: #f9fafb !important;
+                border-color: #9ca3af !important;
+                color: #4b5563 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .case-card-icon-action[aria-disabled="true"] {
+                background: #fef2f2 !important;
+                border: 1px solid #fecaca !important;
+                color: #dc2626 !important;
+                box-shadow: 0 1px 2px 0 rgb(0 0 0 / .05) !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions :is(.view-case, .edit-case, .case-card-icon-action, form > button) i {
+                margin: 0 !important;
+                color: inherit !important;
+                font-size: 1rem !important;
+            }
+        }
+
+        /* Compact barangay case cards, matching the existing Acacia card design. */
+        @media (max-width: 80rem) {
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card {
+                display: flex !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                overflow: hidden !important;
+                border: 1px solid #e5e7eb !important;
+                border-radius: .75rem !important;
+                background: #fff !important;
+                box-shadow: 0 1px 3px rgba(15, 23, 42, .08) !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card > .p-4 {
+                position: relative !important;
+                display: flex !important;
+                flex: 1 1 auto !important;
+                flex-direction: column !important;
+                min-width: 0 !important;
+                min-height: 10.75rem !important;
+                gap: 0 !important;
+                padding: .75rem .75rem 3.5rem !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-header-row {
+                display: flex !important;
+                align-items: flex-start !important;
+                justify-content: space-between !important;
+                flex-wrap: nowrap !important;
+                gap: .5rem !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-header-primary {
+                display: flex !important;
+                flex: 1 1 auto !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                min-width: 0 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-header-primary > a {
+                display: block !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+                color: #C41E3A !important;
+                font-size: .75rem !important;
+                font-weight: 700 !important;
+                line-height: 1.25 !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-header-primary .case-card-date {
+                position: static !important;
+                display: block !important;
+                margin-top: .125rem !important;
+                color: #64748b !important;
+                font-size: .6875rem !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-header-primary .case-card-date i {
+                display: none !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-header-row > span {
+                flex: 0 0 auto !important;
+                padding: .125rem .5rem !important;
+                font-size: .625rem !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card h3 {
+                min-width: 0 !important;
+                margin: .625rem 0 .25rem !important;
+                overflow: hidden !important;
+                color: #1f2937 !important;
+                font-size: .8125rem !important;
+                font-weight: 500 !important;
+                line-height: 1.3 !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-details {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: .1875rem !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: 0 !important;
+                color: #64748b !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-details > div {
+                display: flex !important;
+                align-items: center !important;
+                min-width: 0 !important;
+                gap: .375rem !important;
+                color: #64748b !important;
+                font-size: .6875rem !important;
+                line-height: 1.25 !important;
+                overflow-wrap: anywhere !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-details .case-card-updated {
+                display: flex !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-details > div i {
+                flex: 0 0 .75rem !important;
+                width: .75rem !important;
+                margin: 0 !important;
+                color: #C41E3A !important;
+                font-size: .625rem !important;
+                text-align: center !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-details .case-card-category {
+                position: absolute !important;
+                left: .75rem !important;
+                bottom: .875rem !important;
+                display: inline-flex !important;
+                width: auto !important;
+                max-width: calc(100% - 8.75rem) !important;
+                min-height: 1.25rem !important;
+                padding: .125rem .5rem !important;
+                overflow: hidden !important;
+                border-radius: 9999px !important;
+                background: #f1f3f5 !important;
+                color: #6b7280 !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-details .case-card-category i {
+                display: none !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-details .case-card-creator-prefix {
+                display: inline !important;
+                color: #9ca3af !important;
+                font-weight: 400 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions {
+                position: absolute !important;
+                right: .75rem !important;
+                bottom: .625rem !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
+                flex-wrap: nowrap !important;
+                width: auto !important;
+                gap: .5rem !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > :is(a, button, span, form),
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > form > button {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex: 0 0 2.1875rem !important;
+                width: 2.1875rem !important;
+                min-width: 2.1875rem !important;
+                height: 2.1875rem !important;
+                min-height: 2.1875rem !important;
+                box-sizing: border-box !important;
+                gap: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                border-radius: .5rem !important;
+                font-size: .8125rem !important;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, .12) !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .case-card-action-label,
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .case-card-text-label {
+                display: none !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions :is(a, button, span) > i {
+                margin: 0 !important;
+                color: inherit !important;
+                font-size: .75rem !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .view-case,
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > form > button:not(:disabled) {
+                border: 1px solid #C41E3A !important;
+                background: #C41E3A !important;
+                color: #fff !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .edit-case:not(:disabled) {
+                border: 1px solid #fecaca !important;
+                background: #fff1f2 !important;
+                color: #C41E3A !important;
+            }
+        }
+
+        /* Tablet actions use the Acacia reference card-button dimensions. */
+        @media (min-width: 48rem) and (max-width: 80rem) {
+
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions {
+                position: absolute !important;
+                right: .75rem !important;
+                bottom: .625rem !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
+                flex-wrap: nowrap !important;
+                width: auto !important;
+                gap: .5rem !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > :is(a, button, span, form),
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > form > button {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex: 0 0 2.5rem !important;
+                width: 2.5rem !important;
+                min-width: 2.5rem !important;
+                height: 2.5rem !important;
+                min-height: 2.5rem !important;
+                box-sizing: border-box !important;
+                gap: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                border-radius: .5rem !important;
+                font-size: .8125rem !important;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, .12) !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .case-card-action-label,
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .case-card-text-label {
+                display: none !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions :is(a, button, span) > i {
+                margin: 0 !important;
+                color: inherit !important;
+                font-size: .75rem !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .view-case,
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions > form > button:not(:disabled) {
+                border: 1px solid #C41E3A !important;
+                background: #C41E3A !important;
+                color: #fff !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions .edit-case:not(:disabled) {
+                border: 1px solid #fecaca !important;
+                background: #fff1f2 !important;
+                color: #C41E3A !important;
+            }
+        }
+
+        #desk-officer-cases-content #mobile-case-cards#mobile-case-cards .case-card-actions .desk-tablet-case-edit {
+            display: none !important;
+        }
+        /* Share the same status-aware Edit control on mobile and tablet cards. */
+        @media (max-width: 80rem) {
+            #desk-officer-cases-content #mobile-case-cards#mobile-case-cards .case-card-actions .desk-tablet-case-edit {
+                display: inline-flex !important;
+                border: 1px solid #C41E3A !important;
+                background: #C41E3A!important;
+                color: #ffffff !important;
+                cursor: pointer;
+            }
+            #desk-officer-cases-content #mobile-case-cards#mobile-case-cards .case-card-actions .desk-tablet-case-edit:not(:disabled):hover {
+                background: #A01830 !important;
+                border-color: #A01830 !important;
+                color: #ffffff !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards#mobile-case-cards .case-card-actions .desk-tablet-case-edit:disabled {
+                border-color: #fecaca !important;
+                background: #fef2f2 !important;
+                color: #dc2626 !important;
+                cursor: not-allowed !important;
+                opacity: 1 !important;
+                transition: none !important;
+            }
+            #desk-officer-cases-content #mobile-case-cards#mobile-case-cards .case-card-actions .desk-original-case-edit {
+                display: none !important;
+            }
+        }
+
+        /* Card pagination treatment from the Acacia cases reference. */
+        @if(strtolower(request('type', $defaultCaseType)) === 'bcpc')
+        @media (min-width: 48rem) and (max-width: 80rem) {
+            /* Keep desktop status rules; distinguish the enabled outline from the locked control. */
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions a.edit-case[href] {
+                border: 1px solid #9ca3af !important;
+                background: #ffffff !important;
+                color: #4b5563 !important;
+                cursor: pointer !important;
+                opacity: 1 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions a.edit-case[href]:is(:hover, :focus-visible) {
+                background: #f9fafb !important;
+                color: #4b5563 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards .case-card-actions span.case-card-icon-action[aria-disabled="true"] {
+                border: 1px solid #fecaca !important;
+                background: #fef2f2 !important;
+                color: #dc2626 !important;
+                cursor: not-allowed !important;
+                transition: none !important;
+            }
+        }
+        @endif
+
+        @media (max-width: 80rem) {
+            #desk-officer-cases-content .cases-card-pagination {
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: .75rem !important;
+                padding: .75rem 1rem !important;
+                background: #ffffff !important;
+                text-align: left !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-summary {
+                flex: 0 1 auto;
+                color: #4b5563 !important;
+                font-size: .875rem !important;
+                line-height: 1.25 !important;
+                white-space: nowrap;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-controls,
+            #desk-officer-cases-content .cases-card-pagination-pages {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
+                flex-wrap: nowrap !important;
+                gap: .25rem !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-item {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex: 0 0 2rem !important;
+                width: 2rem !important;
+                min-width: 2rem !important;
+                height: 2rem !important;
+                min-height: 2rem !important;
+                padding: 0 !important;
+                border: 1px solid #d1d5db !important;
+                border-radius: .5rem !important;
+                background: #fff !important;
+                color: #374151 !important;
+                font-size: .6875rem !important;
+                font-weight: 500 !important;
+                line-height: 1 !important;
+                opacity: 1 !important;
+                box-shadow: none !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-item:is(:hover, :focus-visible):not(.is-active, .is-disabled) {
+                border-color: #cbd5e1 !important;
+                background: #f8fafc !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-item.is-active {
+                border-color: #C41E3A !important;
+                background: #C41E3A !important;
+                color: #fff !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-item.is-disabled {
+                border-color: #d1d5db !important;
+                background: #ffffff !important;
+                color: #4b5563 !important;
+                opacity: .5 !important;
+                cursor: not-allowed !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-item i {
+                color: inherit !important;
+                font-size: .6875rem !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-ellipsis {
+                padding: 0 .125rem !important;
+                color: #94a3b8 !important;
+                font-size: .75rem !important;
+            }
+        }
+
+        @media (max-width: 47.9375rem) {
+            #desk-officer-cases-content .cases-card-pagination {
+                flex-direction: column !important;
+                justify-content: center !important;
+                text-align: center !important;
+                gap: .5rem !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-item {
+                flex-basis: 2.25rem !important;
+                width: 2.25rem !important;
+                min-width: 2.25rem !important;
+                height: 2.25rem !important;
+                min-height: 2.25rem !important;
+                font-size: .875rem !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-controls {
+                justify-content: center !important;
+                max-width: 100%;
+            }
+        }
+
+        /* Compact tablet pagination from the latest reference. */
+        @media (min-width: 48rem) and (max-width: 80rem) {
+            #desk-officer-cases-content .cases-card-pagination {
+                padding: .75rem 1rem !important;
+                gap: .5rem !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-summary {
+                font-size: .75rem !important;
+                color: #64748b !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-controls {
+                margin-left: auto;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-item {
+                flex: 0 0 1.75rem !important;
+                width: 1.75rem !important;
+                min-width: 1.75rem !important;
+                height: 1.75rem !important;
+                min-height: 1.75rem !important;
+                border-color: #e5e7eb !important;
+                border-radius: .375rem !important;
+                color: #C41E3A !important;
+                font-size: .6875rem !important;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, .04) !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-item.is-active {
+                background: #C41E3A !important;
+                border-color: #C41E3A !important;
+                color: #ffffff !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-arrow {
+                color: #64748b !important;
+            }
+
+            #desk-officer-cases-content .cases-card-pagination-item i {
+                font-size: .625rem !important;
+            }
+        }
+
+        /* Use the same pagination component and tablet dimensions as Case Profiles. */
+        #desk-officer-cases-content .cases-reference-pagination {
+            display: none !important;
+        }
+        @media (min-width: 48rem) and (max-width: 80rem) {
+            #desk-officer-cases-content .cases-card-pagination {
+                display: none !important;
+            }
+            #desk-officer-cases-content .cases-reference-pagination {
+                display: block !important;
+                padding: 0 1rem .75rem;
+                background: #ffffff;
+            }
+            #desk-officer-cases-content .cases-reference-pagination [data-pagination-label] {
+                display: flex !important;
+                width: 100%;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: .75rem;
+                padding: .75rem .125rem 0 !important;
+            }
+            #desk-officer-cases-content .cases-reference-pagination [data-pagination-label] > div:last-child {
+                flex-wrap: nowrap !important;
+                gap: .25rem !important;
+            }
+            #desk-officer-cases-content .cases-reference-pagination [data-pagination-label] :is(a, span).w-9 {
+                width: 2rem !important;
+                height: 2rem !important;
+                font-size: .6875rem !important;
+                border-radius: .5rem !important;
+            }
+        }
+
+        @media (max-width: 47.9375rem) {
+            #desk-officer-cases-content .cases-card-pagination {
+                display: none !important;
+            }
+            #desk-officer-cases-content .cases-reference-pagination {
+                display: block !important;
+                padding: 0 .75rem .75rem;
+                background: #ffffff;
+            }
+            #desk-officer-cases-content .cases-reference-pagination [data-pagination-label] {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+                padding: .75rem .25rem !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: .5rem !important;
+                text-align: center !important;
+            }
+            #desk-officer-cases-content .cases-reference-pagination [data-pagination-label] > div {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                justify-content: center !important;
+                text-align: center !important;
+                flex-wrap: wrap !important;
+            }
+            #desk-officer-cases-content .cases-reference-pagination [data-pagination-label] > div:last-child {
+                gap: .25rem !important;
+            }
+        }
+
+
+
+        /* Larger mobile and tablet touch targets while retaining the bottom-right action layout. */
+        @media (max-width: 80rem) {
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards#mobile-case-cards .case-card > .p-4 {
+                padding-bottom: 4.5rem !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards#mobile-case-cards .case-card-actions {
+                gap: .75rem !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards#mobile-case-cards .case-card-actions > :is(a, button, span, form),
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards#mobile-case-cards .case-card-actions > form > button {
+                flex: 0 0 3rem !important;
+                width: 3rem !important;
+                min-width: 3rem !important;
+                height: 3rem !important;
+                min-height: 3rem !important;
+                box-sizing: border-box !important;
+                padding: 0 !important;
+            }
+
+            #desk-officer-cases-content.barangay-case-actions-page #mobile-case-cards#mobile-case-cards .case-card-actions :is(a, button, span) > i {
+                font-size: 1rem !important;
+            }
+        }
+
         /* Edit modal form styles */
         #editCaseModal .case-form-container {
             max-width: 100%;
@@ -1150,23 +2255,164 @@
                 font-size: 0.85rem !important;
             }
         }
+
+        /* Mobile cases header. */
+        @media (max-width: 47.9375rem) {
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header {
+                background: #C41E3A !important;
+                border-bottom: 1px solid #99172E !important;
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 30 !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: flex-start !important;
+                justify-content: space-between !important;
+                flex-wrap: nowrap !important;
+                min-width: 0 !important;
+                min-height: 0 !important;
+                height: auto !important;
+                padding-top: .875rem !important;
+                padding-bottom: .875rem !important;
+                padding-left: max(.5rem, env(safe-area-inset-left)) !important;
+                padding-right: max(1rem, env(safe-area-inset-right)) !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div > div:first-child {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: flex-start !important;
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                gap: .5rem !important;
+                margin: 0 !important;
+                align-self: flex-start !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header #pageMobileMenuToggle {
+                display: inline-flex !important;
+                flex: 0 0 2.5rem !important;
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+                min-width: 2.5rem !important;
+                min-height: 2.5rem !important;
+                align-items: center !important;
+                justify-content: center !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                color: #ffffff !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div > div:first-child > div {
+                display: block !important;
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                text-align: left !important;
+                align-self: flex-start !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header h2 {
+                color: #ffffff !important;
+                font-size: clamp(.875rem, 3.8vw, 1.125rem) !important;
+                font-weight: 700 !important;
+                line-height: 1.25 !important;
+                margin: 0 !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header p {
+                display: block !important;
+                color: #ffffff !important;
+                font-size: clamp(.6875rem, 2.8vw, .75rem) !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                margin: .25rem 0 0 !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div > div:last-child {
+                display: flex !important;
+                flex: 0 0 auto !important;
+                align-items: center !important;
+                margin: 0 !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header div:has(> img[alt="User Profile"]),
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header button:has(> img[alt="User Profile"]) {
+                display: none !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header button[aria-label="Notifications"] {
+                box-sizing: border-box !important;
+                width: 2.5rem !important;
+                min-width: 2.5rem !important;
+                height: 2.5rem !important;
+                min-height: 2.5rem !important;
+                padding: 0 !important;
+                border-radius: .625rem !important;
+                background: var(--mswdo-profile, #BC0202) !important;
+                border: 1px solid #8f0202 !important;
+                box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+                color: #ffffff !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header button[aria-label="Notifications"] > i {
+                margin: 0 !important;
+                font-size: 1.05rem !important;
+                color: #ffffff !important;
+            }
+
+            @if($isMultiroleDeskOfficer)
+            /* Use the shared multirole header typography and vertical alignment. */
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div,
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div > div:first-child {
+                align-items: center !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div > div:first-child,
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div > div:first-child > div {
+                align-self: center !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div > div:first-child > div {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header h2 {
+                font-family: inherit;
+                font-size: clamp(1.125rem, 1.5vw, 1.5rem) !important;
+                line-height: 1.35 !important;
+            }
+
+            html body.portal-ui #mainContent > header#desk-officer-dashboard-header.multirole-view-cases-header > div > div:first-child > div > p {
+                color: rgba(255, 255, 255, .85) !important;
+                margin: .125rem 0 0 !important;
+            }
+            @endif
+        }
     </style>
 @endpush
 
 @section('content')
-<script>document.body.classList.add('view-cases-desk-mobile-nav');</script>
 @if($isDeskOfficer)
-@php
-    $currentCaseType = strtoupper((string) request('type', (Auth::user()?->defaultCaseDepartment() ?: 'BCPC')));
-    $currentDept = in_array($currentCaseType, ['VAWC', 'SWD'], true) ? 'SWD' : 'BCPC';
-@endphp
 @include('components.desk-officer.bcpc-dashboard-header', [
-    'title' => 'Welcome, ' . $currentDept . ' SILANG',
-    'subtitle' => $currentDept . ' Desk Officer - Silang, Cavite'
+    'title' => $barangayName . ' Cases',
+    'subtitle' => 'Viewing cases for this barangay',
+    'headerClass' => 'multirole-view-cases-header'
 ])
 @endif
 <!-- Print Content (hidden on screen, visible on print popup) -->
-<div class="print-content hidden">
+<div data-ajax-pagination-companion="cases" class="print-content hidden">
     <div class="print-header">
         <h1>{{ Auth::user()->canAccessCaseDepartment('BCPC') ? 'BCPC Barangay Case Management' : 'Women and Children Protection Unit' }}</h1>
         <h2>{{ $barangayName }} Barangay Cases Report</h2>
@@ -1231,7 +2477,7 @@
     </div>
 </div>
 
-<div id="desk-officer-cases-content" class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 {{ $isDeskOfficer ? 'space-y-0 swd-desk-cases-page' : '' }} {{ $isMultiroleDeskOfficer ? 'multirole-cases-page' : '' }}">
+<div id="desk-officer-cases-content" class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 {{ $isDeskOfficer ? 'space-y-0 swd-desk-cases-page' : '' }} {{ $isMultiroleDeskOfficer ? 'multirole-cases-page' : '' }} {{ $isDeskOfficer && in_array(strtolower(request('type', $defaultCaseType)), ['bcpc', 'vawc'], true) ? 'barangay-case-actions-page' : '' }}">
 <!-- Page Header (Fallback for non-desk-officer roles) -->
 @unless($isDeskOfficer)
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -1340,7 +2586,7 @@
     </div>
 </div>
 
-<div class="cases-list-section bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+<div data-ajax-pagination="cases" data-ajax-page="page" class="cases-list-section bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
     <div class="cases-list-heading px-5 py-4 bg-[#C41E3A] text-white">
         <h3 class="font-semibold flex items-center gap-2"><i class="fas fa-folder-open"></i> Cases List ({{ $cases->total() }} total)</h3>
     </div>
@@ -1464,8 +2710,11 @@
     <div class="case-card bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="p-4">
             {{-- Header: Case # + Status --}}
-            <div class="flex items-center justify-between mb-2">
-                <a href="{{ route('desk-officer.cases.show', ['hash' => encrypt($case->id)]) }}" class="text-sm font-bold text-purple-800 hover:text-[#C41E3A] hover:underline">#{{ $case->case_number }}</a>
+            <div class="case-card-header-row flex items-start justify-between mb-2">
+                <div class="case-card-header-primary min-w-0">
+                    <a href="{{ route('desk-officer.cases.show', ['hash' => encrypt($case->id)]) }}" class="text-sm font-bold text-purple-800 hover:text-[#C41E3A] hover:underline">#{{ $case->case_number }}</a>
+                    <div class="case-card-date"><i class="fas fa-calendar text-xs mr-1 text-purple-400"></i>{{ $case->created_at->format('M d, Y') }}</div>
+                </div>
                 @php
                                         $hex = \App\Http\Controllers\Wcpu\DeskOfficerController::getStatusColor($case->status);
                     $hex = preg_match('/^[0-9a-fA-F]{6}$/', $hex) ? $hex : '6c757d';
@@ -1488,17 +2737,17 @@
 
             {{-- Details grid --}}
             <div class="case-card-details grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-500 mb-3">
-                <div><i class="fas fa-gavel text-xs mr-1 text-purple-400"></i>{{ $case->abuse_type }}</div>
-                <div><i class="fas fa-calendar text-xs mr-1 text-purple-400"></i>{{ $case->created_at->format('M d, Y') }}</div>
-                <div>
+                <div class="case-card-category"><i class="fas fa-gavel text-xs mr-1 text-purple-400"></i>{{ $case->abuse_type }}</div>
+                <div class="case-card-creator">
                     <i class="fas fa-user text-xs mr-1 text-purple-400"></i>
+                    <span class="case-card-creator-prefix">Generated by: </span>
                     @if($case->created_by == ($currentUserId ?? Auth::id()))
                         <span class="text-purple-700 font-medium">You</span>
                     @else
                         {{ $case->createdBy ? $case->createdBy->first_name . ' ' . substr($case->createdBy->last_name ?? '', 0, 1) . '.' : 'Unknown' }}
                     @endif
                 </div>
-                <div><i class="fas fa-sync text-xs mr-1 text-purple-400"></i>{{ $case->updated_at->format('M d, Y') }}</div>
+                <div class="case-card-updated"><i class="fas fa-sync text-xs mr-1 text-purple-400"></i>{{ $case->updated_at->format('M d, Y') }}</div>
             </div>
 
             {{-- Action buttons --}}
@@ -1509,35 +2758,47 @@
                     data-ajax-url="{{ route('desk-officer.cases.show', ['hash' => encrypt($case->id)]) }}"
                     data-case-number="{{ $case->case_number }}"
                     data-case-id="{{ $case->id }}"
-                    data-case-status="{{ $case->status }}">
+                    data-case-status="{{ $case->status }}" title="View Case" aria-label="View Case">
                     <i class="fas fa-eye text-xs" aria-hidden="true"></i><span class="case-card-action-label">View</span>
                 </button>
                 @endif
                 @if($case->created_by == ($currentUserId ?? Auth::id()) || (Auth::user()->position === 'Desk Officer' && Auth::user()->defaultCaseDepartment() === 'BCPC'))
+                @php
+                    $usesTabletCaseEdit = in_array(strtolower(request('type', $defaultCaseType)), ['bcpc', 'vawc'], true);
+                @endphp
+                @if($usesTabletCaseEdit)
+                <button type="button" class="desk-tablet-case-edit case-card-icon-action {{ $editDisabled ? '' : 'edit-case' }} inline-flex items-center justify-center rounded-lg border transition-colors"
+                    @disabled($editDisabled) aria-disabled="{{ $editDisabled ? 'true' : 'false' }}"
+                    data-ajax-url="{{ route('desk-officer.cases.edit', ['hash' => encrypt($case->id)]) }}"
+                    data-case-number="{{ $case->case_number }}"
+                    title="{{ $editDisabled ? 'Editing is unavailable for this case status' : 'Edit Case' }}" aria-label="Edit Case">
+                    <i class="fas fa-edit" aria-hidden="true"></i><span class="sr-only">Edit</span>
+                </button>
+                @endif
                 @if($editDisabled)
-                <span class="case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 bg-red-50 text-red-600 shadow-sm rounded-lg text-sm cursor-not-allowed" title="Only Case Filed cases can be edited" aria-disabled="true">
+                <span class="{{ $usesTabletCaseEdit ? 'desk-original-case-edit' : '' }} case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 bg-red-50 text-red-600 shadow-sm rounded-lg text-sm cursor-not-allowed" title="Only Case Filed cases can be edited" aria-disabled="true">
                     <i class="fas fa-edit text-xs"></i><span class="case-card-action-label">Edit</span>
                 </span>
                 @else
                 <a href="{{ route('desk-officer.cases.edit', ['hash' => encrypt($case->id)]) }}"
-                   class="case-card-icon-action edit-case flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-400 text-gray-700 hover:bg-gray-50 rounded-lg text-sm font-medium transition"
+                   class="{{ $usesTabletCaseEdit ? 'desk-original-case-edit' : '' }} case-card-icon-action edit-case flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-400 text-gray-700 hover:bg-gray-50 rounded-lg text-sm font-medium transition"
                    data-ajax-url="{{ route('desk-officer.cases.edit', ['hash' => encrypt($case->id)]) }}"
-                   data-case-number="{{ $case->case_number }}">
+                   data-case-number="{{ $case->case_number }}" title="Edit Case" aria-label="Edit Case">
                     <i class="fas fa-edit text-xs"></i><span class="case-card-action-label">Edit</span>
                 </a>
                 @endif
                 @include('components.case-archive-button', ['archiveUrl' => route('desk-officer.cases.destroy', ['hash' => encrypt($case->id), 'type' => request('type', strtolower($case->type ?? 'bcpc'))])])
                 @else
                 @if(Auth::user()->defaultCaseDepartment() === 'BCPC')
-                        <span class="case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 bg-red-50 text-red-600 shadow-sm rounded-lg text-sm cursor-not-allowed" title="Only the creator can edit" aria-disabled="true">
+                        <span class="case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 bg-red-50 text-red-600 shadow-sm rounded-lg text-sm cursor-not-allowed" title="Only the creator can edit" aria-label="Edit unavailable: only the creator can edit this case" aria-disabled="true">
                     <i class="fas fa-edit text-xs"></i><span class="case-card-action-label">Edit</span>
                 </span>
-                        <span class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 bg-red-50 text-red-800 rounded-lg text-sm cursor-not-allowed" title="Only the creator can archive" aria-disabled="true">
-                    <i class="fas fa-archive text-xs"></i> Archive
+                        <span class="case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 bg-red-50 text-red-800 rounded-lg text-sm cursor-not-allowed" title="Only the creator can archive" aria-label="Archive unavailable: only the creator can archive this case" aria-disabled="true">
+                    <i class="fas fa-archive text-xs"></i><span class="case-card-text-label">Archive</span>
                 </span>
                 @else
-                <span class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-200 text-gray-400 rounded-lg text-sm cursor-not-allowed" title="Only the creator can edit">
-                    <i class="fas fa-lock text-xs"></i> Locked
+                <span class="case-card-icon-action flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-200 text-gray-400 rounded-lg text-sm cursor-not-allowed" title="Only the creator can edit" aria-label="Case actions locked: only the creator can edit this case" aria-disabled="true">
+                    <i class="fas fa-lock text-xs"></i><span class="case-card-text-label">Locked</span>
                 </span>
                 @endif
                 @endif
@@ -1545,7 +2806,7 @@
         </div>
     </div>
     @empty
-    <div class="flex flex-col items-center justify-center py-12 text-gray-400">
+    <div class="case-list-empty-state flex flex-col items-center justify-center py-12 text-gray-400">
         <i class="fas fa-inbox text-4xl mb-3 opacity-50"></i>
         <p class="text-sm">No cases found</p>
     </div>
@@ -1557,12 +2818,15 @@
 </div>
 
 @if($cases->hasPages())
-<div class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
-    <div class="text-sm text-gray-600">
+<div class="cases-reference-pagination">
+    @include('components.archived-pagination', ['paginator' => $cases, 'label' => 'cases'])
+</div>
+<div class="cases-card-pagination px-6 py-4 border-t border-gray-100 flex flex-col items-center justify-center gap-4 text-center">
+    <div class="cases-card-pagination-summary text-sm text-gray-600">
         Showing {{ $cases->firstItem() ?? 0 }} - {{ $cases->lastItem() ?? 0 }} of {{ $cases->total() }} cases
     </div>
-    <div class="flex items-center gap-2">
-        <a href="{{ $cases->previousPageUrl() }}" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $cases->onFirstPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
+    <nav class="cases-card-pagination-controls flex flex-wrap items-center justify-center gap-2" aria-label="Cases pagination">
+        <a href="{{ $cases->previousPageUrl() }}" class="cases-card-pagination-item cases-card-pagination-arrow inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $cases->onFirstPage() ? 'is-disabled opacity-50 cursor-not-allowed pointer-events-none' : '' }}" aria-label="Previous page" @if($cases->onFirstPage()) aria-disabled="true" @endif>
             <i class="fas fa-chevron-left text-gray-600"></i>
         </a>
         @php
@@ -1571,27 +2835,27 @@
             $start = max(1, $current - 2);
             $end = min($last, $current + 2);
         @endphp
-        <div class="flex items-center gap-1">
+        <div class="cases-card-pagination-pages flex flex-wrap items-center justify-center gap-1">
             @if($start > 1)
-                <a href="{{ $cases->url(1) }}" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">1</a>
+                <a href="{{ $cases->url(1) }}" class="cases-card-pagination-item inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">1</a>
                 @if($start > 2)
-                    <span class="px-2 text-gray-400">&hellip;</span>
+                    <span class="cases-card-pagination-ellipsis px-2 text-gray-400">&hellip;</span>
                 @endif
             @endif
             @for($i = $start; $i <= $end; $i++)
-                <a href="{{ $cases->url($i) }}" class="inline-flex items-center justify-center w-9 h-9 {{ $current == $i ? 'bg-[#C41E3A] text-white border border-[#C41E3A] font-medium' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50' }} rounded-lg text-sm">{{ $i }}</a>
+                <a href="{{ $cases->url($i) }}" class="cases-card-pagination-item {{ $current == $i ? 'is-active bg-[#C41E3A] text-white border border-[#C41E3A] font-medium' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50' }} inline-flex items-center justify-center w-9 h-9 rounded-lg text-sm" @if($current == $i) aria-current="page" @endif>{{ $i }}</a>
             @endfor
             @if($end < $last)
                 @if($end < $last - 1)
-                    <span class="px-2 text-gray-400">&hellip;</span>
+                    <span class="cases-card-pagination-ellipsis px-2 text-gray-400">&hellip;</span>
                 @endif
-                <a href="{{ $cases->url($last) }}" class="inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">{{ $last }}</a>
+                <a href="{{ $cases->url($last) }}" class="cases-card-pagination-item inline-flex items-center justify-center w-9 h-9 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm">{{ $last }}</a>
             @endif
         </div>
-        <a href="{{ $cases->nextPageUrl() }}" class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $cases->currentPage() == $cases->lastPage() ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}">
+        <a href="{{ $cases->nextPageUrl() }}" class="cases-card-pagination-item cases-card-pagination-arrow inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm {{ $cases->currentPage() == $cases->lastPage() ? 'is-disabled opacity-50 cursor-not-allowed pointer-events-none' : '' }}" aria-label="Next page" @if($cases->currentPage() == $cases->lastPage()) aria-disabled="true" @endif>
             <i class="fas fa-chevron-right text-gray-600"></i>
         </a>
-    </div>
+    </nav>
 </div>
 @endif
 </div>
@@ -1632,13 +2896,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('#mobile-case-cards .case-card');
             cards.forEach(card => {
                 const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(searchTerm) ? '' : 'none';
+                if (text.includes(searchTerm)) {
+                    card.style.removeProperty('display');
+                } else {
+                    card.style.setProperty('display', 'none', 'important');
+                }
             });
 
             const hasDesktopMatch = Array.from(rows).some(row => row.style.display !== 'none');
             const hasMobileMatch = Array.from(cards).some(card => card.style.display !== 'none');
             const desktopEmpty = document.getElementById('desktop-search-empty');
             const mobileEmpty = document.getElementById('mobile-search-empty');
+            const noCasesEmpty = document.querySelector('#mobile-case-cards .case-list-empty-state');
+            if (noCasesEmpty) noCasesEmpty.classList.toggle('hidden', !!searchTerm);
 
             if (desktopEmpty) {
                 desktopEmpty.classList.toggle('hidden', !searchTerm || hasDesktopMatch);
@@ -1739,7 +3009,7 @@ document.addEventListener('DOMContentLoaded', function() {
         referButton.style.setProperty('opacity', '0.7');
     };
 
-    document.querySelectorAll('.view-case').forEach(btn => {
+    window.portalPaginationElements('.view-case').forEach(btn => {
         btn.addEventListener('click', function(e) {
             const ajaxUrl = this.dataset.ajaxUrl;
             const canRefer = !/closed|referred/i.test(this.dataset.caseStatus || '');
@@ -1828,7 +3098,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Edit Case Modal behavior
-    document.querySelectorAll('.edit-case').forEach(btn => {
+    window.portalPaginationElements('.edit-case').forEach(btn => {
         btn.addEventListener('click', function(e) {
             const ajaxUrl = this.dataset.ajaxUrl;
             const caseNumber = this.dataset.caseNumber || '';

@@ -146,8 +146,13 @@ class QuarterlyReportController extends Controller
         $isAdmin = strtolower($user->position) === 'administrator';
         $barangays = $isAdmin ? Barangay::orderBy('name')->get() : collect();
 
+        $request->validate([
+            'barangay_name' => 'nullable|string|max:255',
+            'quarter' => 'nullable|integer|between:1,4',
+            'year' => 'nullable|integer|min:2000|max:2100',
+        ]);
+
         if ($isAdmin && $request->has('barangay_name')) {
-            $request->validate(['barangay_name' => 'nullable|string|max:255']);
             $name = trim((string) $request->input('barangay_name'));
             if ($name !== '') {
                 $matchingBarangayIds = $barangays
@@ -183,6 +188,11 @@ class QuarterlyReportController extends Controller
         $this->applyReportTypeScope($query);
         if ($request->filled('type')) {
             $query->where('type', $this->requestedReportType($request->type));
+        }
+
+        if (!$isAdmin && $request->filled('barangay_name')) {
+            $barangayName = trim((string) $request->input('barangay_name'));
+            $query->whereHas('barangay', fn ($barangayQuery) => $barangayQuery->where('name', 'like', "%{$barangayName}%"));
         }
         
         // Filters
@@ -233,7 +243,7 @@ class QuarterlyReportController extends Controller
         if (!$isAdmin) {
             $reportGroups = [];
             foreach ($user->caseDepartments() as $department) {
-                $reportGroups[$department] = (clone $query)->where('type', $department)->paginate(5, ['*'], strtolower($department).'_page')->withQueryString();
+                $reportGroups[$department] = (clone $query)->where('type', $department)->paginate(2, ['*'], strtolower($department).'_page')->withQueryString();
             }
             return view('desk-officer.quarterly-reports.index', compact('reportGroups', 'isMultiCaseDepartment'));
         }

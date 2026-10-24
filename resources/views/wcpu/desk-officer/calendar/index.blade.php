@@ -68,6 +68,7 @@ $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer'
         }
 
         html body.portal-ui.desk-officer-calendar-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) {
+            font-size: 1.125rem !important;
             position: relative !important;
             left: 0 !important;
             margin-left: 0 !important;
@@ -87,6 +88,10 @@ $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer'
 
         html body.portal-ui.desk-officer-calendar-mobile-nav :is(#dashboardMenuToggle, #pageMobileMenuToggle) i {
             color: inherit !important;
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header:is(#desk-officer-dashboard-header, .portal-page-header, .sticky) :is(h1, h2, h3),
@@ -120,8 +125,7 @@ $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer'
             flex-wrap: nowrap !important;
         }
 
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header button[aria-label="Notifications"],
-        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"] {
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"] {
             box-sizing: border-box !important;
             width: 2.5rem !important;
             min-width: 2.5rem !important;
@@ -129,23 +133,51 @@ $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer'
             min-height: 2.5rem !important;
             padding: 0 !important;
             border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
         }
 
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header button[aria-label="Notifications"]>i,
-        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header button[aria-label="Notifications"]>i {
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header#desk-officer-dashboard-header button[aria-label="Notifications"]>i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             margin: 0 !important;
+            padding: 0 !important;
             font-size: 1rem !important;
             line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
         }
 
-        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header #notifications-unread-count,
-        html body.portal-ui.desk-officer-calendar-mobile-nav #desk-officer-dashboard-header #notifications-unread-count {
+        html body.portal-ui.desk-officer-calendar-mobile-nav #mainContent>header#desk-officer-dashboard-header #notifications-unread-count {
+            position: absolute !important;
             width: 1.25rem !important;
             height: 1.25rem !important;
+            min-width: 1.25rem !important;
             top: -.25rem !important;
             right: -.25rem !important;
+            padding: 0 !important;
             font-size: .75rem !important;
             line-height: 1 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
         }
 
         /* Sidebar dropdown drawer below header */
@@ -499,6 +531,29 @@ auth()->user()?->isMultiCaseDepartment()))
 
     .bcpc-admin-calendar .fc .fc-col-header-cell {
         background: #faf5ff;
+    }
+
+    /* Keep the list-view empty message centered even with automatic list height. */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        #calendar .fc-list-empty {
+            width: 100%;
+            min-height: 10rem;
+            box-sizing: border-box;
+        }
+
+        #calendar .fc-list-empty-cushion {
+            display: flex;
+            width: 100%;
+            min-height: 10rem;
+            box-sizing: border-box;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            text-align: center;
+            overflow-wrap: anywhere;
+            color: #6b7280;
+            font-size: .875rem;
+        }
     }
 
     @media (max-width: 640px) {

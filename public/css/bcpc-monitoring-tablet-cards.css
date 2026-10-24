@@ -1,0 +1,86 @@
+/* Tablet report viewing and editing reuse cards with room for all three years. */
+#bcpc-monitoring-section-filter-panel .bcpc-monitoring-section-filter-controls {
+    width: 100%;
+    max-width: none;
+}
+
+#bcpc-monitoring-section-filter-panel #bcpc-monitoring-section-filter {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+}
+
+#bcpc-monitoring-form .bcpc-monitoring-table > tbody > tr {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    gap: .75rem .5rem;
+    padding: 1.25rem;
+}
+
+#bcpc-monitoring-form .bcpc-monitoring-row-label {
+    grid-row: 1;
+    font-size: 1rem !important;
+}
+
+#bcpc-monitoring-form .bcpc-monitoring-mobile-year {
+    grid-row: 2;
+    margin-top: 0;
+    text-align: center;
+}
+
+#bcpc-monitoring-form .bcpc-monitoring-value-cell:nth-child(2) > .bcpc-monitoring-mobile-year {
+    grid-column: 1 / span 3;
+}
+
+#bcpc-monitoring-form .bcpc-monitoring-value-cell:nth-child(5) > .bcpc-monitoring-mobile-year {
+    grid-column: 4 / span 3;
+}
+
+#bcpc-monitoring-form .bcpc-monitoring-value-cell:nth-child(8) > .bcpc-monitoring-mobile-year {
+    grid-column: 7 / span 3;
+}
+
+#bcpc-monitoring-form .bcpc-monitoring-field {
+    grid-row: 3;
+}
+
+#bcpc-monitoring-form .bcpc-organizations-table > tbody > tr {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+#bcpc-monitoring-form .bcpc-organizations-table > tbody > tr::before {
+    grid-column: 1 / -1;
+}
+
+#bcpc-monitoring-form [data-monitoring-pagination]:not([hidden]) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+}
+
+#bcpc-monitoring-form .bcpc-monitoring-page-controls {
+    width: 50%;
+    max-width: 22rem;
+    min-width: 0;
+}
+
+#bcpc-monitoring-form > .bcpc-monitoring-form-actions:empty {
+    display: none !important;
+}
+
+#bcpc-monitoring-form > .bcpc-monitoring-form-actions {
+    grid-template-columns: minmax(4.5rem, .35fr) minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: .5rem;
+    max-width: 40rem;
+    margin-left: auto;
+}
+
+#bcpc-monitoring-form > .bcpc-monitoring-form-actions > :is(a, button) {
+    min-height: 2.75rem;
+    padding: .625rem .5rem;
+    gap: .375rem;
+    font-size: clamp(.6875rem, 1.2vw, .8125rem);
+    white-space: nowrap;
+}

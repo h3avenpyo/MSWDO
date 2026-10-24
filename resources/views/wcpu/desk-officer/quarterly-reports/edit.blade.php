@@ -88,6 +88,75 @@
 @endif
 @if(auth()->user()?->position === 'Desk Officer' && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
 <style>
+    @media (max-width: 47.9375rem) {
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle {
+            font-size: 1.125rem !important;
+        }
+
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle > i {
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Match the notification controls on the quarterly reports list. */
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"]>i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
+        }
+
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] #notifications-unread-count {
+            position: absolute !important;
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            min-width: 1.25rem !important;
+            top: -.25rem !important;
+            right: -.25rem !important;
+            padding: 0 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
+        }
+    }
+
     @media (max-width: 47.9375rem) and (orientation: portrait) {
         .quarterly-report-edit-type-label {
             justify-content: center;
@@ -121,6 +190,67 @@
     }
 </style>
 @endif
+<style>
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        #quarterly-report-edit-actions {
+            flex-wrap: nowrap !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+        }
+
+        #quarterly-report-edit-actions > div:first-child {
+            width: auto !important;
+            flex: 0 0 auto !important;
+            margin-right: auto !important;
+        }
+
+        #quarterly-report-edit-actions > div:first-child > a {
+            width: 11.25rem !important;
+            flex: 0 0 auto !important;
+        }
+
+        #quarterly-report-edit-actions > div:last-child {
+            width: auto !important;
+            flex: 0 0 auto !important;
+            margin-left: auto !important;
+            gap: 0.75rem !important;
+        }
+
+        #quarterly-report-edit-actions form {
+            width: auto !important;
+            flex: 0 0 auto !important;
+        }
+
+        #quarterly-report-edit-actions :is(a, button) {
+            display: inline-flex !important;
+            min-width: 0 !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+            padding: 0 0.75rem !important;
+            border-radius: 0.625rem !important;
+            font-size: 0.875rem !important;
+            line-height: 1rem !important;
+            white-space: nowrap !important;
+        }
+
+        #quarterly-report-edit-actions :is(a, button) i {
+            font-size: 0.75rem !important;
+            line-height: 1 !important;
+        }
+
+        #quarterly-report-edit-actions > div:last-child > a {
+            width: 5rem !important;
+        }
+
+        #quarterly-report-edit-actions form button {
+            width: 16.5rem !important;
+        }
+    }
+</style>
 @unless($isAdminEditor)
 @include('components.desk-officer.bcpc-dashboard-header', [
     'title' => 'Edit Quarterly Report',

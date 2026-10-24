@@ -26,7 +26,7 @@
             <span class="block text-xs text-gray-500 mt-0.5">{{ \Carbon\Carbon::parse($item['date'])->format('F j, Y') }}</span>
         </button>
         @empty
-        <p class="text-sm text-gray-500">No announcements yet.</p>
+        <p class="dashboard-announcements-empty text-sm text-gray-500">No announcements yet.</p>
         @endforelse
     </div>
     @if($visibleAnnouncements->hasPages())

@@ -1515,8 +1515,34 @@ body.portal-ui.archive-report-modal-preview #bcpc-monitoring-form > div:has(inpu
     body.portal-ui .swal2-popup.multi-role-archived-case-modal > .swal2-title { padding: 12px 20px !important; }
     body.portal-ui .swal2-popup.multi-role-archived-case-modal .desk-archive-view-frame { height: min(72dvh, 52rem); min-height: 24rem; }
     @media (max-width: 47.9375rem) {
-        body.portal-ui .swal2-popup.multi-role-archived-case-modal { width: calc(100vw - 16px) !important; }
-        body.portal-ui .swal2-popup.multi-role-archived-case-modal .desk-archive-view-frame { height: calc(100dvh - 9rem); min-height: 18rem; }
+        body.portal-ui .swal2-popup.multi-role-archived-case-modal {
+            display: flex !important;
+            flex-direction: column;
+            width: calc(100vw - 16px) !important;
+            height: calc(100vh - 2rem);
+            height: calc(100dvh - 2rem);
+            max-height: calc(100dvh - 2rem) !important;
+        }
+        body.portal-ui .swal2-popup.multi-role-archived-case-modal > .swal2-title { flex: 0 0 auto; }
+        body.portal-ui .swal2-popup.multi-role-archived-case-modal > .swal2-html-container {
+            display: flex !important;
+            flex: 1 1 auto;
+            min-height: 0;
+            max-height: none !important;
+            overflow: hidden !important;
+        }
+        body.portal-ui .swal2-popup.multi-role-archived-case-modal .desk-archive-view-frame {
+            flex: 1 1 0%;
+            height: 100%;
+            min-height: 0;
+        }
+        /* Reserve footer space so long case previews cannot clip the Close button. */
+        body.portal-ui.desk-officer-archived-cases-mobile-nav .swal2-popup.desk-archive-view-popup > :is(.swal2-actions, .portal-modal-dismiss-footer) {
+            flex: 0 0 auto;
+            margin: 0 !important;
+            padding: 16px 20px !important;
+            padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
+        }
     }
     body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview { display: block !important; }
     body.portal-ui.archive-case-modal-preview .bcpc-shared-case-preview .case-modal-details > .grid { margin-top: 0 !important; gap: 12px !important; }

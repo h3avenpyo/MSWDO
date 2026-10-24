@@ -3,6 +3,285 @@
 @section('title', 'Quarterly Report - ' . ($barangay->name ?? 'Barangay'))
 
 @section('content')
+@if(request()->routeIs('desk-officer.quarterly-reports.show'))
+<style>
+    @media (max-width: 47.9375rem) {
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle {
+            font-size: 1.125rem !important;
+        }
+
+        body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle > i {
+            font-size: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Match the notification controls on the quarterly reports list. */
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"] {
+            box-sizing: border-box !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            border-radius: .625rem !important;
+            background: var(--mswdo-profile, #BC0202) !important;
+            border: 1px solid #8f0202 !important;
+            box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+            color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            position: relative !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"]:hover {
+            background: #8f0202 !important;
+        }
+
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] button[aria-label="Notifications"]>i {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+            vertical-align: middle !important;
+        }
+
+        body.portal-ui #mainContent>header#desk-officer-dashboard-header [data-multirole-notifications] #notifications-unread-count {
+            position: absolute !important;
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            min-width: 1.25rem !important;
+            top: -.25rem !important;
+            right: -.25rem !important;
+            padding: 0 !important;
+            background-color: #eab308 !important;
+            color: #ffffff !important;
+            font-size: .75rem !important;
+            line-height: 1 !important;
+            font-weight: 700 !important;
+            border: 2px solid #C41E3A !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2) !important;
+        }
+
+        #mobileTopBar,
+        #mobileMenuToggle {
+            display: none !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) > div {
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
+            padding: .75rem 1rem .75rem .75rem !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) > div > div:first-child {
+            display: flex !important;
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: .5rem !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) :is(#pageMobileMenuToggle, #dashboardMenuToggle) {
+            display: inline-flex !important;
+            flex: 0 0 2.25rem !important;
+            width: 2.25rem !important;
+            height: 2.25rem !important;
+            min-width: 2.25rem !important;
+            min-height: 2.25rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            color: #ffffff !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) > div > div:first-child > div {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            width: auto !important;
+            margin: 0 !important;
+            text-align: left !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) :is(h1, h2, h3) {
+            margin: 0 !important;
+            font-size: 1.05rem !important;
+            line-height: 1.2 !important;
+            font-weight: 700 !important;
+            color: #ffffff !important;
+            text-align: left !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) p {
+            display: block !important;
+            margin: .125rem 0 0 !important;
+            font-size: .6875rem !important;
+            line-height: 1.2 !important;
+            color: rgba(255, 255, 255, .85) !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) > div > div:last-child {
+            flex: 0 0 auto !important;
+            margin-left: .5rem !important;
+        }
+
+        /* Keep report tables on larger screens, but use the existing card
+           markup for every report section on phone-sized screens. */
+        #abuse-type-classification .abuse-type-table-view,
+        #case-status-breakdown .case-status-table-view,
+        #case-records .case-records-table-view {
+            display: none !important;
+        }
+
+        #abuse-type-mobile-cards,
+        #case-status-mobile-cards,
+        #case-records-mobile-cards {
+            display: block !important;
+            padding: .75rem !important;
+        }
+
+        #abuse-type-mobile-cards > article,
+        #case-status-mobile-cards > article,
+        #case-records-mobile-cards > article {
+            min-width: 0;
+            padding: 1rem;
+        }
+
+        #abuse-type-mobile-cards p,
+        #case-status-mobile-cards p,
+        #case-records-mobile-cards p,
+        #case-records-mobile-cards span {
+            overflow-wrap: anywhere;
+        }
+    }
+</style>
+@endif
+@if(request()->routeIs('desk-officer.quarterly-reports.show'))
+<style>
+    @if(request()->boolean('archived') && request()->boolean('archive_report_preview') && in_array($report->type ?? 'VAWC', ['BCPC', 'VAWC', 'SWD'], true))
+    @media (max-width: 47.9375rem) {
+        .quarterly-report-detail-header {
+            display: none !important;
+        }
+    }
+    @endif
+    @media (max-width: 47.9375rem) and (orientation: portrait) {
+        .quarterly-report-type-label {
+            justify-content: center;
+            text-align: center;
+        }
+        #case-status-breakdown .case-status-table-view { display: none !important; }
+        #case-status-mobile-cards { display: block !important; padding: .75rem; }
+        #case-status-mobile-cards > article {
+            min-width: 0;
+            padding: 1rem;
+        }
+    }
+</style>
+@endif
+@if(!$isAdmin && auth()->user()?->defaultCaseDepartment() === 'BCPC')
+<style>
+    .swal2-popup .swal2-styled { background-color: #C41E3A !important; color: #ffffff !important; min-width: 7rem; min-height: 2.5rem; border-radius: .5rem; }
+    .swal2-popup .swal2-styled:hover { background-color: #A01830 !important; }
+</style>
+@endif
+@if(!$isAdmin && auth()->user()?->position === 'Desk Officer' && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
+<style>
+    @media (max-width: 47.9375rem) {
+        #mobileTopBar,
+        #mobileMenuToggle {
+            display: none !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) > div {
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
+            padding: .75rem 1rem .75rem .75rem !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) > div > div:first-child {
+            display: flex !important;
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: .5rem !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) :is(#pageMobileMenuToggle, #dashboardMenuToggle) {
+            display: inline-flex !important;
+            flex: 0 0 2.25rem !important;
+            width: 2.25rem !important;
+            height: 2.25rem !important;
+            min-width: 2.25rem !important;
+            min-height: 2.25rem !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            color: #ffffff !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) > div > div:first-child > div {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            width: auto !important;
+            margin: 0 !important;
+            text-align: left !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) :is(h1, h2, h3) {
+            margin: 0 !important;
+            font-size: 1.05rem !important;
+            line-height: 1.2 !important;
+            font-weight: 700 !important;
+            color: #ffffff !important;
+            text-align: left !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) p {
+            display: block !important;
+            margin: .125rem 0 0 !important;
+            font-size: .6875rem !important;
+            line-height: 1.2 !important;
+            color: rgba(255, 255, 255, .85) !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        #mainContent > header:is(#desk-officer-dashboard-header, .admin-reference-mobile-header) > div > div:last-child {
+            flex: 0 0 auto !important;
+            margin-left: .5rem !important;
+        }
+    }
+</style>
+@endif
 @if($isAdmin)
 <style>
     body.portal-ui.archive-report-modal-preview #case-records .case-records-table-view { display: none !important; }
@@ -31,28 +310,65 @@
 @endif
 @if($isAdmin && in_array($report->type ?? 'VAWC', ['BCPC', 'SWD', 'VAWC'], true))
 <style>
-    @media (max-width: 47.9375rem) and (orientation: portrait) {
-        .quarterly-report-type-label {
-            justify-content: center;
-            text-align: center;
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header#desk-officer-dashboard-header > div {
+            padding: .75rem 1rem .75rem .75rem !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            min-width: 0 !important;
         }
-        #case-status-breakdown .case-status-table-view { display: none !important; }
-        #case-status-mobile-cards { display: block !important; padding: .75rem; }
-        #case-status-mobile-cards > article {
-            min-width: 0;
-            padding: 1rem;
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header#desk-officer-dashboard-header > div > div:first-of-type {
+            display: flex !important;
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: .5rem !important;
+        }
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle {
+            display: inline-flex !important;
+            flex: 0 0 2.25rem !important;
+            width: 2.25rem !important;
+            height: 2.25rem !important;
+            min-width: 2.25rem !important;
+            min-height: 2.25rem !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border: 0 !important;
+            background: transparent !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header#desk-officer-dashboard-header > div > div:first-of-type > div {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            width: auto !important;
+            margin: 0 !important;
+            text-align: left !important;
+        }
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header#desk-officer-dashboard-header h2 {
+            margin: 0 !important;
+            font-size: 1.05rem !important;
+            line-height: 1.2 !important;
+            font-weight: 700 !important;
+            color: #ffffff !important;
+        }
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header#desk-officer-dashboard-header p {
+            margin: .125rem 0 0 !important;
+            font-size: .6875rem !important;
+            line-height: 1.2 !important;
+            color: rgba(255, 255, 255, .85) !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+        html body.portal-ui.desk-officer-quarterly-reports-mobile-nav #mainContent > header#desk-officer-dashboard-header > div > div:last-child {
+            flex: 0 0 auto !important;
+            margin-left: .5rem !important;
         }
     }
-</style>
-@endif
-@if(!$isAdmin && auth()->user()?->defaultCaseDepartment() === 'BCPC')
-<style>
-    .swal2-popup .swal2-styled { background-color: #C41E3A !important; color: #ffffff !important; min-width: 7rem; min-height: 2.5rem; border-radius: .5rem; }
-    .swal2-popup .swal2-styled:hover { background-color: #A01830 !important; }
-</style>
-@endif
-@if(!$isAdmin && auth()->user()?->position === 'Desk Officer' && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
-<style>
+
     @media (max-width: 47.9375rem) and (orientation: portrait) {
         .quarterly-report-type-label {
             justify-content: center;
@@ -176,9 +492,9 @@
 @endif
 <div class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8" data-archive-report-title="{{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }} Quarterly Compliance Report" data-archive-report-subtitle="Barangay {{ $barangay->name ?? 'N/A' }} • Period: Q{{ $report->quarter }} {{ $report->year }}">
     <!-- Header -->
-    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="quarterly-report-detail-header mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="{{ (($isAdmin && request()->boolean('archived')) || (!$isAdmin && $report->archived_at)) ? 'flex-1 min-w-0' : '' }}">
-            <div class="flex items-center gap-2 mb-2">
+            <div class="quarterly-report-navigation-row flex items-center gap-2 mb-2">
                 <a href="{{ ($isAdmin && request()->boolean('archived')) || (!$isAdmin && $report->archived_at) ? ($isAdmin ? route('admin.quarterly-reports.archived', ['section' => 'quarterly']) : route('desk-officer.quarterly-reports.archived')) : ($isAdmin ? route('admin.quarterly-reports.index') : route('desk-officer.quarterly-reports.index')) }}"
                    class="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 hover:text-purple-800 transition">
                     <i class="fas fa-arrow-left"></i>
@@ -210,10 +526,6 @@
                 $isReportArchived = !empty($report->archived_at) || request()->boolean('archived');
             @endphp
             @if(!$isAdmin && !$isReportArchived)
-                <a href="{{ route('desk-officer.quarterly-reports.edit', $report->id) }}" class="inline-flex items-center justify-center gap-2 flex-1 sm:flex-initial px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs sm:text-sm font-medium shadow-sm transition">
-                    <i class="fas fa-edit"></i>
-                    <span>Edit Report</span>
-                </a>
                 @if(($report->type ?? 'VAWC') !== 'BCPC' && auth()->user()?->defaultCaseDepartment() !== 'VAWC' && !auth()->user()?->isMultiCaseDepartment())
                 <button type="button"
                         onclick="sendReportToAdmin({{ $report->id }}, 'Q{{ $report->quarter }} {{ $report->year }} ({{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }})')"

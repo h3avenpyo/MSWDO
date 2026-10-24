@@ -23,7 +23,6 @@ class DeskOfficerController extends Controller
     {
         $user = Auth::user();
         $department = $user?->defaultCaseDepartment();
-        $instantArchiveSearch = in_array($department, ['VAWC', 'BCPC'], true);
         abort_unless($user && $user->position === 'Desk Officer' && in_array($department, ['VAWC', 'BCPC'], true), 403);
 
         $barangay = Barangay::where('id', $user->barangay)
@@ -52,9 +51,9 @@ class DeskOfficerController extends Controller
             ->with(['barangay', 'caseType'])
             ->where('case_designation', $barangay->id)
             ->where('type', $department);
-        if (!$instantArchiveSearch) $applyFilters($casesQuery);
+        $applyFilters($casesQuery);
         $cases = $casesQuery->latest('deleted_at')
-            ->paginate($instantArchiveSearch ? PHP_INT_MAX : 5, ['*'], 'page', $instantArchiveSearch ? 1 : null)
+            ->paginate(2)
             ->withQueryString();
 
         $caseGroups = [$department => $cases];
@@ -63,8 +62,8 @@ class DeskOfficerController extends Controller
             foreach ($user->caseDepartments() as $type) {
                 $groupQuery = CaseModel::onlyTrashed()->with(['barangay', 'caseType'])
                     ->where('case_designation', $barangay->id)->where('type', $type);
-                if (!$instantArchiveSearch) $applyFilters($groupQuery);
-                $caseGroups[$type] = $groupQuery->latest('deleted_at')->paginate($instantArchiveSearch ? PHP_INT_MAX : 5, ['*'], strtolower($type) . '_page', $instantArchiveSearch ? 1 : null)->withQueryString();
+                $applyFilters($groupQuery);
+                $caseGroups[$type] = $groupQuery->latest('deleted_at')->paginate(2, ['*'], strtolower($type) . '_page')->withQueryString();
             }
         }
         return view('desk-officer.archived-barangay-cases', compact('cases', 'caseGroups', 'barangay', 'department'));
@@ -460,7 +459,7 @@ class DeskOfficerController extends Controller
             }
             
             // Get paginated results
-            $perPage = 5;
+            $perPage = 4;
             $cases = $query->paginate($perPage)->withQueryString();
             
             // Log query results
@@ -550,7 +549,7 @@ class DeskOfficerController extends Controller
                 'barangayName' => 'Error',
                 'activeFilters' => [],
                 'totalCases' => 0,
-                'perPage' => 5,
+                'perPage' => 4,
                 'error' => 'Error loading cases: ' . $e->getMessage()
             ]);
         }
@@ -1423,13 +1422,14 @@ public function create()
      */
     public function referrals(Request $request)
     {
+        $perPage = 2;
         $user = Auth::user();
         $barangay = Barangay::where('name', $user->barangay)
             ->when($user->isMultiCaseDepartment(), fn ($q) => $q->orWhere('id', $user->barangay))->first();
         
         if (!$barangay) {
             return view('desk-officer.referrals', [
-                'referrals' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 5),
+                'referrals' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $perPage),
                 'referralGroups' => [],
                 'barangayName' => 'Error',
                 'stats' => ['total' => 0, 'pending' => 0, 'accepted' => 0, 'completed' => 0],
@@ -1452,7 +1452,7 @@ public function create()
             $query->where('status', $request->status);
         }
 
-        $referrals = (clone $query)->paginate(5);
+        $referrals = (clone $query)->paginate($perPage);
         if ($user->defaultCaseDepartment() === 'BCPC' && !$user->isMultiCaseDepartment() && $referrals->currentPage() > $referrals->lastPage()) {
             return redirect()->route('desk-officer.referrals', array_merge($request->query(), ['page' => $referrals->lastPage()]));
         }
@@ -1461,7 +1461,7 @@ public function create()
             $referralGroups = [];
             foreach ($user->caseDepartments() as $type) {
                 $referralGroups[$type] = (clone $query)->whereHas('case', fn ($q) => $q->where('type', $type))
-                    ->paginate(5, ['*'], strtolower($type) . '_page')->withQueryString();
+                    ->paginate($perPage, ['*'], strtolower($type) . '_page')->withQueryString();
             }
         }
 
@@ -1507,10 +1507,9 @@ public function create()
     public function archivedReferrals()
     {
         $user = Auth::user();
-        $instantArchiveSearch = in_array($user?->defaultCaseDepartment(), ['VAWC', 'BCPC'], true);
         $search = trim((string) request('search'));
         $query = $this->officerReferralQuery()->onlyTrashed()->latest('deleted_at');
-        if (!$instantArchiveSearch && $search !== '') {
+        if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('referral_number', 'like', "%{$search}%")
                   ->orWhere('client_name', 'like', "%{$search}%")
@@ -1518,13 +1517,13 @@ public function create()
                   ->orWhereHas('case', fn ($cq) => $cq->where('case_number', 'like', "%{$search}%")->orWhere('victim_name', 'like', "%{$search}%"));
             });
         }
-        $referrals = (clone $query)->paginate($instantArchiveSearch ? PHP_INT_MAX : 5, ['*'], 'page', $instantArchiveSearch ? 1 : null)->withQueryString();
+        $referrals = (clone $query)->paginate(2)->withQueryString();
         $referralGroups = ['' => $referrals];
         if ($user && $user->isMultiCaseDepartment()) {
             $referralGroups = [];
             foreach ($user->caseDepartments() as $type) {
                 $referralGroups[$type] = (clone $query)->whereHas('case', fn ($q) => $q->where('type', $type))
-                    ->paginate($instantArchiveSearch ? PHP_INT_MAX : 5, ['*'], strtolower($type) . '_page', $instantArchiveSearch ? 1 : null)->withQueryString();
+                    ->paginate(2, ['*'], strtolower($type) . '_page')->withQueryString();
             }
         }
         return view('desk-officer.archived-referrals', compact('referrals', 'referralGroups'));

@@ -61,6 +61,9 @@
             box-shadow: none !important;
             color: #fff !important;
         }
+        html body.portal-ui.case-details-admin-mobile-nav #mainContent > header#case-details-page-header #dashboardMenuToggle > i {
+            color: inherit !important;
+        }
         html body.portal-ui.case-details-admin-mobile-nav #mainContent > header#case-details-page-header :is(h1,h2,h3,p) { color: #fff !important; }
         html body.portal-ui.case-details-admin-mobile-nav #mainContent > header#case-details-page-header p {
             display: block !important;
