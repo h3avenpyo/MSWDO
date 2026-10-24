@@ -51,6 +51,10 @@ return [
 
         'wcpu' => [
             'transport' => 'smtp',
+            'from' => [
+                'address' => env('WCPU_MAIL_FROM_ADDRESS', env('MAIL_FROM_ADDRESS')),
+                'name' => env('WCPU_MAIL_FROM_NAME', env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel'))),
+            ],
             'scheme' => env('WCPU_MAIL_SCHEME', env('MAIL_SCHEME')),
             'url' => env('WCPU_MAIL_URL', env('MAIL_URL')),
             'host' => env('WCPU_MAIL_HOST', env('MAIL_HOST', '127.0.0.1')),

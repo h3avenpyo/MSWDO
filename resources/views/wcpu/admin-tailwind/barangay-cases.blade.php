@@ -830,6 +830,65 @@ document.addEventListener('DOMContentLoaded', function() {
                 reverseButtons: true,
                 @if(auth()->user()->isDepartmentAdmin())
                 customClass: { popup: 'barangay-cases-print-popup' },
+                didOpen: () => {
+                    const select = document.getElementById('print-barangay');
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'mt-4 text-left';
+                    const toggle = document.createElement('button');
+                    toggle.type = 'button';
+                    toggle.className = 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm flex items-center justify-between bg-white';
+                    toggle.setAttribute('aria-haspopup', 'listbox');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    const label = document.createElement('span');
+                    label.textContent = select.options[select.selectedIndex].textContent;
+                    toggle.append(label);
+                    const arrow = document.createElement('i');
+                    arrow.className = 'fas fa-chevron-down';
+                    arrow.setAttribute('aria-hidden', 'true');
+                    toggle.append(arrow);
+                    const menu = document.createElement('div');
+                    menu.id = 'print-barangay-options';
+                    menu.setAttribute('role', 'listbox');
+                    menu.setAttribute('aria-label', 'Select barangay');
+                    menu.className = 'mt-1 w-full border border-gray-300 rounded-lg bg-white overflow-y-auto';
+                    menu.style.maxHeight = '12rem';
+                    menu.hidden = true;
+                    toggle.setAttribute('aria-controls', menu.id);
+                    const close = () => { menu.hidden = true; toggle.setAttribute('aria-expanded', 'false'); };
+                    Array.from(select.options).forEach(option => {
+                        const item = document.createElement('button');
+                        item.type = 'button';
+                        item.className = 'block w-full px-3 py-2 text-left text-sm hover:bg-gray-100';
+                        item.setAttribute('role', 'option');
+                        item.setAttribute('aria-selected', String(option.selected));
+                        item.textContent = option.textContent;
+                        item.addEventListener('click', () => {
+                            select.value = option.value;
+                            label.textContent = option.textContent;
+                            menu.querySelectorAll('[role="option"]').forEach(node => node.setAttribute('aria-selected', String(node === item)));
+                            select.dispatchEvent(new Event('change', { bubbles: true }));
+                            close();
+                            toggle.focus();
+                        });
+                        menu.append(item);
+                    });
+                    toggle.addEventListener('click', () => { menu.hidden = !menu.hidden; toggle.setAttribute('aria-expanded', String(!menu.hidden)); });
+                    wrapper.addEventListener('keydown', event => {
+                        if (event.key === 'Escape') { event.stopPropagation(); close(); toggle.focus(); }
+                        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                            event.preventDefault();
+                            menu.hidden = false;
+                            toggle.setAttribute('aria-expanded', 'true');
+                            const items = Array.from(menu.children);
+                            const index = items.indexOf(document.activeElement);
+                            items[(index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus();
+                        }
+                    });
+                    wrapper.addEventListener('focusout', event => { if (!wrapper.contains(event.relatedTarget)) close(); });
+                    select.hidden = true;
+                    select.after(wrapper);
+                    wrapper.append(toggle, menu);
+                },
                 @endif
                 preConfirm: async () => {
                     const barangayId = document.getElementById('print-barangay').value;

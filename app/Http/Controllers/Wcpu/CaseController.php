@@ -1032,7 +1032,7 @@ class CaseController extends Controller
                 \Log::info('PDF generated successfully', ['size' => strlen($pdf)]);
 
                 // Check if mailable exists
-                if (!class_exists('App\Mail\CaseReferralNotification')) {
+                if (!class_exists(CaseReferralNotification::class)) {
                     throw new \Exception('Mailable class CaseReferralNotification not found');
                 }
 
@@ -1046,7 +1046,11 @@ class CaseController extends Controller
                     'referral_number' => $referral->referral_number
                 ]);
 
-                \Illuminate\Support\Facades\Mail::to($referral->recipient_email)->send($mail);
+                if ($isDepartmentAdminReferral) {
+                    Mail::mailer('wcpu')->to($referral->recipient_email)->send($mail);
+                } else {
+                    Mail::to($referral->recipient_email)->send($mail);
+                }
                 
                 $emailSent = true;
                 \Log::info('Email sent successfully to ' . $referral->recipient_email);

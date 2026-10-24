@@ -16,9 +16,9 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>Case Referral Notification</h2>
-        <p>Women and Children Protection Unit</p>
+    <div class="header" style="background-color: #C41E3A; color: #ffffff; padding: 20px; text-align: center;">
+        <h2 style="color: #ffffff; margin: 0 0 8px;">Case Referral Notification</h2>
+        <p style="color: #ffffff; margin: 0;">Municipal Social Welfare and Development Office</p>
     </div>
     <div class="content">
         <p>Dear {{ $referral->recipient_name }},</p>
@@ -34,7 +34,7 @@
         @if($referral->additional_notes)
         <div class="info-row"><span class="label">Additional Notes:</span> {{ $referral->additional_notes }}</div>
         @endif
-        <div class="info-row"><span class="label">Referred By:</span> {{ $referral->referred_by_name }} ({{ $referral->referred_by_designation }})</div>
+        <div class="info-row"><span class="label">Referred By:</span> MSWDO SILANG (Administrator)</div>
     </div>
     <div class="footer">
         <p>This is an automated notification from the ISERVE SILANG Case Management System.</p>

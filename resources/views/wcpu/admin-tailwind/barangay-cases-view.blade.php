@@ -12,6 +12,13 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
 @endphp
 
 @push('styles')
+@if($isBarangayDeskOfficer)
+<style>
+    @media (min-width: 85.4375rem) {
+        html body.portal-ui #mainContent .view-cases-table-cards { display: none !important; }
+    }
+</style>
+@endif
 @if(auth()->user()?->isDepartmentAdmin())
 <style>
     @media (min-width: 48rem) and (max-width: 85.375rem) {

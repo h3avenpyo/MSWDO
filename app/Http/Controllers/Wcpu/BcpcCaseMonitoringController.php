@@ -360,7 +360,7 @@ class BcpcCaseMonitoringController extends Controller
             $pdfContent = Pdf::loadHtml($reportView->render())->output();
             $pdfFilename = "BCPC-Monitoring-Q{$monitoring->quarter}-{$monitoring->year}.pdf";
 
-            Mail::to('bcpcsilang@gmail.com')->send(new PortalActionNotification(
+            Mail::mailer('wcpu')->to('bcpcsilang@gmail.com')->send(new PortalActionNotification(
                 'BCPC monitoring report submitted',
                 $summary,
                 $pdfContent,

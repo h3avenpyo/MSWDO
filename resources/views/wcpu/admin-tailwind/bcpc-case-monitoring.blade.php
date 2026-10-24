@@ -460,7 +460,7 @@
                                     <a href="{{ route('admin.bcpc-case-monitoring.print', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year]) }}"
                                        target="_blank"
                                        class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
-                                       title="Print Record">
+                                       title="Print Record" data-monitoring-print>
                                         <i class="fas fa-print"></i>
                                         <span>Print</span>
                                     </a>
@@ -530,7 +530,7 @@
                         <a href="{{ route('admin.bcpc-case-monitoring.print', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year]) }}"
                            target="_blank"
                            class="inline-flex items-center justify-center gap-1 px-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
-                           title="Print Record">
+                           title="Print Record" data-monitoring-print>
                             <i class="fas fa-print text-xs"></i>
                             <span>Print</span>
                         </a>
@@ -704,6 +704,25 @@
 </div>
 
 @push('scripts')
+@if(auth()->user()?->isDepartmentAdmin())
+<script>
+document.addEventListener('click', function (event) {
+    const link = event.target.closest('a[data-monitoring-print]');
+    if (!link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    Swal.fire({
+        title: 'Open Print Preview?',
+        text: 'The report will open in a new tab for printing.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Open Print Preview',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#C41E3A',
+        preConfirm: () => { window.open(link.href, '_blank', 'noopener'); },
+    });
+});
+</script>
+@endif
 @if(auth()->user()?->isDepartmentAdmin())
 <script>
 document.addEventListener('DOMContentLoaded', () => {

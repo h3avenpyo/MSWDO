@@ -632,7 +632,7 @@
                                 <a href="{{ route('admin.quarterly-reports.download', $report->id) }}{{ auth()->user()->isDepartmentAdmin() ? '?preview=1' : '' }}"
                                    {!! auth()->user()->isDepartmentAdmin() ? 'target="_blank" rel="noopener"' : '' !!}
                                    class="{{ auth()->user()->isVawcAdmin() ? 'swd-quarterly-print ' : '' }}inline-flex items-center justify-center w-9 h-9 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition"
-                                   title="Preview / Print">
+                                   title="Preview / Print" data-quarterly-print>
                                     <i class="fas fa-print"></i><span class="sr-only">Preview / Print</span>
                                 </a>
                                 <a href="{{ route('admin.quarterly-reports.edit', $report->id) }}"
@@ -958,13 +958,35 @@ document.getElementById('generateQuarterlyReportForm')?.addEventListener('submit
 });
 @endif
 
+function confirmQuarterlyPrint(url) {
+    return Swal.fire({
+        title: 'Open Print Preview?',
+        text: 'The report will open in a new tab for printing.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Open Print Preview',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#C41E3A',
+        preConfirm: () => { window.open(url, '_blank', 'noopener'); },
+    });
+}
+
+@if(auth()->user()?->isDepartmentAdmin())
+document.addEventListener('click', function (event) {
+    const link = event.target.closest('a[data-quarterly-print], a.quarterly-report-card-print');
+    if (!link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    confirmQuarterlyPrint(link.href);
+});
+@endif
+
 document.getElementById('printAllQuarterlyReportsButton')?.addEventListener('click', function (event) {
     event.preventDefault();
     const url = new URL(this.href, window.location.origin);
     const filters = new FormData(document.getElementById('quarterly-reports-filter-form'));
     url.search = new URLSearchParams(filters).toString();
     url.searchParams.set('preview', '1');
-    window.open(url, '_blank', 'noopener');
+    confirmQuarterlyPrint(url.href);
 });
 
 @if(auth()->user()->isDepartmentAdmin())

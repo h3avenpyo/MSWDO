@@ -20,7 +20,8 @@ class CaseReferralNotification extends Mailable
 
     public function build()
     {
-        return $this->from(config('mail.from.address'), config('mail.from.name'))
+        $sender = $this->mailer === 'wcpu' ? 'mail.mailers.wcpu.from' : 'mail.from';
+        return $this->from(config($sender . '.address'), config($sender . '.name'))
                     ->subject('New Case Referral - ' . $this->referral->referral_number)
                     ->view('wcpu.emails.case-referral')
                     ->with([
