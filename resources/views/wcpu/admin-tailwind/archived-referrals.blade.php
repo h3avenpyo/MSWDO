@@ -1,13 +1,199 @@
 @extends('layouts.admin-tailwind')
 @section('title', 'Archived Referrals - iSERVE SILANG Admin')
+@if(auth()->user()?->isDepartmentAdmin())
 @push('styles')
 <style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > [data-pagination-label],
+        html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > .archived-referrals-table-view > [data-pagination-label],
+        html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > .archived-referrals-mobile-cards > [data-pagination-label] { display: none !important; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > .archived-referrals-tablet-pagination { display: block !important; }
+        html body.portal-ui .archived-referrals-tablet-pagination > [data-pagination-label] {
+            flex-direction: column; justify-content: center; gap: .5rem; padding: .75rem; text-align: center;
+        }
+        html body.portal-ui .archived-referrals-tablet-pagination [data-pagination-label] > div:last-child {
+            justify-content: center; gap: clamp(.25rem, 2vw, .625rem); max-width: 100%;
+        }
+        html body.portal-ui .archived-referrals-tablet-pagination a {
+            flex: 0 0 auto; width: clamp(2rem, 10vw, 2.75rem) !important; min-width: 0 !important;
+            height: 2.75rem !important; padding: 0 !important; margin: 0 !important;
+            border: 1px solid #e5e7eb !important; border-radius: .5rem;
+            background: #fff !important; color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        html body.portal-ui .archived-referrals-tablet-pagination a[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+        }
+        html body.portal-ui .archived-referrals-tablet-pagination a > i { color: inherit !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.admin-referrals-archived-mobile-nav .archive-action[data-action="restore"] {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0 !important;
+            font-size: 0 !important;
+        }
+        html body.portal-ui.admin-referrals-archived-mobile-nav .archive-action[data-action="restore"] > span { display: none !important; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav .archive-action[data-action="restore"] > i { font-size: 1rem !important; margin: 0 !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > [data-pagination-label],
+        html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > .archived-referrals-table-view > [data-pagination-label],
+        html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > .archived-referrals-mobile-cards > [data-pagination-label] { display: none !important; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > .archived-referrals-tablet-pagination { display: block !important; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav .archived-referrals-tablet-pagination > [data-pagination-label] {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        html body.portal-ui.admin-referrals-archived-mobile-nav .archived-referrals-tablet-pagination > [data-pagination-label] > div:last-child { margin-left: auto; justify-content: flex-end; flex-wrap: wrap; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        html body.portal-ui.admin-referrals-archived-mobile-nav .archived-referrals-mobile-cards > [data-pagination-label] {
+            grid-column: 1 / -1;
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100%;
+            padding-inline: 0 !important;
+            gap: .75rem !important;
+        }
+        html body.portal-ui.admin-referrals-archived-mobile-nav .archived-referrals-mobile-cards > [data-pagination-label] > div:first-child {
+            flex: 1 1 auto;
+            min-width: 0;
+            text-align: left !important;
+        }
+        html body.portal-ui.admin-referrals-archived-mobile-nav .archived-referrals-mobile-cards > [data-pagination-label] > div:last-child {
+            margin-left: auto !important;
+            justify-content: flex-end !important;
+            flex-wrap: wrap;
+        }
+    }
+    @media (max-width: 85.375rem) {
+        html body.portal-ui .archived-referrals-mobile-cards .archived-referral-card-actions > button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0 !important;
+            gap: 0 !important;
+            transition: none !important;
+        }
+        html body.portal-ui .archived-referrals-mobile-cards .archived-referral-card-actions > button > span {
+            font-size: 0 !important;
+            margin: 0 !important;
+        }
+        html body.portal-ui .archived-referrals-mobile-cards .archived-referral-card-actions > button > i {
+            font-size: 1rem !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            transform: none !important;
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui:is(.bcpc-admin-header-theme, .swd-admin-header-theme) .archived-referrals-mobile-cards > .archive-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.admin-referrals-archived-mobile-nav > #sidebar {
+            position: fixed !important;
+            inset: 0 auto 0 0 !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            margin-block: 0 !important;
+            box-sizing: border-box;
+            width: 18rem !important;
+            min-width: 18rem !important;
+            max-width: 18rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+        }
+        html body.portal-ui.admin-referrals-archived-mobile-nav > #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) { width: 4.5rem !important; min-width: 4.5rem !important; max-width: 4.5rem !important; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav > #sidebar > nav.sidebar-menu { flex: 1 1 0 !important; min-height: 0 !important; overflow-y: auto !important; overscroll-behavior-y: contain; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav > #sidebar > div.sidebar-menu {
+            flex: 0 0 auto !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+            margin-top: auto;
+            padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+        }
+        html body.portal-ui.admin-referrals-archived-mobile-nav > #sidebar ~ #mainContent { margin-left: 18rem !important; width: calc(100% - 18rem) !important; min-width: 0 !important; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav > #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) ~ #mainContent { margin-left: 4.5rem !important; width: calc(100% - 4.5rem) !important; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav #mainContent > header + div { box-sizing: border-box; width: 100%; max-width: none !important; padding-inline: 1.5rem !important; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav #mainContent > header + div > .bg-white { box-sizing: border-box; width: 100%; min-width: 0; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav #mainContent .archived-static-table { width: 100% !important; min-width: 0 !important; table-layout: fixed !important; }
+        html body.portal-ui.admin-referrals-archived-mobile-nav #mainContent .archived-static-table :is(th, td) { overflow-wrap: anywhere; white-space: normal; }
+    }
+</style>
+@endpush
+@endif
+@push('styles')
+<style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        #archived-referrals-controls { flex-direction: column !important; }
+        #archived-referrals-controls > .relative:last-child {
+            width: 100% !important;
+            align-self: stretch !important;
+        }
+        #archived-referrals-filter-button {
+            width: 100% !important;
+            min-height: 2.75rem;
+            justify-content: center;
+        }
+    }
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        .archived-referrals-mobile-cards .archived-referral-card-actions .archive-action[data-action="restore"] {
+            border-radius: .5rem !important;
+        }
+    }
+    @endif
     .archived-referrals-table-scroll { width: 100%; overflow-x: auto; }
     .archived-static-table { width: 100%; min-width: 54rem; table-layout: auto; font-size: .8125rem; }
     .archived-static-table :is(th, td) { padding: .625rem .75rem !important; line-height: 1.4; }
     .archived-static-table th:last-child, .archived-static-table td:last-child { width: 1%; white-space: nowrap; }
     .archived-static-table td { overflow-wrap: anywhere; }
     .archived-static-table td:last-child { overflow-wrap: normal; }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui:has(#sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init):not(.sidebar-open)) #mainContent table.archived-static-table {
+            width: 100% !important;
+            min-width: 0 !important;
+            table-layout: fixed !important;
+        }
+        html body.portal-ui:has(#sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init):not(.sidebar-open)) #mainContent table.archived-static-table :is(th, td) {
+            overflow-wrap: anywhere;
+            white-space: normal;
+        }
+        html body.portal-ui:has(#sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init):not(.sidebar-open)) #mainContent table.archived-static-table > :is(thead, tbody) > tr > :is(th, td):last-child:not([colspan]) {
+            width: 8rem !important;
+            min-width: 8rem !important;
+            padding-inline: .75rem !important;
+            white-space: nowrap !important;
+        }
+        html body.portal-ui:has(#sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init):not(.sidebar-open)) #mainContent table.archived-static-table > tbody > tr > td:last-child:not([colspan]) > div {
+            display: flex !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            justify-content: flex-start !important;
+            flex-wrap: nowrap !important;
+            gap: .5rem !important;
+        }
+    }
     #viewArchivedRecipientModal .archived-recipient-modal-card { max-height: calc(100dvh - 2rem); }
     #viewArchivedRecipientModal #viewArchivedRecipientContent { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
     .swal2-popup.admin-archived-referral-popup { box-sizing: border-box; width: min(48rem, calc(100vw - 2rem)) !important; max-height: min(48rem, calc(100dvh - 2rem)); grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; padding: 0; }
@@ -30,7 +216,7 @@
         #archived-referrals-search { width: 100%; }
         #archived-referrals-filter-panel { right: 0; left: auto; width: 18rem; max-width: calc(100vw - 2rem); }
     }
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 47.9375rem), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
         #archived-referrals-controls { gap: .75rem; }
         #archived-referrals-controls > .relative:last-child { align-self: flex-start; }
         #archived-referrals-filter-panel { left: 0; right: auto; width: min(18rem, calc(100vw - 2rem)); }
@@ -62,6 +248,33 @@
         }
         .archived-referrals-mobile-cards .archived-referral-card-actions .archive-action[data-action="restore"] i {
             font-size: 1rem !important;
+        }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        @if(auth()->user()->isDepartmentAdmin())
+        #archived-referrals-controls { z-index: 30; overflow: visible; }
+        #archived-referrals-controls > .relative:last-child { align-self: center; flex-shrink: 0; }
+        #archived-referrals-filter-panel {
+            left: auto !important;
+            right: 0 !important;
+            top: 100%;
+            width: 18rem;
+            max-width: calc(100vw - 2rem);
+            z-index: 40;
+            background: #fff;
+        }
+        @endif
+        .archived-referrals-mobile-cards .archived-referral-card { overflow-wrap: anywhere; }
+        .archived-referrals-mobile-cards .archived-referral-card-actions {
+            grid-template-columns: none;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(0, 1fr);
+        }
+        .archived-referrals-mobile-cards .archived-referral-card-actions > button {
+            height: 2.75rem;
+            min-height: 2.75rem;
+            border-radius: .5rem !important;
+            font-size: .8125rem;
         }
     }
 </style>
@@ -262,7 +475,7 @@
         </div>
     </div>
     <p id="archived-referrals-result-count" class="text-sm text-gray-500" aria-live="polite"></p>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div data-archive-list="referrals_page" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Referrals</h3>
         <div class="archived-referrals-table-view archived-referrals-table-scroll">
         <table class="archived-static-table w-full text-sm text-left">
@@ -270,9 +483,9 @@
             <tbody class="divide-y divide-gray-100">
                 @forelse($referrals as $referral)
 @if(auth()->user()->isVawcAdmin())
-                <tr data-archived-referral-row data-archive-table-row data-archive-record="referral"><td class="p-3">{{ $referral->referral_number }}</td><td class="p-3">{{ $referral->client_name }}</td><td class="p-3">{{ $referral->recipient_name }}<br>{{ $referral->recipient_email }}</td><td class="p-3">{{ $referral->date_of_referral?->format('M d, Y') }}</td><td class="p-3">{{ $referral->deleted_at?->format('M d, Y') }}</td><td class="p-3 text-center"><div class="flex justify-center gap-2">@if(auth()->user()->isVawcAdmin())<button type="button" data-swd-archived-referral="swd-archived-referral-{{ $referral->id }}" title="View Referral" aria-label="View Referral" class="px-3 py-2 text-white bg-[#C41E3A] rounded-lg hover:bg-[#A01830]"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>@endif<button type="button" class="archive-action px-3 py-2 text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100" data-action="restore" data-url="{{ route('admin.referrals.archived.restore', ['type' => 'referral', 'id' => $referral->id]) }}">Restore</button></div></td></tr>
+                <tr data-archived-referral-row data-archive-table-row data-archive-record="referral"><td class="p-3">{{ $referral->referral_number }}</td><td class="p-3">{{ $referral->client_name }}</td><td class="p-3">{{ $referral->recipient_name }}<br>{{ $referral->recipient_email }}</td><td class="p-3">{{ $referral->date_of_referral?->format('M d, Y') }}</td><td class="p-3">{{ $referral->deleted_at?->format('M d, Y') }}</td><td class="p-3 text-center"><div class="flex justify-center gap-2">@if(auth()->user()->isVawcAdmin())<button type="button" data-swd-archived-referral="swd-archived-referral-{{ $referral->id }}" title="View Referral" aria-label="View Referral" class="px-3 py-2 text-white bg-[#C41E3A] rounded-lg hover:bg-[#A01830]"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>@endif<button type="button" class="archive-action px-3 py-2 text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100" data-action="restore" data-url="{{ route('admin.referrals.archived.restore', ['type' => 'referral', 'id' => $referral->id]) }}" aria-label="Restore"><i class="fas fa-undo" aria-hidden="true"></i><span>Restore</span></button></div></td></tr>
 @else
-                <tr data-archived-referral-row data-archive-table-row data-archive-record="referral"><td class="p-3">{{ $referral->referral_number }}</td><td class="p-3">{{ $referral->client_name }}</td><td class="p-3">{{ $referral->recipient_name }}<br>{{ $referral->recipient_email }}</td><td class="p-3">{{ $referral->date_of_referral?->format('M d, Y') }}</td><td class="p-3">{{ $referral->deleted_at?->format('M d, Y') }}</td><td class="p-3 text-center"><div class="flex justify-center gap-2"><button type="button" class="view-archived-referral inline-flex items-center gap-1.5 rounded-lg bg-purple-50 px-3 py-2 text-purple-700 hover:bg-purple-100" aria-label="View referral details" data-referral-number="{{ $referral->referral_number }}" data-client-name="{{ $referral->client_name }}" data-client-age="{{ $referral->client_age }}" data-client-sex="{{ $referral->client_sex }}" data-date="{{ $referral->date_of_referral?->format('M d, Y') }}" data-services="{{ $referral->specific_services_requested }}" data-recipient-name="{{ $referral->recipient_name }}" data-recipient-email="{{ $referral->recipient_email }}" data-feedback="{{ $referral->feedback }}" data-feedback-date="{{ $referral->feedback_received_at?->format('M d, Y') }}" data-notes="{{ $referral->additional_notes }}"><i class="fas fa-eye" aria-hidden="true"></i>View</button><button type="button" class="archive-action px-3 py-2 text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100" data-action="restore" data-url="{{ route('admin.referrals.archived.restore', ['type' => 'referral', 'id' => $referral->id]) }}">Restore</button></div></td></tr>
+                <tr data-archived-referral-row data-archive-table-row data-archive-record="referral"><td class="p-3">{{ $referral->referral_number }}</td><td class="p-3">{{ $referral->client_name }}</td><td class="p-3">{{ $referral->recipient_name }}<br>{{ $referral->recipient_email }}</td><td class="p-3">{{ $referral->date_of_referral?->format('M d, Y') }}</td><td class="p-3">{{ $referral->deleted_at?->format('M d, Y') }}</td><td class="p-3 text-center"><div class="flex justify-center gap-2"><button type="button" class="view-archived-referral inline-flex items-center gap-1.5 rounded-lg bg-purple-50 px-3 py-2 text-purple-700 hover:bg-purple-100" aria-label="View referral details" data-referral-number="{{ $referral->referral_number }}" data-client-name="{{ $referral->client_name }}" data-client-age="{{ $referral->client_age }}" data-client-sex="{{ $referral->client_sex }}" data-date="{{ $referral->date_of_referral?->format('M d, Y') }}" data-services="{{ $referral->specific_services_requested }}" data-recipient-name="{{ $referral->recipient_name }}" data-recipient-email="{{ $referral->recipient_email }}" data-feedback="{{ $referral->feedback }}" data-feedback-date="{{ $referral->feedback_received_at?->format('M d, Y') }}" data-notes="{{ $referral->additional_notes }}"><i class="fas fa-eye" aria-hidden="true"></i>View</button><button type="button" class="archive-action px-3 py-2 text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100" data-action="restore" data-url="{{ route('admin.referrals.archived.restore', ['type' => 'referral', 'id' => $referral->id]) }}" aria-label="Restore"><i class="fas fa-undo" aria-hidden="true"></i><span>Restore</span></button></div></td></tr>
 @endif
                 @empty
                 <tr><td colspan="6" class="p-6 text-center text-gray-500">No archived referrals.</td></tr>
@@ -293,12 +506,17 @@
 @endif
             </article>
             @empty
-            <div class="rounded-xl border border-gray-200 p-6 text-center text-gray-500">No archived referrals.</div>
+            <div class="archive-empty-state rounded-xl border border-gray-200 p-6 text-center text-gray-500">No archived referrals.</div>
             @endforelse
             @include('components.archived-pagination', ['paginator' => $referrals, 'label' => 'referrals'])
         </div>
+        @if(auth()->user()?->isDepartmentAdmin())
+        <div class="archived-referrals-tablet-pagination hidden">
+            @include('components.archived-pagination', ['paginator' => $referrals, 'label' => 'referrals', 'pageLinkLimit' => 4])
+        </div>
+        @endif
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div data-archive-list="info_page" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Referral Info</h3>
         <div class="archived-referrals-table-view archived-referrals-table-scroll">
         <table class="archived-static-table w-full text-sm text-left">
@@ -306,9 +524,9 @@
             <tbody class="divide-y divide-gray-100">
                 @forelse($recipients as $recipient)
 @if(auth()->user()->isVawcAdmin())
-                <tr data-archive-table-row data-archive-record="recipient"><td class="p-3">{{ $recipient->name }}</td><td class="p-3">{{ $recipient->email }}</td><td class="p-3">{{ $recipient->contact_number ?: 'N/A' }}</td><td class="p-3">{{ $recipient->role ?: 'N/A' }}</td><td class="p-3">{{ $recipient->deleted_at?->format('M d, Y') }}</td><td class="p-3 text-center"><div class="flex justify-center gap-2">@if(auth()->user()->isVawcAdmin())<button type="button" data-swd-archived-recipient="swd-archived-recipient-{{ $recipient->id }}" title="View Referral Info" aria-label="View Referral Info" class="px-3 py-2 text-white bg-[#C41E3A] rounded-lg hover:bg-[#A01830]"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>@endif<button type="button" class="archive-action px-3 py-2 text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100" data-action="restore" data-url="{{ route('admin.referrals.archived.restore', ['type' => 'info', 'id' => $recipient->id]) }}">Restore</button></div></td></tr>
+                <tr data-archive-table-row data-archive-record="recipient"><td class="p-3">{{ $recipient->name }}</td><td class="p-3">{{ $recipient->email }}</td><td class="p-3">{{ $recipient->contact_number ?: 'N/A' }}</td><td class="p-3">{{ $recipient->role ?: 'N/A' }}</td><td class="p-3">{{ $recipient->deleted_at?->format('M d, Y') }}</td><td class="p-3 text-center"><div class="flex justify-center gap-2">@if(auth()->user()->isVawcAdmin())<button type="button" data-swd-archived-recipient="swd-archived-recipient-{{ $recipient->id }}" title="View Referral Info" aria-label="View Referral Info" class="px-3 py-2 text-white bg-[#C41E3A] rounded-lg hover:bg-[#A01830]"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span></button>@endif<button type="button" class="archive-action px-3 py-2 text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100" data-action="restore" data-url="{{ route('admin.referrals.archived.restore', ['type' => 'info', 'id' => $recipient->id]) }}" aria-label="Restore"><i class="fas fa-undo" aria-hidden="true"></i><span>Restore</span></button></div></td></tr>
 @else
-                <tr data-archive-table-row data-archive-record="recipient"><td class="p-3">{{ $recipient->name }}</td><td class="p-3">{{ $recipient->email }}</td><td class="p-3">{{ $recipient->contact_number ?: 'N/A' }}</td><td class="p-3">{{ $recipient->role ?: 'N/A' }}</td><td class="p-3">{{ $recipient->deleted_at?->format('M d, Y') }}</td><td class="p-3 text-center"><div class="flex justify-center gap-2"><button type="button" class="view-archived-recipient p-2 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600" title="View Details" aria-label="View recipient details" data-name="{{ $recipient->name }}" data-email="{{ $recipient->email }}" data-contact="{{ $recipient->contact_number }}" data-role="{{ $recipient->role }}" data-active="{{ $recipient->active ? '1' : '0' }}" data-created="{{ $recipient->created_at?->format('M d, Y') }}"><i class="fas fa-eye" aria-hidden="true"></i></button><button type="button" class="archive-action px-3 py-2 text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100" data-action="restore" data-url="{{ route('admin.referrals.archived.restore', ['type' => 'info', 'id' => $recipient->id]) }}">Restore</button></div></td></tr>
+                <tr data-archive-table-row data-archive-record="recipient"><td class="p-3">{{ $recipient->name }}</td><td class="p-3">{{ $recipient->email }}</td><td class="p-3">{{ $recipient->contact_number ?: 'N/A' }}</td><td class="p-3">{{ $recipient->role ?: 'N/A' }}</td><td class="p-3">{{ $recipient->deleted_at?->format('M d, Y') }}</td><td class="p-3 text-center"><div class="flex justify-center gap-2"><button type="button" class="view-archived-recipient p-2 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600" title="View Details" aria-label="View recipient details" data-name="{{ $recipient->name }}" data-email="{{ $recipient->email }}" data-contact="{{ $recipient->contact_number }}" data-role="{{ $recipient->role }}" data-active="{{ $recipient->active ? '1' : '0' }}" data-created="{{ $recipient->created_at?->format('M d, Y') }}"><i class="fas fa-eye" aria-hidden="true"></i></button><button type="button" class="archive-action px-3 py-2 text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100" data-action="restore" data-url="{{ route('admin.referrals.archived.restore', ['type' => 'info', 'id' => $recipient->id]) }}" aria-label="Restore"><i class="fas fa-undo" aria-hidden="true"></i><span>Restore</span></button></div></td></tr>
 @endif
                 @empty
                 <tr><td colspan="6" class="p-6 text-center text-gray-500">No archived referral info.</td></tr>
@@ -329,10 +547,15 @@
 @endif
             </article>
             @empty
-            <div class="rounded-xl border border-gray-200 p-6 text-center text-gray-500">No archived referral info.</div>
+            <div class="archive-empty-state rounded-xl border border-gray-200 p-6 text-center text-gray-500">No archived referral info.</div>
             @endforelse
             @include('components.archived-pagination', ['paginator' => $recipients, 'label' => 'recipients'])
         </div>
+        @if(auth()->user()?->isDepartmentAdmin())
+        <div class="archived-referrals-tablet-pagination hidden">
+            @include('components.archived-pagination', ['paginator' => $recipients, 'label' => 'recipients', 'pageLinkLimit' => 4])
+        </div>
+        @endif
     </div>
 </div>
 <div id="viewArchivedRecipientModal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="viewArchivedRecipientTitle">
@@ -394,6 +617,46 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    @if(auth()->user()?->isDepartmentAdmin())
+    let paginationRequest;
+    document.addEventListener('click', async event => {
+        const link = event.target.closest('[data-archive-list] [data-pagination-label] a[href]');
+        if (!matchMedia('(max-width: 85.375rem)').matches || !link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.classList.contains('pointer-events-none')) return;
+        const list = link.closest('[data-archive-list]');
+        const pageName = list.dataset.archiveList;
+        const target = new URL(link.href);
+        if (!target.searchParams.has(pageName)) return;
+        event.preventDefault();
+        const url = new URL(location.href);
+        url.searchParams.set(pageName, target.searchParams.get(pageName));
+        paginationRequest?.abort();
+        const controller = new AbortController();
+        paginationRequest = controller;
+        list.setAttribute('aria-busy', 'true');
+        try {
+            const response = await fetch(url, { signal: controller.signal, headers: { Accept: 'text/html' } });
+            if (!response.ok || response.redirected) throw new Error('Unable to load archived referrals');
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            if (controller.signal.aborted) return;
+            const next = page.querySelector('[data-archive-list="' + pageName + '"]');
+            if (!next) throw new Error('Missing archived records');
+            const top = list.getBoundingClientRect().top;
+            list.replaceWith(next);
+            page.querySelectorAll('template[id^="swd-archived-"]').forEach(template => {
+                const current = document.getElementById(template.id);
+                if (current) current.replaceWith(template);
+                else document.body.append(template);
+            });
+            history.replaceState(null, '', url);
+            applyArchivedReferralFilters();
+            window.scrollBy({ top: next.getBoundingClientRect().top - top, behavior: 'instant' });
+        } catch (error) {
+            if (error.name !== 'AbortError') location.assign(url);
+        } finally {
+            list.removeAttribute('aria-busy');
+        }
+    });
+    @endif
     const search = document.getElementById('archived-referrals-search');
     const filterButton = document.getElementById('archived-referrals-filter-button');
     const filterPanel = document.getElementById('archived-referrals-filter-panel');
@@ -406,7 +669,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let visible = 0;
 
-        const records = window.matchMedia('(max-width: 47.9375rem)').matches
+        const records = window.matchMedia('(max-width: 47.9375rem), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)').matches
             ? document.querySelectorAll('[data-archive-card]')
             : document.querySelectorAll('[data-archive-table-row]');
         records.forEach((row) => {
@@ -422,6 +685,7 @@ document.addEventListener('DOMContentLoaded', function () {
             : '';
     };
 
+    window.addEventListener('resize', applyArchivedReferralFilters);
     search?.addEventListener('input', applyArchivedReferralFilters);
     filterChoices.forEach((choice) => {
         choice.addEventListener('click', () => {

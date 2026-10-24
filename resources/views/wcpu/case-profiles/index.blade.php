@@ -7,6 +7,136 @@
 @endphp
 
 @push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.case-profiles-admin-mobile-nav > aside#sidebar {
+            width: 18rem !important;
+            min-width: 4.5rem !important;
+            max-width: 18rem !important;
+            transition: width .3s cubic-bezier(.22, .61, .36, 1) !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav > aside#sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) { width: 4.5rem !important; }
+        html body.portal-ui.case-profiles-admin-mobile-nav > #sidebarToggleBtn { transition: left .3s cubic-bezier(.22, .61, .36, 1) !important; }
+        html body.portal-ui.case-profiles-admin-mobile-nav > #mainContent { transition: margin-left .3s cubic-bezier(.22, .61, .36, 1), width .3s cubic-bezier(.22, .61, .36, 1) !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) and (prefers-reduced-motion: reduce) {
+        html body.portal-ui.case-profiles-admin-mobile-nav > :is(aside#sidebar, #sidebarToggleBtn, #mainContent) { transition: none !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards > .case-profiles-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+    @media (max-width: 85.375rem) {
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card {
+            position: relative;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card > div:first-child > div:first-child,
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card > .grid > div:not(:last-child) {
+            display: none !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card > div:first-child {
+            justify-content: flex-end;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            margin-bottom: 0 !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card > .grid {
+            grid-template-columns: minmax(0, 1fr) !important;
+            margin-top: 0 !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card > .grid > div:last-child > p:first-child { padding-right: 5rem; }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card > .grid > div:last-child > div { padding-top: .5rem; }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card > .grid > div:last-child {
+            grid-column: 1 !important;
+        }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-table-view { display: none !important; }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 1rem; }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card { display: flex !important; flex-direction: column; min-width: 0; margin: 0 !important; padding: 1rem; border: 1px solid #dbe1e8; border-radius: .625rem; }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profile-card > div:has(> .case-profile-card-action) { margin-top: auto !important; }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-pagination-container { grid-column: 1 / -1; }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profile-card-action { display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: .5rem; }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card {
+            display: flex !important;
+            flex-direction: column !important;
+            align-self: stretch;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profile-card > div:has(> .case-profile-card-action) {
+            margin-top: auto !important;
+        }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        #case-profiles-filter-form .case-profiles-clear-button { border-radius: .5rem !important; }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent #dashboardMenuToggle {
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-width: 2.5rem !important;
+            min-height: 2.5rem !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent #dashboardMenuToggle > i {
+            font-size: 1.25rem !important;
+            line-height: 1 !important;
+        }
+    }
+    @media (max-width: 26.875rem) {
+        html body.portal-ui.case-profiles-admin-mobile-nav #mainContent #dashboardMenuToggle {
+            min-width: 3rem !important;
+            min-height: 3rem !important;
+        }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards [data-pagination-label] > div:last-child {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            gap: .375rem !important;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards [data-pagination-label] > div:last-child > a {
+            flex: 0 0 2.5rem;
+            width: 2.5rem !important;
+            min-width: 0 !important;
+            height: 2.75rem !important;
+            padding: 0 !important;
+            font-size: .875rem;
+        }
+        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards [data-pagination-label] > div:last-child > span {
+            padding-inline: .125rem !important;
+            font-size: .875rem;
+        }
+    }
+</style>
+@endif
 <style>
     .guardian-dialog::backdrop {
         background: rgba(15, 23, 42, 0.65) !important;
@@ -554,10 +684,60 @@
             height: 100dvh !important;
         }
     }
+
+    /* Department admins render the page header and the shared desk header;
+       hide the duplicate shared header on tablet only. */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui.case-profiles-admin-mobile-nav #desk-officer-dashboard-header {
+            display: none !important;
+        }
+    }
 </style>
 @endpush
 
 @section('content')
+@if(auth()->user()?->isDepartmentAdmin())
+@push('scripts')
+<script>
+(() => {
+    const responsivePagination = matchMedia('(max-width: 85.375rem)');
+    let activeRequest;
+    document.addEventListener('click', async event => {
+        const link = event.target.closest('[data-profile-section] [data-pagination-label] a[href]');
+        if (!responsivePagination.matches || !link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        const section = link.closest('[data-profile-section]');
+        const pageName = section.dataset.profileSection + '_page';
+        const target = new URL(link.href);
+        if (!target.searchParams.has(pageName)) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const url = new URL(location.href);
+        url.searchParams.set(pageName, target.searchParams.get(pageName));
+        activeRequest?.abort();
+        const controller = new AbortController();
+        activeRequest = controller;
+        section.setAttribute('aria-busy', 'true');
+        try {
+            const response = await fetch(url, { signal: controller.signal, headers: { Accept: 'text/html' } });
+            if (!response.ok || response.redirected) throw new Error('Unable to load profiles');
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            const next = page.querySelector('[data-profile-section="' + section.dataset.profileSection + '"]');
+            if (controller.signal.aborted) return;
+            if (!next) throw new Error('Missing profiles');
+            const top = section.getBoundingClientRect().top;
+            section.replaceWith(next);
+            history.replaceState(null, '', url);
+            window.scrollBy({ top: next.getBoundingClientRect().top - top, behavior: 'instant' });
+        } catch (error) {
+            if (error.name !== 'AbortError') location.assign(url);
+        } finally {
+            section.removeAttribute('aria-busy');
+        }
+    }, true);
+})();
+</script>
+@endpush
+@endif
 @if($isAdmin && auth()->user()?->isDepartmentAdmin())
 <header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
@@ -573,8 +753,9 @@
         @include('admin-tailwind.components.header-account')
     </div>
 </header>
-@endif
+@else
 @include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Victim and Perpetrator Profiles', 'subtitle' => 'View and manage case profiles'])
+@endif
 <div id="case-profiles-content" class="p-4 sm:p-6 lg:p-8 space-y-8">
     @unless(auth()->user()?->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
     <div class="flex flex-wrap items-center justify-between gap-4">
@@ -622,7 +803,7 @@
                 && $profiles->total() === 0;
         @endphp
         @if(!$hideEmptySwdProfileTable && !$hideEmptyBcpcProfileTable)
-        <section class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <section data-profile-section="{{ $isVictim ? 'victims' : 'perpetrators' }}" class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
             <h2 class="px-5 py-4 text-lg font-semibold text-purple-800">{{ $heading }}</h2>
             <div class="case-profiles-table-view">
             <div class="overflow-x-auto">
@@ -809,11 +990,11 @@
                         @endif
                     </article>
                 @empty
-                <div class="rounded-xl border border-gray-200 bg-white p-6 text-center text-gray-500">No profiles found.</div>
+                <div class="case-profiles-empty-state rounded-xl border border-gray-200 bg-white p-6 text-center text-gray-500">No profiles found.</div>
                 @endforelse
                 @if((auth()->user()?->isDepartmentAdmin() || !$isAdmin) && $profiles->hasPages())
                     <div class="case-profiles-pagination-container w-full min-w-0 overflow-x-hidden">
-                        @include('components.archived-pagination', ['paginator' => $profiles, 'label' => 'profiles'])
+                        @include('components.archived-pagination', ['paginator' => $profiles, 'label' => 'profiles', 'pageLinkLimit' => auth()->user()?->isDepartmentAdmin() ? 4 : null])
                     </div>
                 @endif
             </div>
@@ -842,7 +1023,8 @@
         const q = (searchInput?.value || '').toLowerCase().trim();
         const ageVal = (ageInput?.value || '').trim();
 
-        const isMobileProfileView = window.matchMedia('(max-width: 47.9375rem)').matches;
+        const isMobileProfileView = window.matchMedia('(max-width: 47.9375rem)').matches
+            || (@json(auth()->user()?->isDepartmentAdmin()) && window.matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').matches);
         const profileItems = isMobileProfileView
             ? document.querySelectorAll('.case-profile-card')
             : document.querySelectorAll('#case-profiles-results table tbody tr');

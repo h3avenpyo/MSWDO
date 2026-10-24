@@ -3,6 +3,36 @@
 @section('title', 'Edit Quarterly Report')
 
 @section('content')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        #quarterly-report-edit-actions {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr);
+            gap: .75rem;
+        }
+        #quarterly-report-edit-actions > div { display: contents !important; }
+        #quarterly-report-edit-actions form { width: 100%; margin: 0; }
+        #quarterly-report-edit-actions form { grid-row: 1; }
+        #quarterly-report-edit-actions > div:first-child > a { grid-row: 2; }
+        #quarterly-report-edit-actions > div:last-child > a { grid-row: 3; }
+        #quarterly-report-edit-actions :is(a, button) {
+            display: inline-flex !important;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0;
+            height: 3rem !important;
+            min-height: 3rem !important;
+            padding: .5rem !important;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: .5rem !important;
+            font-size: .75rem;
+        }
+    }
+</style>
+@endif
 @php
     $isAdminEditor = auth()->user()?->position === 'Administrator';
     $quarterlyIndexRoute = $isAdminEditor ? 'admin.quarterly-reports.index' : 'desk-officer.quarterly-reports.index';
@@ -10,6 +40,7 @@
     $quarterlyRegenerateRoute = $isAdminEditor ? 'admin.quarterly-reports.regenerate' : 'desk-officer.quarterly-reports.regenerate';
 @endphp
 @if($isAdminEditor)
+@include('admin-tailwind.quarterly-reports._portrait-sidebar')
 <style>
     @media (min-width: 48rem) and (max-width: 80rem) {
         body:has([data-quarterly-report-edit-header]) #sidebar {
@@ -227,7 +258,7 @@
             <!-- Action buttons -->
             <div id="quarterly-report-edit-actions" class="pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                    <a href="{{ route($quarterlyShowRoute, $report->id) }}" @if($isAdminEditor) target="_blank" @endif class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
+                    <a href="{{ route($quarterlyShowRoute, auth()->user()?->isDepartmentAdmin() ? ['id' => $report->id, 'from' => 'edit'] : $report->id) }}" @if(auth()->user()?->isDepartmentAdmin()) data-icon-action="labelled" @elseif($isAdminEditor) target="_blank" @endif class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
                         <i class="fas fa-file-pdf"></i>
                         <span>View Current PDF</span>
                     </a>

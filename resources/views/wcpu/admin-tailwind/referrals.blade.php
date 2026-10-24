@@ -4,6 +4,130 @@
 
 @push('styles')
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 85.375rem) {
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-card-actions > :is(.view-referral-btn, .edit-referral-btn, .print-referral-btn, .archive-referral-btn) {
+            background-color: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #fff !important;
+            transition: none !important;
+        }
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-card-actions > :is(.view-referral-btn, .edit-referral-btn, .print-referral-btn, .archive-referral-btn) > i {
+            color: inherit !important;
+        }
+    }
+    @media (max-width: 85.375rem) {
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-card-actions > :is(button, a) {
+            font-size: 0 !important;
+            gap: 0 !important;
+        }
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-card-actions > :is(button, a) > span {
+            font-size: 0 !important;
+            margin: 0 !important;
+        }
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-card-actions > :is(button, a) > i {
+            font-size: .875rem !important;
+        }
+    }
+    @media (max-width: 85.375rem) {
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-card-actions > .view-referral-btn { order: 1; }
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-card-actions > :is(.edit-referral-btn, .disabled-referral-edit) { order: 2; }
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-card-actions > .print-referral-btn { order: 3; }
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-card-actions > .archive-referral-btn { order: 4; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        body.portal-ui.admin-referrals-mobile-nav #referralModal {
+            z-index: 100 !important;
+        }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.admin-referrals-mobile-nav #referrals-mobile-cards .referral-cards-list > .referrals-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+    @media (max-width: 47.9375rem) {
+        #referrals-summary-heading {
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: .5rem !important;
+        }
+        #referrals-summary-heading > div { min-width: 0; gap: .5rem; }
+        #referrals-summary-heading > .download-referrals-btn {
+            flex-shrink: 0;
+            margin-left: auto;
+            padding-inline: .625rem;
+            white-space: nowrap;
+        }
+    }
+    @endif
+    @if(auth()->user()->isDepartmentAdmin())
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        #referrals-table-pagination,
+        #referrals-card-pagination {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+        #referrals-card-pagination > p { text-align: left; flex-shrink: 0; }
+        #referrals-card-pagination > div {
+            margin-top: 0;
+            margin-left: auto;
+            justify-content: flex-end;
+            transform: none;
+        }
+        #referrals-table-pagination > div:last-child { margin-left: auto; }
+    }
+    @media (max-width: 47.9375rem) {
+        #referrals-card-pagination {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+        #referrals-card-pagination > p { text-align: left; flex-shrink: 0; }
+        #referrals-card-pagination > div {
+            min-width: 0;
+            margin-top: 0;
+            margin-left: auto;
+            justify-content: flex-end;
+            transform: none;
+        }
+        #referrals-card-pagination > div > div,
+        #referrals-card-pagination > div > div > div {
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        #referrals-card-pagination a { flex-shrink: 0; }
+        #referrals-card-pagination > :not(.referrals-phone-pagination) { display: none !important; }
+        #referrals-card-pagination > .referrals-phone-pagination { display: block !important; width: 100%; margin: 0; }
+        #referrals-card-pagination .referrals-phone-pagination > [data-pagination-label] {
+            flex-direction: column; justify-content: center; gap: .5rem; padding: 0; text-align: center;
+        }
+        #referrals-card-pagination .referrals-phone-pagination [data-pagination-label] > div:last-child {
+            gap: clamp(.25rem, 2vw, .625rem); justify-content: center;
+        }
+        #referrals-card-pagination .referrals-phone-pagination a {
+            width: clamp(2rem, 10vw, 2.75rem) !important; min-width: 0 !important; height: 2.75rem !important;
+            padding: 0 !important; margin: 0 !important; border: 1px solid #e5e7eb !important;
+            border-radius: .5rem; background: #fff !important; color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        #referrals-card-pagination .referrals-phone-pagination a[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+        }
+        #referrals-card-pagination .referrals-phone-pagination a > i { color: inherit !important; }
+    }
+    @endif
     /* Android tablets (600px–1280px): the shared Admin sidebar is the drawer;
        Referrals uses fluid spacing and lets only the table scroll horizontally. */
     @media (min-width: 37.5rem) and (max-width: 80rem) {
@@ -43,8 +167,7 @@
         }
     }
 
-    /* Phone-only referral cards. The existing table remains the presentation
-       for tablet and desktop widths. */
+    /* Phone referral cards. */
     @media (max-width: 47.9375rem) {
         #referrals-table-panel { display: none !important; }
         #referrals-mobile-cards {
@@ -204,9 +327,22 @@
         min-height: 2.25rem;
     }
 
-    /* The mobile cards end at 767px; retain the table for the tablet range. */
+    /* Tablet portrait presentation for department admins. */
     @media (min-width: 48rem) and (max-width: 63.9375rem) {
-        #referrals-table-panel { display: flex !important; flex-direction: column; }
+        #referrals-table-panel { display: none !important; }
+        #referrals-mobile-cards { display: block !important; }
+        #referrals-mobile-cards .referral-cards-list { max-height: none !important; overflow: visible !important; }
+        #referrals-mobile-cards .referral-card-actions {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .5rem;
+        }
+        #referrals-mobile-cards .referral-card-actions > :is(button, a) {
+            width: 100% !important;
+            min-width: 0;
+            min-height: 3rem;
+            padding: .5rem !important;
+        }
     }
 </style>
 @endif
@@ -328,6 +464,63 @@
         }
     }
 </style>
+<style>
+    /* Use the existing referral cards throughout tablet portrait and landscape. */
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        html body.portal-ui #referrals-table-panel {
+            display: none !important;
+        }
+        html body.portal-ui #referrals-mobile-cards {
+            display: block !important;
+            width: 100%;
+            min-width: 0;
+            padding-bottom: 1rem;
+        }
+        html body.portal-ui #referrals-mobile-cards .referral-cards-list {
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        html body.portal-ui #referrals-mobile-cards .referral-card {
+            min-width: 0;
+        }
+        html body.portal-ui #referrals-mobile-cards .referral-card-actions {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: .5rem;
+        }
+        html body.portal-ui #referrals-mobile-cards .referral-card-actions > :is(button, a) {
+            width: 100% !important;
+            min-width: 0;
+            min-height: 2.75rem;
+            padding: .375rem .5rem !important;
+            white-space: nowrap;
+            font-size: .75rem;
+        }
+    }
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #referrals-mobile-cards .referral-card-actions {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: .375rem;
+            align-items: stretch;
+        }
+        html body.portal-ui #referrals-mobile-cards .referral-card-actions > :is(button, a) {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 100% !important;
+            min-width: 0 !important;
+            height: 2.75rem !important;
+            min-height: 2.75rem !important;
+            padding: .375rem .25rem !important;
+            gap: .25rem;
+            font-size: .6875rem;
+            white-space: nowrap;
+        }
+    }
+    @endif
+</style>
 @endpush
 
 @section('content')
@@ -367,7 +560,7 @@
     
     <!-- Header Card -->
     <div id="referrals-summary-card" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6">
-        <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        <div id="referrals-summary-heading" class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                     <i class="fas fa-exchange-alt text-purple-600"></i>
@@ -492,7 +685,7 @@
         </div>
         
         <!-- Pagination -->
-        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div id="referrals-table-pagination" class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="text-sm text-gray-600">
                 Showing <span class="font-medium">{{ $referrals->firstItem() ?? 0 }}</span> to <span class="font-medium">{{ $referrals->lastItem() ?? 0 }}</span> of <span class="font-medium">{{ $referrals->total() }}</span> referrals
             </div>
@@ -535,7 +728,31 @@
     </div>
     
     <!-- Referrals Cards (Mobile/Tablet) -->
+    @if(auth()->user()?->isDepartmentAdmin())
+    <style>
+        .referral-tablet-details, .referral-tablet-heading { display: none; }
+        @media (min-width: 48rem) and (max-width: 85.375rem) {
+            html body.portal-ui #referrals-table-panel { display: none !important; }
+            html body.portal-ui #referrals-mobile-cards { display: block !important; background: #fff; border: 1px solid #e5e7eb; border-radius: .75rem; padding: 1rem; }
+            .referral-tablet-heading { display: block; color: #B11116; font-size: 1rem; font-weight: 600; margin-bottom: 1.25rem; }
+            html body.portal-ui #referrals-mobile-cards .referral-cards-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-height: none !important; overflow: visible !important; }
+            html body.portal-ui #referrals-mobile-cards .referral-card { display: flex; flex-direction: column; min-width: 0; margin: 0 !important; padding: 1rem; border: 1px solid #dbe1e8; border-radius: .625rem; }
+            #referrals-mobile-cards .referral-card > .referral-original-details { display: none; }
+            .referral-tablet-details { display: block; font-size: .8125rem; line-height: 1.4; overflow-wrap: anywhere; }
+            .referral-tablet-details small { display: block; color: #6b7280; font-size: .6875rem; }
+            .referral-tablet-details .referral-tablet-top { display: flex; justify-content: space-between; gap: .75rem; padding-bottom: .75rem; border-bottom: 1px solid #f1f5f9; }
+            .referral-tablet-details dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .625rem; padding-block: .75rem; }
+            .referral-tablet-details dt { font-size: .6875rem; font-weight: 600; color: #6b7280; }
+            .referral-tablet-details .referral-wide { grid-column: 1 / -1; }
+            html body.portal-ui #referrals-mobile-cards .referral-card-actions { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; margin-top: auto; }
+            html body.portal-ui #referrals-mobile-cards .referral-card-actions > :is(button, a) { width: 100% !important; min-width: 0; height: 2.75rem !important; min-height: 2.75rem; border-radius: .5rem !important; }
+        }
+    </style>
+    @endif
     <div id="referrals-mobile-cards" class="hidden">
+        @if(auth()->user()?->isDepartmentAdmin())
+        <h3 class="referral-tablet-heading">{{ auth()->user()->isBcpcAdmin() ? 'BCPC' : 'SWD' }} Referrals</h3>
+        @endif
         <div class="referral-cards-list space-y-4 max-h-[calc(100vh-420px)] overflow-y-auto pb-2">
             @forelse($referrals as $referral)
             @php
@@ -545,7 +762,24 @@
                 $editDisabledTitle = 'Edit';
             @endphp
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 referral-card" data-id="{{ $referral->id }}">
-                <div class="flex items-start justify-between gap-3 mb-3">
+                @if(auth()->user()?->isDepartmentAdmin())
+                <div class="referral-tablet-details">
+                    <div class="referral-tablet-top">
+                        <div><small>Client</small><strong>{{ $referral->client_name }}</strong><small>{{ $referral->referral_number }}</small></div>
+                        <div class="text-right"><small>Date</small>{{ \Carbon\Carbon::parse($referral->date_of_referral)->format('M d, Y') }}</div>
+                    </div>
+                    <dl>
+                        <div><dt>Age</dt><dd>{{ $referral->client_age }}</dd></div>
+                        <div><dt>Sex</dt><dd>{{ $referral->client_sex }}</dd></div>
+                        <div class="referral-wide"><dt>Services Needed</dt><dd>{{ $referral->specific_services_requested ?: 'N/A' }}</dd></div>
+                        <div class="referral-wide"><dt>Receiving Agency</dt><dd>{{ $referral->recipient_name }}<small>{{ $referral->created_by_department_admin ? $referral->recipient_address : $referral->recipient_email }}</small></dd>
+                            @if($recipientUnavailable)<small class="text-red-600">The recipient is currently unavailable. The referral cannot be processed due to this reason.</small>@endif
+                        </div>
+                        <div class="referral-wide"><dt>Feedback</dt><dd>{{ $referral->feedback ?: 'No feedback yet' }}</dd></div>
+                    </dl>
+                </div>
+                @endif
+                <div class="referral-original-details flex items-start justify-between gap-3 mb-3">
                     <div>
                         <p class="text-sm font-semibold text-gray-800">{{ $referral->client_name }}</p>
                         <p class="text-xs text-gray-500">{{ $referral->referral_number }}</p>
@@ -556,7 +790,7 @@
                     </div>
                 </div>
                 
-                <div class="space-y-2 text-sm mb-4">
+                <div class="referral-original-details space-y-2 text-sm mb-4">
                     <div class="flex items-start gap-2">
                         <i class="fas fa-building text-purple-500 mt-0.5 w-4"></i>
                         <div>
@@ -601,7 +835,7 @@
                 </div>
             </div>
             @empty
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+            <div class="referrals-empty-state bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-inbox text-gray-400 text-2xl"></i>
                 </div>
@@ -612,7 +846,16 @@
         </div>
         
         <!-- Mobile Pagination -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 mt-4">
+        <div id="referrals-card-pagination" class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 mt-4">
+            @if(auth()->user()?->isDepartmentAdmin())
+            <div class="referrals-phone-pagination hidden">
+                @if($referrals->hasPages())
+                    @include('components.archived-pagination', ['paginator' => $referrals, 'label' => 'referrals', 'pageLinkLimit' => 4])
+                @else
+                    <p class="text-center text-sm text-gray-600">Showing {{ $referrals->firstItem() ?? 0 }} - {{ $referrals->lastItem() ?? 0 }} of {{ $referrals->total() }} referrals</p>
+                @endif
+            </div>
+            @endif
             <p class="text-center text-xs text-gray-600">
                 Showing {{ $referrals->firstItem() ?? 0 }}-{{ $referrals->lastItem() ?? 0 }} of {{ $referrals->total() }}
             </p>
@@ -692,9 +935,55 @@
 </div>
 
 @push('scripts')
+@if(auth()->user()?->isDepartmentAdmin())
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const responsivePagination = matchMedia('(max-width: 85.375rem)');
+    let activeRequest;
+    document.addEventListener('click', async event => {
+        const link = event.target.closest('#referrals-card-pagination a[href], #referrals-table-pagination a[href]');
+        if (!responsivePagination.matches || !link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.classList.contains('pointer-events-none')) return;
+        event.preventDefault();
+        activeRequest?.abort();
+        const controller = new AbortController();
+        activeRequest = controller;
+        const cards = document.getElementById('referrals-mobile-cards');
+        cards?.setAttribute('aria-busy', 'true');
+        try {
+            const response = await fetch(link.href, { signal: controller.signal, headers: { Accept: 'text/html' } });
+            if (!response.ok || response.redirected) throw new Error('Unable to load referrals');
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            if (controller.signal.aborted) return;
+            const replacements = ['#referrals-table-panel', '#referrals-mobile-cards']
+                .map(selector => [document.querySelector(selector), page.querySelector(selector)]);
+            if (replacements.some(([current, next]) => !current || !next)) throw new Error('Missing referral list');
+            const top = cards.getBoundingClientRect().top;
+            replacements.forEach(([current, next]) => current.replaceWith(next));
+            history.replaceState(null, '', link.href);
+            window.scrollBy({ top: document.getElementById('referrals-mobile-cards').getBoundingClientRect().top - top, behavior: 'instant' });
+        } catch (error) {
+            if (error.name !== 'AbortError') location.assign(link.href);
+        } finally {
+            cards?.removeAttribute('aria-busy');
+        }
+    });
+});
+</script>
+@endif
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('referralModal');
+    @if(auth()->user()?->isDepartmentAdmin())
+    const portraitModalMedia = matchMedia('(min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)');
+    const modalHome = document.createComment('Referral modal position');
+    modal.before(modalHome);
+    const positionReferralModal = () => {
+        if (portraitModalMedia.matches) document.body.append(modal);
+        else modalHome.after(modal);
+    };
+    positionReferralModal();
+    portraitModalMedia.addEventListener('change', positionReferralModal);
+    @endif
     const modalOverlay = document.getElementById('modalOverlay');
     const closeModal = document.getElementById('closeModal');
     const referralDetails = document.getElementById('referralDetails');
@@ -717,7 +1006,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     referCaseButton?.addEventListener('click', function() {
         if (!this.disabled && this.dataset.referUrl) {
+            if (@json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').matches) {
+                const referralId = new URL(this.dataset.referUrl, location.origin).searchParams.get('source_referral');
+                if (referralId) sessionStorage.setItem('admin-referral-details-return', JSON.stringify({ id: referralId, url: location.href }));
+            }
             window.location.assign(this.dataset.referUrl);
+        }
+    });
+
+    window.addEventListener('pageshow', () => {
+        if (!@json(auth()->user()?->isDepartmentAdmin()) || !matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').matches) return;
+        const saved = sessionStorage.getItem('admin-referral-details-return');
+        if (!saved) return;
+        sessionStorage.removeItem('admin-referral-details-return');
+        try {
+            const previous = JSON.parse(saved);
+            if (previous.url === location.href && /^\d+$/.test(previous.id)) fetchReferralDetails(previous.id);
+        } catch (_) {
+            // Ignore an invalid saved return state.
         }
     });
 

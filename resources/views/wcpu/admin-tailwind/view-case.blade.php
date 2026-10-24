@@ -5,6 +5,58 @@
 @push('styles')
 @if(auth()->user()?->isDepartmentAdmin())
 <style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.case-details-admin-mobile-nav > aside#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) ~ #sidebarToggleBtn {
+            top: 2.75rem !important;
+            left: 18rem !important;
+            transform: translate(-50%, -50%) !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav > aside#sidebar {
+            width: 18rem !important;
+            min-width: 4.5rem !important;
+            max-width: 18rem !important;
+            transition: width .3s cubic-bezier(.22, .61, .36, 1) !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav > aside#sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) { width: 4.5rem !important; }
+        html body.portal-ui.case-details-admin-mobile-nav > #sidebarToggleBtn { transition: left .3s cubic-bezier(.22, .61, .36, 1) !important; }
+        html body.portal-ui.case-details-admin-mobile-nav > #mainContent { transition: margin-left .3s cubic-bezier(.22, .61, .36, 1), width .3s cubic-bezier(.22, .61, .36, 1) !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) and (prefers-reduced-motion: reduce) {
+        html body.portal-ui.case-details-admin-mobile-nav > :is(aside#sidebar, #sidebarToggleBtn, #mainContent) { transition: none !important; }
+    }
+    @media (max-width: 47.9375rem) {
+        .case-profile-details:not(.archived-case-details) .case-details-actions {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .75rem;
+            align-items: stretch;
+        }
+        .case-profile-details:not(.archived-case-details) :is(.case-details-primary-actions, .case-details-print-actions) { display: contents !important; }
+        .case-profile-details:not(.archived-case-details) .case-details-action-back {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            justify-self: stretch;
+            width: 100% !important;
+            justify-content: center;
+        }
+        .case-profile-details:not(.archived-case-details) :is(.case-details-action-add, .case-details-action-print) {
+            display: inline-flex;
+            width: 100% !important;
+            min-width: 0;
+            min-height: 3rem;
+            padding: .5rem .75rem !important;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            white-space: normal;
+        }
+        .case-profile-details:not(.archived-case-details) .case-details-action-add { grid-column: 1; grid-row: 2; }
+        .case-profile-details:not(.archived-case-details) .case-details-action-print { grid-column: 2; grid-row: 2; }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
     @media (min-width: 48rem) {
         body.portal-ui.case-details-admin-mobile-nav #mobileTopBar { display: none !important; }
     }
@@ -14,6 +66,71 @@
             height: 100dvh !important;
         }
         body.portal-ui.case-details-admin-mobile-nav #sidebarToggleBtn { top: 1.5rem !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 80rem) and (orientation: portrait) {
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar,
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar.sidebar-collapsed-init {
+            position: fixed !important;
+            inset: 0 auto 0 0 !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            border-radius: 0 !important;
+            transform: none !important;
+            background: #B11116 !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem !important;
+            padding-left: .75rem !important;
+            padding-right: .5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            min-width: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar .sidebar-text {
+            display: none !important;
+            max-width: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar .sidebar-menu {
+            padding-left: .5rem !important;
+            padding-right: .5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar .sidebar-link,
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar nav :is(a, button) {
+            justify-content: center !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar .sidebar-chevron,
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar .sidebar-submenu {
+            display: none !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar ~ #mainContent,
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+        html body.portal-ui.case-details-admin-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            min-width: 0 !important;
+            margin-left: 4.5rem !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav #sidebarToggleBtn {
+            display: none !important;
+        }
+        html body.portal-ui.case-details-admin-mobile-nav.bcpc-admin-header-theme #sidebar,
+        html body.portal-ui.case-details-admin-mobile-nav.swd-admin-header-theme #sidebar {
+            background: #B11116 !important;
+        }
     }
     @media (max-width: 40rem) {
         html body.portal-ui.case-details-admin-mobile-nav #mobileTopBar { display: none !important; }

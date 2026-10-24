@@ -3,11 +3,64 @@
 @section('title', 'Archived Users - iSERVE SILANG Admin')
 @push('styles')
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #archived-users-mobile-pagination { display: none !important; }
+        html body.portal-ui #archived-users-tablet-pagination { display: block !important; background: #fff; }
+        html body.portal-ui #archived-users-tablet-pagination > [data-pagination-label] {
+            flex-direction: column; justify-content: center; gap: .5rem; padding: .75rem; text-align: center;
+        }
+        html body.portal-ui #archived-users-tablet-pagination [data-pagination-label] > div:last-child {
+            justify-content: center; gap: clamp(.25rem, 2vw, .625rem); max-width: 100%;
+        }
+        html body.portal-ui #archived-users-tablet-pagination a {
+            flex: 0 0 auto; width: clamp(2rem, 10vw, 2.75rem) !important; min-width: 0 !important;
+            height: 2.75rem !important; padding: 0 !important; margin: 0 !important;
+            border: 1px solid #e5e7eb !important; border-radius: .5rem;
+            background: #fff !important; color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        html body.portal-ui #archived-users-tablet-pagination a[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+        }
+        html body.portal-ui #archived-users-tablet-pagination a > i { color: inherit !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui #archived-users-mobile-pagination,
+        html body.portal-ui .archived-users-legacy-pagination { display: none !important; }
+        html body.portal-ui #archived-users-tablet-pagination,
+        html body.portal-ui .archived-users-desktop-tablet-pagination { display: block !important; grid-column: 1 / -1; background: #fff; }
+        html body.portal-ui :is(#archived-users-tablet-pagination, .archived-users-desktop-tablet-pagination) > [data-pagination-label] { padding: 1rem 1.5rem; }
+        html body.portal-ui :is(#archived-users-tablet-pagination, .archived-users-desktop-tablet-pagination) > [data-pagination-label] > div:last-child { margin-left: auto; justify-content: flex-end; flex-wrap: wrap; }
+    }
+    @media (max-width: 85.375rem) {
+        html body.portal-ui #users-cards-mobile .archived-user-card-actions > :is(.view-btn, .restore-btn) {
+            font-size: 0 !important;
+            gap: 0 !important;
+        }
+        html body.portal-ui #users-cards-mobile .archived-user-card-actions > :is(.view-btn, .restore-btn) > span {
+            font-size: 0 !important;
+            margin: 0 !important;
+        }
+        html body.portal-ui #users-cards-mobile .archived-user-card-actions > :is(.view-btn, .restore-btn) > i {
+            font-size: .875rem !important;
+        }
+    }
+    @endif
     .archived-static-table { table-layout: fixed; }
     .archived-static-table th:last-child, .archived-static-table td:last-child { width: 12rem; white-space: nowrap; }
     #userModal .archived-user-modal-card { max-height: calc(100dvh - 2rem); }
     #userModal #modalContent { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-    @media (max-width: 47.9375rem) {
+    #archived-users-tablet-pagination { display: none; }
+    @if(auth()->user()->isDepartmentAdmin())
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        #archived-users-mobile-pagination { display: none !important; }
+        #archived-users-tablet-pagination { display: block; }
+        #archived-users-tablet-pagination > div { padding: 1rem; }
+        #archived-users-tablet-pagination > div > div:last-child { flex-wrap: wrap; }
+    }
+    @endif
+    @media (max-width: 47.9375rem)@if(auth()->user()->isDepartmentAdmin()), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)@endif {
         #users-cards-mobile .user-row > div:first-child .flex.items-center.justify-between > span {
             max-width: 45%;
             overflow: hidden;
@@ -35,6 +88,12 @@
         }
         #users-cards-mobile .archived-user-card-actions :is(.restore-btn, .delete-btn) i { color: #ffffff !important; }
     }
+    @if(auth()->user()->isDepartmentAdmin())
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        #archived-users-table-view { display: none !important; }
+        #users-cards-mobile { display: block !important; }
+    }
+    @endif
 </style>
 @if(auth()->user()->isDepartmentAdmin())
 <style>
@@ -257,7 +316,7 @@
     </div>
     
     <!-- Users Table (Desktop) -->
-    <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div id="archived-users-table-view" class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="archived-static-table w-full">
                 <thead class="bg-gray-50 border-b border-gray-200">
@@ -323,7 +382,12 @@
         
         <!-- Pagination -->
         @if($users->hasPages())
-        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50">
+        @if(auth()->user()?->isDepartmentAdmin())
+        <div class="archived-users-desktop-tablet-pagination hidden">
+            @include('components.archived-pagination', ['paginator' => $users, 'label' => 'archived users', 'pageLinkLimit' => 4])
+        </div>
+        @endif
+        <div class="archived-users-legacy-pagination px-6 py-4 border-t border-gray-100 bg-gray-50">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p class="text-sm text-gray-600">
                     Showing {{ $users->firstItem() ?? 0 }}-{{ $users->lastItem() ?? 0 }} of {{ $users->total() }} archived users
@@ -407,9 +471,14 @@
         
         <!-- Mobile Pagination -->
         @if($users->hasPages())
-        <div class="flex justify-center pt-4">
+        <div id="archived-users-mobile-pagination" class="flex justify-center pt-4">
             {{ $users->links() }}
         </div>
+        @if(auth()->user()->isDepartmentAdmin())
+        <div id="archived-users-tablet-pagination">
+            @include('components.archived-pagination', ['paginator' => $users, 'label' => 'archived users', 'pageLinkLimit' => 4])
+        </div>
+        @endif
         @endif
     </div>
 </main>
@@ -440,6 +509,37 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    @if(auth()->user()?->isDepartmentAdmin())
+    let paginationRequest;
+    document.addEventListener('click', async event => {
+        const link = event.target.closest('#archived-users-tablet-pagination a[href], #archived-users-table-view a[href*="page="]');
+        if (!matchMedia('(max-width: 85.375rem)').matches || !link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.classList.contains('pointer-events-none')) return;
+        event.preventDefault();
+        paginationRequest?.abort();
+        const controller = new AbortController();
+        paginationRequest = controller;
+        const cards = document.getElementById('users-cards-mobile');
+        cards.setAttribute('aria-busy', 'true');
+        try {
+            const response = await fetch(link.href, { signal: controller.signal, headers: { Accept: 'text/html' } });
+            if (!response.ok || response.redirected) throw new Error('Unable to load archived users');
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            if (controller.signal.aborted) return;
+            const replacements = ['#users-cards-mobile', '#archived-users-table-view']
+                .map(selector => [document.querySelector(selector), page.querySelector(selector)]);
+            if (replacements.some(([current, next]) => !current || !next)) throw new Error('Missing archived users');
+            const top = cards.getBoundingClientRect().top;
+            replacements.forEach(([current, next]) => current.replaceWith(next));
+            history.replaceState(null, '', link.href);
+            searchInput.dispatchEvent(new Event('input'));
+            window.scrollBy({ top: document.getElementById('users-cards-mobile').getBoundingClientRect().top - top, behavior: 'instant' });
+        } catch (error) {
+            if (error.name !== 'AbortError') location.assign(link.href);
+        } finally {
+            cards.removeAttribute('aria-busy');
+        }
+    });
+    @endif
     const modal = document.getElementById('userModal');
     const modalOverlay = document.getElementById('modalOverlay');
     const closeModal = document.getElementById('closeModal');

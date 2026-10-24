@@ -2,9 +2,147 @@
 @section('title', request('section') === 'barangay-cases' ? 'Archived Barangay Cases' : (auth()->user()->isVawcAdmin() ? 'Archived Case Reports' : 'Archived BCPC Reports'))
 @push('styles')
 <style>
+    @if(auth()->user()?->isDepartmentAdmin() && request('section') === 'barangay-cases')
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #archived-barangay-cases-table [data-archived-case-pagination],
+        html body.portal-ui #archived-barangay-cases-table .archived-barangay-cases-mobile-cards > [data-pagination-label] { display: none !important; }
+        html body.portal-ui #archived-barangay-cases-table > .archived-cases-tablet-pagination { display: block !important; background: #fff; }
+        html body.portal-ui .archived-cases-tablet-pagination > [data-pagination-label] {
+            flex-direction: column; justify-content: center; gap: .5rem; padding: .75rem; text-align: center;
+        }
+        html body.portal-ui .archived-cases-tablet-pagination [data-pagination-label] > div:last-child {
+            justify-content: center; gap: clamp(.25rem, 2vw, .625rem); max-width: 100%;
+        }
+        html body.portal-ui .archived-cases-tablet-pagination a {
+            flex: 0 0 auto; width: clamp(2rem, 10vw, 2.75rem) !important; min-width: 0 !important;
+            height: 2.75rem !important; padding: 0 !important; margin: 0 !important;
+            border: 1px solid #e5e7eb !important; border-radius: .5rem;
+            background: #fff !important; color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        html body.portal-ui .archived-cases-tablet-pagination a[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+        }
+        html body.portal-ui .archived-cases-tablet-pagination a > i { color: inherit !important; }
+    }
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin() && request('section') === 'barangay-cases')
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui #archived-barangay-cases-table .restore-confirm-form > button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0 !important;
+            font-size: 0 !important;
+        }
+        html body.portal-ui #archived-barangay-cases-table .restore-confirm-form > button > span { display: none !important; }
+        html body.portal-ui #archived-barangay-cases-table .restore-confirm-form > button > i { font-size: 1rem !important; margin: 0 !important; }
+    }
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin() && request('section') === 'barangay-cases')
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui #archived-barangay-cases-table [data-archived-case-pagination],
+        html body.portal-ui #archived-barangay-cases-table .archived-barangay-cases-mobile-cards > [data-pagination-label] { display: none !important; }
+        html body.portal-ui #archived-barangay-cases-table > .archived-cases-tablet-pagination { display: block !important; background: #fff; }
+        html body.portal-ui .archived-cases-tablet-pagination [data-pagination-label] { display: flex; align-items: center; justify-content: space-between; }
+        html body.portal-ui .archived-cases-tablet-pagination [data-pagination-label] > div:last-child { margin-left: auto; justify-content: flex-end; flex-wrap: wrap; }
+    }
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin() && request('section') === 'barangay-cases')
+    @media (max-width: 47.9375rem) and (orientation: portrait) {
+        html body.portal-ui .archived-barangay-cases-mobile-cards .archived-barangay-case-actions :is(a, button) {
+            font-size: 0 !important;
+        }
+        html body.portal-ui .archived-barangay-cases-mobile-cards .archived-barangay-case-actions :is(a, button) > i {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 1rem !important;
+            height: 1rem !important;
+            flex: 0 0 1rem;
+            font-size: 1rem !important;
+        }
+    }
+    @media (max-width: 85.375rem) {
+        html body.portal-ui .archived-barangay-cases-mobile-cards .archived-barangay-case-actions :is(a, button) {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0 !important;
+            transition: none !important;
+        }
+        html body.portal-ui .archived-barangay-cases-mobile-cards .archived-barangay-case-actions > a > span {
+            display: none !important;
+        }
+        html body.portal-ui .archived-barangay-cases-mobile-cards .archived-barangay-case-actions :is(a, button) > i {
+            margin: 0 !important;
+            line-height: 1 !important;
+            transform: none !important;
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui .archived-barangay-cases-mobile-cards > .archived-barangay-cases-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+    @endif
     .archived-static-table { table-layout: fixed; }
     .archived-static-table th:last-child, .archived-static-table td:last-child { width: 15rem; white-space: nowrap; }
-    @media (max-width: 47.9375rem) {
+    html body.portal-ui.swd-admin-header-theme #archived-case-filter-form > div {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: .5rem;
+    }
+    @media (min-width: 40rem) {
+        html body.portal-ui.swd-admin-header-theme #archived-case-filter-form > div {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .75rem;
+        }
+        html body.portal-ui.swd-admin-header-theme #archived-case-filter-form > div > :first-child {
+            grid-column: span 2;
+        }
+    }
+    @media (min-width: 80rem) {
+        html body.portal-ui.swd-admin-header-theme #archived-case-filter-form > div {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            align-items: center;
+        }
+        html body.portal-ui.swd-admin-header-theme #archived-case-filter-form > div > .relative {
+            grid-column: 1 !important;
+        }
+        html body.portal-ui.swd-admin-header-theme #archived-case-filter-form > div > .flex,
+        html body.portal-ui.swd-admin-header-theme #archived-case-filter-form > div > button:last-child {
+            grid-column: 5 !important;
+        }
+    }
+    html body.portal-ui.swd-admin-header-theme #archived-case-filter-form > div > :is(input, select, button) {
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+        height: 2.5rem;
+    }
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        #archived-case-filter-form > div {
+            display: grid !important;
+            grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+            align-items: center !important;
+            gap: .5rem !important;
+        }
+        #archived-case-filter-form > div > .relative { grid-column: 1 !important; }
+        #archived-case-filter-form > div > .flex { grid-column: 5 !important; }
+        #archived-case-filter-form :is(input, select, button) {
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            height: 2.5rem !important;
+        }
+    }
+    @media (max-width: 47.9375rem)@if(auth()->user()->isDepartmentAdmin() && request('section') === 'barangay-cases'), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)@endif {
         .archived-barangay-cases-section .archived-barangay-cases-table-view { display: none !important; }
         .archived-barangay-cases-section .archived-barangay-cases-mobile-cards { display: block !important; }
         .archived-barangay-cases-mobile-cards .archived-barangay-case-card { min-width: 0; padding: 1rem; }
@@ -245,24 +383,24 @@
     </form>
     @elseif(auth()->user()->isVawcAdmin())
     <form id="archived-case-filter-form" method="GET" action="{{ route('admin.quarterly-reports.archived') }}" class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:flex xl:items-center gap-2 sm:gap-3">
-            <div class="relative min-w-0 sm:col-span-2 xl:flex-1 xl:min-w-[240px]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 xl:items-start gap-2 sm:gap-3">
+            <div class="relative min-w-0 sm:col-span-2 xl:col-span-1">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" aria-hidden="true"></i>
                 <input id="archived-case-search" type="search" name="search" value="{{ $archivedCaseSearch ?? request('search') }}" placeholder="Search archived cases..." class="w-full h-10 pl-9 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500" aria-label="Search archived barangay cases">
             </div>
-            <select name="quarter" data-archived-case-filter class="w-full xl:w-[130px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700" aria-label="Filter by quarter">
+            <select name="quarter" data-archived-case-filter class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700" aria-label="Filter by quarter">
                 <option value="">All Quarters</option>
                 @foreach([1, 2, 3, 4] as $quarter)<option value="{{ $quarter }}" {{ (string) ($archivedCaseQuarter ?? request('quarter')) === (string) $quarter ? 'selected' : '' }}>Q{{ $quarter }}</option>@endforeach
             </select>
-            <select name="year" data-archived-case-filter class="w-full xl:w-[115px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700" aria-label="Filter by year">
+            <select name="year" data-archived-case-filter class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700" aria-label="Filter by year">
                 <option value="">All Years</option>
                 @foreach(range(2026, 2030) as $year)<option value="{{ $year }}" {{ (string) ($archivedCaseYear ?? request('year')) === (string) $year ? 'selected' : '' }}>{{ $year }}</option>@endforeach
             </select>
-            <select name="barangay_id" data-archived-case-filter class="w-full xl:w-[160px] h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700" aria-label="Filter by barangay">
+            <select name="barangay_id" data-archived-case-filter class="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-700" aria-label="Filter by barangay">
                 <option value="">All Barangays</option>
                 @foreach($barangays as $barangay)<option value="{{ $barangay->id }}" {{ (string) ($archivedCaseBarangayId ?? request('barangay_id')) === (string) $barangay->id ? 'selected' : '' }}>{{ $barangay->name }}</option>@endforeach
             </select>
-            <button type="submit" class="inline-flex h-10 items-center justify-center gap-2 px-4 bg-[#C41E3A] hover:bg-[#A01830] text-white rounded-xl text-sm font-medium shadow-sm transition shrink-0"><i class="fas fa-filter"></i><span>Filter</span></button>
+            <button type="submit" class="inline-flex w-full h-10 items-center justify-center gap-2 px-3 bg-[#C41E3A] hover:bg-[#A01830] text-white rounded-xl text-sm font-medium shadow-sm transition shrink-0"><i class="fas fa-filter"></i><span>Filter</span></button>
         </div>
     </form>
     @endif
@@ -294,7 +432,7 @@
                                         @if($record->trashed())
                                         <form method="POST" action="{{ route('cases.restore', $record->id) }}" class="restore-confirm-form">
                                             @csrf
-                                            <button type="submit" class="px-3 py-2 rounded-lg text-white transition-colors" style="background-color: #C41E3A !important;">Restore</button>
+                                            <button type="submit" aria-label="Restore" class="px-3 py-2 rounded-lg text-white transition-colors" style="background-color: #C41E3A !important;"><i class="fas fa-undo" aria-hidden="true"></i><span>Restore</span></button>
                                         </form>
                                         @elseif(auth()->user()->isVawcAdmin())
                                         <span class="px-3 py-2 rounded-lg bg-green-100 text-green-700 text-sm font-medium">Restored</span>
@@ -375,7 +513,7 @@
                         @if($record->trashed())
                         <form method="POST" action="{{ route('cases.restore', $record->id) }}" class="restore-confirm-form">
                             @csrf
-                            <button type="submit" class="inline-flex items-center gap-1 rounded-lg bg-[#C41E3A] text-white text-xs font-medium" style="background-color: #C41E3A !important;" title="Restore" aria-label="Restore"><i class="fas fa-undo" aria-hidden="true"></i></button>
+                            <button type="submit" data-icon-action="labelled" class="inline-flex items-center gap-1 rounded-lg bg-[#C41E3A] text-white text-xs font-medium" style="background-color: #C41E3A !important;" title="Restore" aria-label="Restore"><i class="fas fa-undo" aria-hidden="true"></i></button>
                         </form>
                         @elseif(auth()->user()->isVawcAdmin())
                         <span class="col-span-2 inline-flex min-h-12 items-center justify-center rounded-lg bg-green-100 text-green-700 text-sm font-medium">Restored</span>
@@ -383,11 +521,16 @@
                     </div>
                 </article>
                 @empty
-                <div class="rounded-xl border border-gray-200 bg-white p-6 text-center text-gray-500">No archived barangay cases.</div>
+                <div class="archived-barangay-cases-empty-state rounded-xl border border-gray-200 bg-white p-6 text-center text-gray-500">No archived barangay cases.</div>
                 @endforelse
                 @if($records->hasPages())
                     @include('components.archived-pagination', ['paginator' => $records, 'label' => 'archived cases'])
                 @endif
+            </div>
+            @endif
+            @if(auth()->user()?->isDepartmentAdmin() && request('section') === 'barangay-cases')
+            <div class="archived-cases-tablet-pagination hidden">
+                @include('components.archived-pagination', ['paginator' => $records, 'label' => 'archived cases', 'pageLinkLimit' => 4])
             </div>
             @endif
         </section>
@@ -505,13 +648,13 @@ const archivedCaseSearch = document.getElementById('archived-case-search');
 let archivedCaseSearchTimer;
 let archivedCaseRequest;
 
-async function refreshArchivedBarangayCases(url) {
+async function refreshArchivedBarangayCases(url, keepPosition = false) {
     const table = document.getElementById('archived-barangay-cases-table');
     if (!table) return;
 
     archivedCaseRequest?.abort();
     archivedCaseRequest = new AbortController();
-    table.classList.add('opacity-60', 'pointer-events-none');
+    table.classList.add('pointer-events-none');
     table.setAttribute('aria-busy', 'true');
 
     try {
@@ -525,12 +668,16 @@ async function refreshArchivedBarangayCases(url) {
         const updatedTable = documentResponse.getElementById('archived-barangay-cases-table');
         if (!updatedTable) throw new Error('Unable to update archived cases.');
 
+        const top = table.getBoundingClientRect().top;
         table.replaceWith(updatedTable);
+        if (keepPosition) {
+            window.scrollBy({ top: updatedTable.getBoundingClientRect().top - top, behavior: 'instant' });
+        }
         window.history.replaceState({}, '', url);
     } catch (error) {
         if (error.name !== 'AbortError') {
             const activeTable = document.getElementById('archived-barangay-cases-table');
-            activeTable?.classList.remove('opacity-60', 'pointer-events-none');
+            activeTable?.classList.remove('pointer-events-none');
             activeTable?.removeAttribute('aria-busy');
         }
     }
@@ -557,10 +704,15 @@ if (archivedCaseFilterForm && archivedCaseSearch) {
 }
 
 document.addEventListener('click', event => {
-    const link = event.target.closest('#archived-barangay-cases-table [data-archived-case-pagination] a[href]');
+    const tablet = @json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches;
+    const selector = tablet
+        ? '#archived-barangay-cases-table [data-archived-case-pagination] a[href], #archived-barangay-cases-table [data-pagination-label] a[href]'
+        : '#archived-barangay-cases-table [data-archived-case-pagination] a[href]';
+    const link = event.target.closest(selector);
     if (!link || !archivedCaseFilterForm) return;
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.classList.contains('pointer-events-none')) return;
     event.preventDefault();
-    refreshArchivedBarangayCases(link.href);
+    refreshArchivedBarangayCases(link.href, tablet);
 });
 
 @if(session('success'))

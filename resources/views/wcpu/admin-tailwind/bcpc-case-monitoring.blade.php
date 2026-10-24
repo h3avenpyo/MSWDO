@@ -20,6 +20,40 @@
 </header>
 @endif
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #bcpc-monitoring-pagination .monitoring-legacy-pagination { display: none !important; }
+        html body.portal-ui #bcpc-monitoring-pagination .monitoring-tablet-pagination { display: block !important; background: #fff; }
+        #bcpc-monitoring-pagination .monitoring-tablet-pagination > [data-pagination-label] {
+            flex-direction: column; justify-content: center; gap: .5rem; padding: .75rem; text-align: center;
+        }
+        #bcpc-monitoring-pagination .monitoring-tablet-pagination [data-pagination-label] > div:last-child {
+            justify-content: center; gap: clamp(.25rem, 2vw, .625rem); max-width: 100%;
+        }
+        #bcpc-monitoring-pagination .monitoring-tablet-pagination a {
+            flex: 0 0 auto; width: clamp(2rem, 10vw, 2.75rem) !important; min-width: 0 !important;
+            height: 2.75rem !important; padding: 0 !important; margin: 0 !important;
+            border: 1px solid #e5e7eb !important; border-radius: .5rem;
+            background: #fff !important; color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        #bcpc-monitoring-pagination .monitoring-tablet-pagination a[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+        }
+        #bcpc-monitoring-pagination .monitoring-tablet-pagination a > i { color: inherit !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.admin-bcpc-case-monitoring-mobile-nav .monitoring-legacy-pagination { display: none !important; }
+        html body.portal-ui.admin-bcpc-case-monitoring-mobile-nav .monitoring-tablet-pagination { display: block !important; background: #fff; }
+    }
+    @endif
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.admin-bcpc-case-monitoring-mobile-nav .bcpc-monitoring-mobile-cards > .bcpc-monitoring-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
     .bcpc-monitoring-mobile-header-swd-only { display: none; }
     .bcpc-monitoring-actions > * { display: inline-flex !important; width: 2.75rem !important; height: 1.875rem !important; min-width: 2.75rem !important; min-height: 1.875rem !important; padding: 0 !important; margin: 0 !important; align-items: center !important; justify-content: center !important; gap: 0 !important; text-align: center !important; }
     .bcpc-monitoring-actions > * > i { display: inline-flex !important; width: 1rem !important; height: 1rem !important; margin: 0 !important; padding: 0 !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; flex: 0 0 1rem !important; text-align: center !important; }
@@ -213,8 +247,8 @@
     }
     @endif
 
-    /* Phone-only monitoring cards.  Tablet and desktop retain the table view. */
-    @media (max-width: 47.9375rem) {
+    /* Monitoring cards for phones and portrait tablets. */
+    @media (max-width: 47.9375rem), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
         .bcpc-monitoring-table-view { display: none !important; }
         .bcpc-monitoring-mobile-cards { display: grid !important; gap: .75rem; padding: .75rem; }
         .bcpc-monitoring-mobile-card { min-width: 0; padding: 1rem; }
@@ -235,6 +269,37 @@
 
     @media (min-width: 48rem) {
         .bcpc-monitoring-mobile-cards { display: none !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        .bcpc-monitoring-mobile-cards { display: grid !important; }
+        #bcpc-monitoring-filter-form > div {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
+            align-items: end;
+            gap: .75rem;
+        }
+        #bcpc-monitoring-filter-form > div > div { width: 100%; min-width: 0; }
+        #bcpc-monitoring-filter-form :is(select, button, a) {
+            box-sizing: border-box;
+            height: 2.5rem;
+            min-height: 2.5rem;
+        }
+        #bcpc-monitoring-filter-form :is(button, a) {
+            padding-inline: .75rem;
+            white-space: nowrap;
+        }
+    }
+    @media (max-width: 47.9375rem) {
+        #bcpc-monitoring-mobile-action-flow { display: flex; flex-direction: column; gap: .75rem; }
+        #bcpc-monitoring-primary-actions,
+        #bcpc-monitoring-filter-form,
+        #bcpc-monitoring-filter-form > div { display: contents !important; }
+        #bcpc-monitoring-filter-form > div > div { order: 0; width: 100%; }
+        #bcpc-monitoring-filter-form button[type="submit"] { order: 1; }
+        #bcpc-monitoring-primary-actions > button:first-child { order: 2; }
+        #bcpc-monitoring-primary-actions > button:nth-child(2) { order: 3; }
+        #bcpc-monitoring-filter-form > div > a { order: 4; }
+        #bcpc-monitoring-mobile-action-flow :is(button, a) { width: 100%; justify-content: center; }
     }
 </style>
 <div class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -323,7 +388,7 @@
     </div>
 
     <!-- Monitoring Table & Cards -->
-    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
+    <div id="bcpc-monitoring-results" class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
         <!-- Desktop Table View -->
         <div class="bcpc-monitoring-table-view overflow-x-auto hidden md:block">
             <table class="w-full min-w-[700px] text-sm table-fixed">
@@ -473,7 +538,7 @@
                     </div>
                 </article>
             @empty
-                <div class="text-center py-10 text-gray-500">
+                <div class="bcpc-monitoring-empty-state text-center py-10 text-gray-500">
                     <div class="w-14 h-14 bg-purple-50 text-purple-400 rounded-full flex items-center justify-center mx-auto mb-3">
                         <i class="fas fa-inbox text-2xl"></i>
                     </div>
@@ -483,7 +548,13 @@
         </div>
 
         @if($monitorings->hasPages())
-            <div class="px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+            <div id="bcpc-monitoring-pagination">
+                @if(auth()->user()?->isDepartmentAdmin())
+                <div class="monitoring-tablet-pagination hidden">
+                    @include('components.archived-pagination', ['paginator' => $monitorings->appends(request()->query()), 'label' => 'records', 'pageLinkLimit' => 4])
+                </div>
+                @endif
+            <div class="monitoring-legacy-pagination px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
                 <div class="text-sm text-gray-600">
                     Showing {{ $monitorings->firstItem() ?? 0 }} - {{ $monitorings->lastItem() ?? 0 }} of {{ $monitorings->total() }} records
                 </div>
@@ -514,6 +585,7 @@
                         <i class="fas fa-chevron-right text-gray-600"></i>
                     </a>
                 </div>
+            </div>
             </div>
         @endif
     </div>
@@ -626,6 +698,40 @@
 </div>
 
 @push('scripts')
+@if(auth()->user()?->isDepartmentAdmin())
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tablet = matchMedia('(max-width: 85.375rem)');
+    let activeRequest;
+    document.addEventListener('click', async event => {
+        const link = event.target.closest('#bcpc-monitoring-pagination a[href]');
+        if (!tablet.matches || !link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.classList.contains('pointer-events-none')) return;
+        event.preventDefault();
+        activeRequest?.abort();
+        const controller = new AbortController();
+        activeRequest = controller;
+        const results = document.getElementById('bcpc-monitoring-results');
+        results.setAttribute('aria-busy', 'true');
+        try {
+            const response = await fetch(link.href, { signal: controller.signal, headers: { Accept: 'text/html' } });
+            if (!response.ok || response.redirected) throw new Error('Unable to load monitoring records');
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            if (controller.signal.aborted) return;
+            const next = page.getElementById('bcpc-monitoring-results');
+            if (!next) throw new Error('Missing monitoring records');
+            const top = results.getBoundingClientRect().top;
+            results.replaceWith(next);
+            history.replaceState(null, '', link.href);
+            window.scrollBy({ top: next.getBoundingClientRect().top - top, behavior: 'instant' });
+        } catch (error) {
+            if (error.name !== 'AbortError') location.assign(link.href);
+        } finally {
+            results.removeAttribute('aria-busy');
+        }
+    });
+});
+</script>
+@endif
 @if(auth()->user()->isBcpcAdmin() && session('saved_monitoring_id'))
 <script>
 document.addEventListener('DOMContentLoaded', function() {

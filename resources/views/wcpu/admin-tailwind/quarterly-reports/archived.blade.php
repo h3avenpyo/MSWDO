@@ -2,13 +2,196 @@
 @section('title', 'Archived Quarterly Reports - iSERVE SILANG Admin')
 @push('styles')
 <style>
+    @if(auth()->user()?->isDepartmentAdmin() && request('section') === 'quarterly')
+    @media (max-width: 47.9375rem) {
+        #archived-quarterly-results .quarterly-archive-existing-pagination { display: none; }
+        #archived-quarterly-results .quarterly-archive-phone-pagination { display: block !important; }
+        #archived-quarterly-results .quarterly-archive-phone-pagination > [data-pagination-label] {
+            flex-direction: column; justify-content: center; gap: .5rem; padding: .75rem; text-align: center;
+        }
+        #archived-quarterly-results .quarterly-archive-phone-pagination [data-pagination-label] > div:last-child {
+            justify-content: center; gap: clamp(.25rem, 2vw, .625rem); max-width: 100%;
+        }
+        #archived-quarterly-results .quarterly-archive-phone-pagination a {
+            flex: 0 0 auto; width: clamp(2rem, 10vw, 2.75rem) !important; min-width: 0 !important;
+            height: 2.75rem !important; padding: 0 !important; margin: 0 !important;
+            border: 1px solid #e5e7eb !important; border-radius: .5rem;
+            background: #fff !important; color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        #archived-quarterly-results .quarterly-archive-phone-pagination a[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+        }
+        #archived-quarterly-results .quarterly-archive-phone-pagination a > i { color: inherit !important; }
+    }
+    @endif
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui:is(.bcpc-admin-header-theme, .swd-admin-header-theme) .archived-quarterly-mobile-cards > .archive-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    @if(auth()->user()?->isDepartmentAdmin() && request('section') === 'quarterly')
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.admin-quarterly-reports-archived-mobile-nav > aside#sidebar {
+            position: fixed !important;
+            inset: 0 auto 0 0 !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            margin-block: 0 !important;
+            box-sizing: border-box;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+        }
+        html body.portal-ui.admin-quarterly-reports-archived-mobile-nav > aside#sidebar > nav.sidebar-menu {
+            flex: 1 1 0 !important;
+            min-height: 0 !important;
+            overflow-y: auto !important;
+            overscroll-behavior-y: contain;
+        }
+        html body.portal-ui.admin-quarterly-reports-archived-mobile-nav > aside#sidebar > div.sidebar-menu {
+            flex: 0 0 auto !important;
+            height: auto !important;
+            overflow: visible !important;
+            margin-top: auto;
+            padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+        }
+        html body.portal-ui.admin-quarterly-reports-archived-mobile-nav > aside#sidebar > .sidebar-header { flex-shrink: 0; }
+    }
+    @endif
+    @if(auth()->user()?->isVawcAdmin() && request('section') === 'quarterly')
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #swdArchiveViewDialog :is(.abuse-type-table-view, .case-status-table-view, .case-records-table-view) {
+            display: none !important;
+        }
+        html body.portal-ui #swdArchiveViewDialog :is(#abuse-type-mobile-cards, #case-status-mobile-cards, #case-records-mobile-cards) {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr);
+            gap: .75rem;
+            padding: .75rem !important;
+        }
+        html body.portal-ui #swdArchiveViewDialog :is(#abuse-type-mobile-cards, #case-status-mobile-cards, #case-records-mobile-cards) > article {
+            min-width: 0;
+            margin: 0 !important;
+            padding: 1rem !important;
+            background: #fff;
+            border: 1px solid #dbe3e8;
+            border-radius: .75rem;
+            overflow-wrap: anywhere;
+        }
+        html body.portal-ui #swdArchiveViewDialog :is(#abuse-type-classification, #case-status-breakdown, #case-records) > div:first-child :is(h2, h3) {
+            font-size: .9375rem !important;
+            line-height: 1.35 !important;
+        }
+        html body.portal-ui #swdArchiveViewDialog :is(#abuse-type-classification, #case-status-breakdown, #case-records) > div:first-child p {
+            font-size: .75rem !important;
+            line-height: 1.4 !important;
+        }
+        html body.portal-ui #swdArchiveViewDialog:has([data-archive-report-title]) .swd-archive-dialog-header {
+            padding: .875rem 1rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui #swdArchiveViewDialog:has([data-archive-report-title]) #swdArchiveViewTitle,
+        html body.portal-ui.swd-admin-header-theme .admin-archive-view-popup--report > .swal2-title {
+            padding: 0 !important;
+            margin: 0 !important;
+            text-align: left !important;
+        }
+        html body.portal-ui #swdArchiveViewDialog:has([data-archive-report-title]) :is(.archive-case-heading, .archive-case-heading-summary) {
+            text-align: left !important;
+            margin-left: 0 !important;
+        }
+        html body.portal-ui #swdArchiveViewDialog [data-archive-report-title] > .bg-white > .grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: .75rem !important;
+        }
+        html body.portal-ui #swdArchiveViewDialog [data-archive-report-title] > .bg-white > .grid > div {
+            grid-column: auto !important;
+            width: auto !important;
+            min-width: 0 !important;
+            padding: .75rem !important;
+            overflow-wrap: anywhere;
+        }
+    }
+    @endif
     .archived-quarterly-reports-stable,
     .archived-quarterly-reports-stable :is(table, button, a),
     #archived-quarterly-reports-header {
         animation: none !important;
         transition: none !important;
     }
-    @media (max-width: 47.9375rem) {
+    html body.portal-ui.swd-admin-header-theme #archived-quarterly-report-filter-form > div {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: .5rem;
+    }
+    @media (min-width: 40rem) {
+        html body.portal-ui.swd-admin-header-theme #archived-quarterly-report-filter-form > div {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .75rem;
+        }
+        html body.portal-ui.swd-admin-header-theme #archived-quarterly-report-filter-form > div > .relative {
+            grid-column: span 2;
+        }
+    }
+    @media (min-width: 80rem) {
+        html body.portal-ui.swd-admin-header-theme #archived-quarterly-report-filter-form > div {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            align-items: center;
+        }
+        html body.portal-ui.swd-admin-header-theme #archived-quarterly-report-filter-form > div > .relative {
+            grid-column: 1 !important;
+        }
+        html body.portal-ui.swd-admin-header-theme #archived-quarterly-report-filter-form > div > .flex,
+        html body.portal-ui.swd-admin-header-theme #archived-quarterly-report-filter-form > div > button:last-child {
+            grid-column: 5 !important;
+        }
+    }
+    html body.portal-ui.swd-admin-header-theme #archived-quarterly-report-filter-form :is(input, select, button) {
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        height: 2.5rem;
+    }
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        #archived-quarterly-report-filter-form > div {
+            display: grid !important;
+            grid-template-columns: minmax(120px, 1.6fr) repeat(3, minmax(90px, 1.15fr)) minmax(72px, .9fr) !important;
+            align-items: center !important;
+            gap: .5rem !important;
+        }
+        #archived-quarterly-report-filter-form > div:has(> .flex a) {
+            grid-template-columns: minmax(120px, 1.6fr) repeat(3, minmax(90px, 1.15fr)) repeat(2, minmax(72px, .9fr)) !important;
+        }
+        #archived-quarterly-report-filter-form > div > .relative,
+        #archived-quarterly-report-filter-form > div > select,
+        #archived-quarterly-report-filter-form > div > .flex {
+            grid-column: auto !important;
+        }
+        #archived-quarterly-report-filter-form > div > .flex { display: contents !important; }
+        #archived-quarterly-report-filter-form :is(input, select, button, a) {
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            height: 2.5rem !important;
+        }
+    }
+    @if(auth()->user()->isDepartmentAdmin() && request('section') === 'quarterly')
+    @media (max-width: 47.9375rem), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        html body.portal-ui .archived-quarterly-mobile-cards dl > div:nth-child(2) dd {
+            background-color: #ffe4e6 !important;
+            color: #C41E3A !important;
+        }
+    }
+    @endif
+    @media (max-width: 47.9375rem)@if(auth()->user()->isDepartmentAdmin() && request('section') === 'quarterly'), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)@endif {
         .archived-quarterly-table-view { display: none !important; }
         .archived-quarterly-mobile-cards { display: block !important; }
         .archived-quarterly-mobile-cards dl > div:nth-child(2) dd {
@@ -198,6 +381,23 @@
         }
     }
 
+    @media (min-width: 48rem) and (max-width: 63.9375rem) and (orientation: portrait) {
+        html body.portal-ui.admin-quarterly-reports-archived-mobile-nav #sidebar {
+            position: fixed !important;
+            inset: 0 auto 0 0 !important;
+            top: 0 !important;
+            right: auto !important;
+            bottom: 0 !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            min-height: 100vh !important;
+            min-height: 100dvh !important;
+            max-height: none !important;
+            margin: 0 !important;
+            transform: none !important;
+        }
+    }
+
     @media (min-width: 48rem) and (max-width: 80rem) {
         html body.portal-ui #mobileTopBar { display: none !important; }
         html body.portal-ui #mobileMenuToggle { display: none !important; }
@@ -246,7 +446,7 @@
         </div>
     </form>
 
-    <section class="desk-officer-quarterly-report-table bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+    <section id="archived-quarterly-results" class="desk-officer-quarterly-report-table bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
         <div class="archived-quarterly-table-view hidden md:block overflow-x-auto">
             <table class="w-full table-fixed">
                 <colgroup><col class="w-[15%]"><col class="w-[12%]"><col class="w-[10%]"><col class="w-[9%]"><col class="w-[16%]"><col class="w-[19%]"><col class="w-[19%]"></colgroup>
@@ -276,10 +476,17 @@
                     <div class="archived-quarterly-card-actions flex items-center justify-center gap-2 pt-3 border-t border-gray-100"><a href="{{ route('admin.quarterly-reports.show', ['id' => $report->id, 'archived' => 1]) }}" title="View Report" data-admin-archive-view="report" data-swd-archive-view="report" data-modal-title="Quarterly Report Details" class="inline-flex w-10 h-10 items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shadow-sm"><i class="fas fa-eye text-sm"></i><span class="sr-only">View Report</span></a><button type="button" data-restore-report-button {{ $restoreBlocked ? 'disabled' : '' }} @unless($restoreBlocked) onclick='openRestoreModal({{ $report->id }}, @json(($report->barangay?->name ?? 'Barangay') . ' - Q' . $report->quarter . ' ' . $report->year))' @endunless title="{{ $restoreBlocked ? 'An active report already exists for this barangay, quarter, and year' : 'Restore Report' }}" class="inline-flex w-10 h-10 items-center justify-center {{ $restoreBlocked ? '!bg-red-100 hover:!bg-red-100 !text-red-800 !border !border-red-200 cursor-not-allowed pointer-events-none' : 'bg-red-600 hover:bg-red-700 text-white' }} rounded-lg transition shadow-sm"><i class="fas fa-undo text-sm"></i></button></div>
                 </article>
             @empty
-                <div class="text-center py-10 text-gray-500">No archived quarterly reports found.</div>
+                <div class="archive-empty-state text-center py-10 text-gray-500">No archived quarterly reports found.</div>
             @endforelse
         </div>
-        @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports'])
+        @if(auth()->user()?->isDepartmentAdmin() && request('section') === 'quarterly')
+        <div class="quarterly-archive-phone-pagination hidden">
+            @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports', 'pageLinkLimit' => 4])
+        </div>
+        @endif
+        <div class="quarterly-archive-existing-pagination">
+            @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports'])
+        </div>
     </section>
 </div>
 
@@ -287,6 +494,40 @@
 @endsection
 
 @push('scripts')
+@if(auth()->user()?->isDepartmentAdmin())
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    let activeRequest;
+    document.addEventListener('click', async event => {
+        const link = event.target.closest('#archived-quarterly-results [data-pagination-label] a[href]');
+        if (!matchMedia('(max-width: 85.375rem)').matches || !link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.classList.contains('pointer-events-none')) return;
+        event.preventDefault();
+        activeRequest?.abort();
+        const controller = new AbortController();
+        activeRequest = controller;
+        const results = document.getElementById('archived-quarterly-results');
+        results.setAttribute('aria-busy', 'true');
+        try {
+            const response = await fetch(link.href, { signal: controller.signal, headers: { Accept: 'text/html' } });
+            if (!response.ok || response.redirected) throw new Error('Unable to load archived reports');
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            if (controller.signal.aborted) return;
+            const next = page.getElementById('archived-quarterly-results');
+            if (!next) throw new Error('Missing archived reports');
+            const top = results.getBoundingClientRect().top;
+            results.replaceWith(next);
+            history.replaceState(null, '', link.href);
+            filterArchivedReports();
+            window.scrollBy({ top: next.getBoundingClientRect().top - top, behavior: 'instant' });
+        } catch (error) {
+            if (error.name !== 'AbortError') location.assign(link.href);
+        } finally {
+            results.removeAttribute('aria-busy');
+        }
+    });
+});
+</script>
+@endif
 @include('admin-tailwind.components.archive-view-modal')
 @if(session('restored_report'))
 <script>

@@ -565,7 +565,7 @@ class AdminController extends Controller
             ->latest();
         
         // Paginate - 10 items per page
-        $perPage = Auth::user()->isDepartmentAdmin() ? 5 : 10;
+        $perPage = Auth::user()->isDepartmentAdmin() ? (request()->boolean('portrait_cards') ? 4 : 5) : 10;
         $users = $users->paginate($perPage)
             ->appends([
                 'search' => $search,
@@ -822,7 +822,7 @@ class AdminController extends Controller
             })
             ->select('id', 'first_name', 'last_name', 'email', 'position', 'department', 'barangay', 'deleted_at')
             ->latest('deleted_at')
-            ->paginate(Auth::user()->isDepartmentAdmin() ? 5 : 10);
+            ->paginate(Auth::user()->isDepartmentAdmin() ? (request()->boolean('portrait_cards') ? 4 : 5) : 10)->withQueryString();
         
         return view('admin-tailwind.archived-users', compact('users'));
     } 
@@ -1405,7 +1405,8 @@ class AdminController extends Controller
                 ->when($deskOfficerBarangayId !== null || Auth::user()->isDepartmentAdmin(), fn ($query) => $query->orderByDesc('updated_at'))
                 ->orderBy('created_at', 'desc')
                 ->orderBy('id', 'desc')
-                ->paginate($department ? 5 : 10)
+                ->paginate($department ? (Auth::user()->isDepartmentAdmin() && request()->boolean('tablet_cases') ? 4 : 5) : 10)
+                ->withQueryString()
                 ->appends([
                     'status' => $status,
                     'date_from' => $dateFrom,
@@ -1413,7 +1414,7 @@ class AdminController extends Controller
                 ]);
             
             // Get totals for summary cards (unfiltered to show overall stats)
-            if ($this->isBcpcDeskOfficer() && !Auth::user()->isMultiCaseDepartment() && $cases->currentPage() > $cases->lastPage()) {
+            if ((Auth::user()->isDepartmentAdmin() || ($this->isBcpcDeskOfficer() && !Auth::user()->isMultiCaseDepartment())) && $cases->currentPage() > $cases->lastPage()) {
                 return redirect()->route('admin.barangay-cases.show', array_merge(request()->query(), ['barangay' => $barangay, 'page' => $cases->lastPage()]));
             }
             $allCases = CaseModel::where('case_designation', $barangay)
@@ -1987,7 +1988,7 @@ class AdminController extends Controller
             });
         }
 
-        $referrals = $query->paginate(Auth::user()->isDepartmentAdmin() ? 5 : 10)->withQueryString();
+        $referrals = $query->paginate(Auth::user()->isDepartmentAdmin() ? ($request->boolean('portrait_cards') ? 4 : 5) : 10)->withQueryString();
         
         return view('admin-tailwind.referrals', compact('referrals'));
     }
@@ -2007,9 +2008,9 @@ class AdminController extends Controller
         $referrals = \App\Models\Wcpu\CaseReferral::onlyTrashed()
             ->whereHas('case', fn ($query) => $query->where('type', $department))
             ->latest('deleted_at')
-            ->paginate(5, ['*'], 'referrals_page')
+            ->paginate(request()->boolean('portrait_cards') ? 4 : 5, ['*'], 'referrals_page')
             ->withQueryString();
-        $recipients = \App\Models\Wcpu\ReportRecipient::onlyTrashed()->latest('deleted_at')->paginate(5, ['*'], 'info_page')->withQueryString();
+        $recipients = \App\Models\Wcpu\ReportRecipient::onlyTrashed()->latest('deleted_at')->paginate(request()->boolean('portrait_cards') ? 4 : 5, ['*'], 'info_page')->withQueryString();
         return view('admin-tailwind.archived-referrals', compact('referrals', 'recipients'));
     }
 
@@ -2298,7 +2299,7 @@ class AdminController extends Controller
             ->orderBy('quarter', 'desc')
             ->orderBy('created_at', 'desc')
             ->when(Auth::user()->isBcpcAdmin(), fn ($query) => $query->orderByDesc('id'))
-            ->paginate(Auth::user()->isDepartmentAdmin() ? 5 : 10);
+            ->paginate(Auth::user()->isDepartmentAdmin() ? ($request->boolean('portrait_cards') ? 4 : 5) : 10)->withQueryString();
 
         $archivedCount = 0;
         $existingMonitoringPeriods = BcpcCaseMonitoring::whereNull('archived_at')
@@ -2554,7 +2555,7 @@ class AdminController extends Controller
             ->when($quarter, fn ($query) => $query->where('quarter', $quarter))
             ->when($year, fn ($query) => $query->where('year', $year))
             ->orderByDesc('archived_at')
-            ->paginate(5)
+            ->paginate($request->user()->isDepartmentAdmin() && $request->boolean('portrait_cards') ? 4 : 5)
             ->withQueryString();
         $activeCount = BcpcCaseMonitoring::count();
         $archivedCount = BcpcCaseMonitoring::whereNotNull('archived_at')

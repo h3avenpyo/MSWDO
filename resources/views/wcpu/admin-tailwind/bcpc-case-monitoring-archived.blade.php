@@ -4,9 +4,85 @@
 
 @push('styles')
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #archived-bcpc-results > [data-pagination-label] { display: none !important; }
+        html body.portal-ui #archived-bcpc-results > .archived-monitoring-tablet-pagination { display: block !important; background: #fff; }
+        html body.portal-ui .archived-monitoring-tablet-pagination > [data-pagination-label] {
+            flex-direction: column; justify-content: center; gap: .5rem; padding: .75rem; text-align: center;
+        }
+        html body.portal-ui .archived-monitoring-tablet-pagination [data-pagination-label] > div:last-child {
+            justify-content: center; gap: clamp(.25rem, 2vw, .625rem); max-width: 100%;
+        }
+        html body.portal-ui .archived-monitoring-tablet-pagination a {
+            flex: 0 0 auto; width: clamp(2rem, 10vw, 2.75rem) !important; min-width: 0 !important;
+            height: 2.75rem !important; padding: 0 !important; margin: 0 !important;
+            border: 1px solid #e5e7eb !important; border-radius: .5rem;
+            background: #fff !important; color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        html body.portal-ui .archived-monitoring-tablet-pagination a[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+        }
+        html body.portal-ui .archived-monitoring-tablet-pagination a > i { color: inherit !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui #archived-bcpc-results > [data-pagination-label] { display: none !important; }
+        html body.portal-ui #archived-bcpc-results > .archived-monitoring-tablet-pagination { display: block !important; background: #fff; }
+        html body.portal-ui .archived-monitoring-tablet-pagination > [data-pagination-label] { display: flex; align-items: center; justify-content: space-between; }
+        html body.portal-ui .archived-monitoring-tablet-pagination > [data-pagination-label] > div:last-child { margin-left: auto; justify-content: flex-end; flex-wrap: wrap; }
+    }
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 85.375rem) {
+        html body.portal-ui .archived-bcpc-monitoring-card-actions > a[data-admin-archive-view="monitoring"] {
+            gap: 0 !important;
+        }
+        html body.portal-ui .archived-bcpc-monitoring-card-actions > a[data-admin-archive-view="monitoring"] > span {
+            display: none !important;
+        }
+    }
+    @endif
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui:is(.bcpc-admin-header-theme, .swd-admin-header-theme) .archived-bcpc-monitoring-mobile-cards > .archive-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    @if(auth()->user()?->isBcpcAdmin())
+    @media (max-width: 85.375rem) {
+        .archived-monitoring-restore-label { display: none; }
+    }
+    @endif
     .archived-static-table { table-layout: fixed; }
     .archived-static-table th:last-child, .archived-static-table td:last-child { width: 7rem; white-space: nowrap; }
-    @media (max-width: 47.9375rem) {
+    @media (min-width: 48rem) and (max-width: 80rem) {
+        #archived-bcpc-report-filter-form > div {
+            display: grid !important;
+            grid-template-columns: minmax(120px, 1.6fr) repeat(3, minmax(90px, 1.15fr)) minmax(72px, .9fr) !important;
+            align-items: center !important;
+            gap: .5rem !important;
+        }
+        #archived-bcpc-report-filter-form > div:has(> .flex a) {
+            grid-template-columns: minmax(120px, 1.6fr) repeat(3, minmax(90px, 1.15fr)) repeat(2, minmax(72px, .9fr)) !important;
+        }
+        #archived-bcpc-report-filter-form > div > .relative,
+        #archived-bcpc-report-filter-form > div > select,
+        #archived-bcpc-report-filter-form > div > .flex {
+            grid-column: auto !important;
+        }
+        #archived-bcpc-report-filter-form > div > .flex { display: contents !important; }
+        #archived-bcpc-report-filter-form :is(input, select, button, a) {
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            height: 2.5rem !important;
+        }
+    }
+    @media (max-width: 47.9375rem)@if(auth()->user()?->isBcpcAdmin()), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)@endif {
         .archived-bcpc-monitoring-table-view { display: none !important; }
         .archived-bcpc-monitoring-mobile-cards { display: grid !important; gap: .75rem; }
         .archived-bcpc-monitoring-mobile-cards .archived-bcpc-monitoring-card { min-width: 0; }
@@ -237,7 +313,7 @@
     </form>
 
     <!-- Table Container -->
-    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
+    <div id="archived-bcpc-results" class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
         <!-- Desktop Table View -->
         <div class="archived-bcpc-monitoring-table-view overflow-x-auto hidden md:block">
             <table class="archived-static-table w-full min-w-[640px] text-sm table-fixed">
@@ -358,12 +434,12 @@
                                 class="inline-flex items-center justify-center gap-1.5 w-full h-10 {{ $restoreBlocked ? '!bg-red-100 hover:!bg-red-100 !text-red-800 !border !border-red-200 cursor-not-allowed pointer-events-none' : 'bg-[#C41E3A] hover:bg-[#A01830] text-white' }} rounded-lg text-xs font-medium transition shadow-sm"
                                 title="{{ $restoreBlocked ? 'An active BCPC monitoring case already exists for this barangay, quarter, and year' : 'Restore Record' }}">
                             <i class="fas fa-undo text-xs"></i>
-                            <span>Restore</span>
+                            <span @if(auth()->user()?->isBcpcAdmin()) class="archived-monitoring-restore-label" @endif>Restore</span>
                         </button>
                     </div>
                 </div>
             @empty
-                <div class="text-center py-10 text-gray-500">
+                <div class="archive-empty-state text-center py-10 text-gray-500">
                     <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3">
                         <i class="fas fa-archive text-2xl"></i>
                     </div>
@@ -373,11 +449,49 @@
         </div>
 
         @include('components.archived-pagination', ['paginator' => $monitorings, 'label' => 'reports'])
+        @if(auth()->user()?->isDepartmentAdmin())
+        <div class="archived-monitoring-tablet-pagination hidden">
+            @include('components.archived-pagination', ['paginator' => $monitorings, 'label' => 'reports', 'pageLinkLimit' => 4])
+        </div>
+        @endif
     </div>
 </div>
 @endsection
 
 @push('scripts')
+@if(auth()->user()?->isDepartmentAdmin())
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    let activeRequest;
+    document.addEventListener('click', async event => {
+        const link = event.target.closest('#archived-bcpc-results [data-pagination-label] a[href]');
+        if (!matchMedia('(max-width: 85.375rem)').matches || !link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.classList.contains('pointer-events-none')) return;
+        event.preventDefault();
+        activeRequest?.abort();
+        const controller = new AbortController();
+        activeRequest = controller;
+        const results = document.getElementById('archived-bcpc-results');
+        results.setAttribute('aria-busy', 'true');
+        try {
+            const response = await fetch(link.href, { signal: controller.signal, headers: { Accept: 'text/html' } });
+            if (!response.ok || response.redirected) throw new Error('Unable to load archived monitoring records');
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            if (controller.signal.aborted) return;
+            const next = page.getElementById('archived-bcpc-results');
+            if (!next) throw new Error('Missing monitoring records');
+            const top = results.getBoundingClientRect().top;
+            results.replaceWith(next);
+            history.replaceState(null, '', link.href);
+            window.scrollBy({ top: next.getBoundingClientRect().top - top, behavior: 'instant' });
+        } catch (error) {
+            if (error.name !== 'AbortError') location.assign(link.href);
+        } finally {
+            results.removeAttribute('aria-busy');
+        }
+    });
+});
+</script>
+@endif
 @include('admin-tailwind.components.archive-view-modal')
 <script>
 const archivedBcpcFilterForm = document.getElementById('archived-bcpc-report-filter-form');

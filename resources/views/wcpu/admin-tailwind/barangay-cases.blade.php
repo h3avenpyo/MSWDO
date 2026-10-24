@@ -3,6 +3,86 @@
 @section('title', 'Barangay Cases - iSERVE SILANG Admin')
 
 @push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+@include('admin-tailwind.components.tablet-profile-pagination')
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent .tablet-profile-pagination {
+            flex-direction: column;
+            justify-content: center;
+            gap: .5rem;
+            padding: .75rem;
+            background: #fff;
+            text-align: center;
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination > div:last-child {
+            display: flex;
+            justify-content: center;
+            gap: clamp(.25rem, 2vw, .625rem);
+            max-width: 100%;
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination #page-numbers { display: contents !important; }
+        html body.portal-ui #mainContent .tablet-profile-pagination #mobile-page-info { display: none !important; }
+        html body.portal-ui #mainContent .tablet-profile-pagination button {
+            flex: 0 0 auto;
+            width: clamp(2rem, 10vw, 2.75rem) !important;
+            min-width: 0 !important;
+            height: 2.75rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: .5rem;
+            background: #fff !important;
+            color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination button[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #fff !important;
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination button:disabled { opacity: .4 !important; }
+        html body.portal-ui #mainContent .tablet-profile-pagination button > i { color: inherit !important; }
+        html body.portal-ui #mainContent :is(#barangay-filter-popup, #barangay-sort-popup) {
+            position: fixed !important;
+            inset: max(1rem, env(safe-area-inset-top)) auto auto 50% !important;
+            transform: translateX(-50%) !important;
+            width: min(15rem, calc(100vw - 2rem - env(safe-area-inset-left) - env(safe-area-inset-right))) !important;
+            max-height: calc(100dvh - max(1rem, env(safe-area-inset-top)) - max(1rem, env(safe-area-inset-bottom)));
+            box-sizing: border-box;
+            overflow-y: auto;
+            margin: 0 !important;
+            padding: .75rem !important;
+            z-index: 60 !important;
+        }
+        html body.portal-ui #mainContent :is(#barangay-filter-popup, #barangay-sort-popup) h4 { font-size: .875rem; margin-bottom: .5rem; }
+        html body.portal-ui #mainContent :is(#barangay-filter-popup, #barangay-sort-popup) :is(input, select, label, button) { font-size: .75rem !important; }
+        html body.portal-ui #mainContent :is(#barangay-filter-popup, #barangay-sort-popup) .mb-4 { margin-bottom: .5rem; }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        .portal-ui .swal2-popup.barangay-cases-print-popup .swal2-actions {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            width: calc(100% - 2rem);
+            gap: .75rem;
+        }
+        .portal-ui .swal2-popup.barangay-cases-print-popup .swal2-actions > :is(.swal2-cancel, .swal2-confirm) {
+            flex: 1 1 0 !important;
+            width: 100%;
+            min-width: 0;
+            min-height: 2.75rem;
+            margin: 0 !important;
+            padding: .625rem .5rem;
+        }
+    }
+</style>
+@endif
 @if(auth()->user()?->position !== 'Desk Officer')
 <style>
     @media (max-width: 40rem) {
@@ -183,6 +263,40 @@
         html body.portal-ui.barangay-cases-admin-mobile-nav #mainContent > header button {
             min-width: 3rem !important;
             min-height: 3rem !important;
+        }
+    }
+
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table {
+            width: 100% !important;
+            min-width: 0 !important;
+            table-layout: fixed !important;
+        }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table :is(th, td) {
+            padding: .75rem .375rem !important;
+            overflow-wrap: anywhere;
+        }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table :is(th, td):first-child {
+            width: 24% !important;
+            white-space: normal !important;
+        }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table td:first-child > span {
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+        }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table col:nth-child(1) { width: 24% !important; }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table col:nth-child(2) { width: 11% !important; }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table col:nth-child(3) { width: 10% !important; }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table col:nth-child(4) { width: 19% !important; }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table col:nth-child(5) { width: 10% !important; }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table :is(col, th, td):last-child { width: 26% !important; }
+        html body.portal-ui.barangay-cases-admin-mobile-nav #barangay-table .barangay-view-cases-button {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            padding-inline: .375rem !important;
+            gap: .25rem !important;
+            font-size: .75rem !important;
         }
     }
 
@@ -426,7 +540,8 @@
                 </button>
                 
                 <!-- Filter Dropdown -->
-                <div 
+                <div id="barangay-filter-popup"
+                    @if(auth()->user()?->isDepartmentAdmin()) x-cloak @endif
                     x-show="open" 
                     @click.away="open = false"
                     x-transition
@@ -477,7 +592,8 @@
                 </button>
                 
                 <!-- Sort Dropdown -->
-                <div 
+                <div id="barangay-sort-popup"
+                    @if(auth()->user()?->isDepartmentAdmin()) x-cloak @endif
                     x-show="open" 
                     @click.away="open = false"
                     x-transition
@@ -564,7 +680,7 @@
         </div>
         
         <!-- Pagination Controls -->
-        <div class="px-4 sm:px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between flex-shrink-0">
+        <div class="tablet-profile-pagination px-4 sm:px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between flex-shrink-0">
             <div class="text-xs sm:text-sm text-gray-600">
                 <span id="pagination-info">Showing 0 - 0 of 0</span>
             </div>
@@ -640,6 +756,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     let allBarangays = [];
     let filteredBarangays = [];
+    @if(auth()->user()?->isDepartmentAdmin())
+    matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').addEventListener('change', () => renderPageNumbers(Math.ceil(filteredBarangays.length / itemsPerPage)));
+    @endif
     let currentFilters = { status: '', dateFrom: '', dateTo: '' };
     let currentSort = { field: 'name', order: 'asc' };
     const isSwdAdmin = @json(auth()->user()->isVawcAdmin());
@@ -1070,6 +1189,12 @@ document.addEventListener('DOMContentLoaded', function() {
         pageNumbersContainer.innerHTML = '';
         
         if (totalPages <= 1) return;
+
+        if (@json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches) {
+            const first = Math.max(1, Math.min(currentPage - 1, totalPages - 3));
+            for (let page = first; page <= Math.min(totalPages, first + 3); page++) pageNumbersContainer.appendChild(createPageButton(page));
+            return;
+        }
         
         // Determine which page numbers to show
         let startPage = Math.max(1, currentPage - 2);

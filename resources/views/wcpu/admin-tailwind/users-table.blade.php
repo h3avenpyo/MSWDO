@@ -3,7 +3,97 @@
 @section('title', 'User Information - iSERVE SILANG Admin')
 
 @push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+@include('admin-tailwind.components.tablet-profile-pagination')
+@endif
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent .tablet-profile-pagination {
+            flex-direction: column;
+            justify-content: center;
+            gap: .5rem;
+            padding: .75rem;
+            background: #fff;
+            text-align: center;
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination > div:last-child {
+            display: flex;
+            justify-content: center;
+            gap: clamp(.25rem, 2vw, .625rem);
+            max-width: 100%;
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination #page-numbers { display: contents !important; }
+        html body.portal-ui #mainContent .tablet-profile-pagination button {
+            flex: 0 0 auto;
+            width: clamp(2rem, 10vw, 2.75rem) !important;
+            min-width: 0 !important;
+            height: 2.75rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: .5rem;
+            background: #fff !important;
+            color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination button[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #fff !important;
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination button:disabled { opacity: .4 !important; }
+        html body.portal-ui #mainContent .tablet-profile-pagination button > i { color: inherit !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table {
+            min-width: 52rem !important;
+            table-layout: fixed !important;
+        }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table th:nth-child(1) { width: 24% !important; }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table th:nth-child(2) { width: auto !important; }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table th:nth-child(3) { width: 15% !important; }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table th:nth-child(4) { width: 6rem !important; }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table th:last-child { width: 14rem !important; }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table :is(th, td) { padding-inline: .75rem !important; }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table td:last-child { padding-inline: 1rem !important; }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table td:last-child > div { gap: .5rem !important; flex-wrap: nowrap !important; }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table td:last-child > div > button { flex: 0 0 2.5rem !important; width: 2.5rem !important; min-width: 2.5rem !important; }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table td:nth-child(2),
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-table td:nth-child(3) { white-space: normal !important; overflow-wrap: anywhere; }
+    }
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #users-mobile-view > .users-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #mainContent > header#desk-officers-profile-header .desk-officers-profile-header-leading:not([hidden]) {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: .5rem !important;
+            min-width: 0 !important;
+            flex: 1 1 0 !important;
+        }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #mainContent > header#desk-officers-profile-header .desk-officers-profile-header-leading > div {
+            width: auto !important;
+            min-width: 0 !important;
+            flex: 1 1 0 !important;
+            text-align: left !important;
+        }
+        html body.portal-ui.admin-desk-officers-profile-mobile-nav #mainContent > header#desk-officers-profile-header .desk-officers-profile-header-leading #dashboardMenuToggle {
+            margin-top: 0 !important;
+            align-self: center !important;
+            flex-shrink: 0 !important;
+        }
+    }
+    @endif
     @if(auth()->user()?->isDepartmentAdmin())
     @media (max-width: 40rem) {
         html body.portal-ui.admin-desk-officers-profile-mobile-nav #mobileTopBar { display: none !important; }
@@ -263,9 +353,8 @@
     .admin-user-modal-card > :first-child { flex: 0 0 auto; }
     #userModalContent,
     #editModalContent { min-height: 0; flex: 1 1 auto; overflow-y: auto; overscroll-behavior-y: contain; }
-    /* Phone-only profile cards. The existing desktop/tablet table remains
-       unchanged from the md breakpoint upward. */
-    @media (max-width: 47.9375rem) {
+    /* Profile cards for phones and portrait tablets. */
+    @media (max-width: 47.9375rem), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
         #users-desktop-table { display: none !important; }
         #users-mobile-view {
             display: grid !important;
@@ -292,6 +381,7 @@
             width: 100% !important;
             min-width: 0;
             min-height: 3rem;
+            border-radius: .5rem !important;
             padding: .5rem !important;
         }
         #users-mobile-view .user-profile-card-actions .archive-user-action,
@@ -307,6 +397,51 @@
         #users-mobile-view .user-profile-card { padding: 1rem; }
         #users-mobile-view .user-profile-card-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        #users-mobile-view { padding: 1rem; gap: 1rem; }
+        #users-mobile-view .user-profile-card { padding: 1rem; overflow-wrap: anywhere; }
+        #users-mobile-view .user-profile-card-actions {
+            grid-template-columns: none;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(0, 1fr);
+            gap: .5rem;
+        }
+        #users-mobile-view .user-profile-card-actions > button {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            height: 2.75rem;
+            min-height: 2.75rem;
+            border-radius: .5rem !important;
+            padding: .5rem .75rem !important;
+            gap: .375rem;
+            font-size: .8125rem;
+            line-height: 1.25;
+            white-space: nowrap;
+        }
+    }
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        #users-mobile-view .user-profile-card-actions {
+            grid-template-columns: none;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(0, 1fr);
+            gap: .375rem;
+        }
+        #users-mobile-view .user-profile-card-actions > button {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            height: 2.75rem !important;
+            min-height: 2.75rem !important;
+            padding: .375rem .25rem !important;
+            font-size: .6875rem;
+            line-height: 1.2;
+            gap: .25rem;
+            white-space: nowrap;
+        }
+    }
+    @endif
     @media (min-width: 1024px) {
         /* Prevent page scrolling on desktop - only table should scroll */
         html, body { overflow: hidden !important; height: 100vh !important; }
@@ -494,7 +629,7 @@
         </div>
         
         <!-- Pagination Controls -->
-        <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between flex-shrink-0">
+        <div class="tablet-profile-pagination px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between flex-shrink-0">
             <div class="text-sm text-gray-600">
                 <span id="pagination-info">Showing 0 - 0 of 0 users</span>
             </div>
@@ -817,17 +952,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearUserFiltersBtn = document.getElementById('clear-user-filters');
     
     // Pagination and filter variables
-    const itemsPerPage = {{ auth()->user()->isDepartmentAdmin() ? 5 : 10 }};
+    const itemsPerPage = {{ auth()->user()->isDepartmentAdmin() ? (request()->boolean('portrait_cards') ? 4 : 5) : 10 }};
     let currentPage = 1;
     let allUsers = [];
     let filteredUsers = [];
+    @if(auth()->user()?->isDepartmentAdmin())
+    matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').addEventListener('change', () => renderPageNumbers(Math.ceil(filteredUsers.length / itemsPerPage)));
+    @endif
+
+    function changeUserPage(page) {
+        const keepPosition = @json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches;
+        const top = mobileView.getBoundingClientRect().top;
+        const scrollTop = mobileView.scrollTop;
+        currentPage = page;
+        renderUsers();
+        if (keepPosition) {
+            mobileView.scrollTop = scrollTop;
+            window.scrollBy({ top: mobileView.getBoundingClientRect().top - top, behavior: 'instant' });
+        }
+    }
     
     // Pagination handlers
     if (prevPageBtn) {
         prevPageBtn.addEventListener('click', function() {
             if (currentPage > 1) {
-                currentPage--;
-                renderUsers();
+                changeUserPage(currentPage - 1);
             }
         });
     }
@@ -836,8 +985,7 @@ document.addEventListener('DOMContentLoaded', function() {
         nextPageBtn.addEventListener('click', function() {
             const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
             if (currentPage < totalPages) {
-                currentPage++;
-                renderUsers();
+                changeUserPage(currentPage + 1);
             }
         });
     }
@@ -932,7 +1080,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </tr>
             `;
             mobileView.innerHTML = `
-                <div class="p-8 text-center text-gray-400">
+                <div class="users-empty-state p-8 text-center text-gray-400">
                     <i class="fas fa-users text-4xl mb-3 opacity-50"></i>
                     <p class="text-sm">No users found</p>
                 </div>
@@ -1039,6 +1187,12 @@ document.addEventListener('DOMContentLoaded', function() {
         pageNumbersContainer.innerHTML = '';
         
         if (totalPages <= 1) return;
+
+        if (@json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches) {
+            const first = Math.max(1, Math.min(currentPage - 1, totalPages - 3));
+            for (let page = first; page <= Math.min(totalPages, first + 3); page++) pageNumbersContainer.appendChild(createPageButton(page));
+            return;
+        }
         
         let startPage = Math.max(1, currentPage - 2);
         let endPage = Math.min(totalPages, currentPage + 2);
@@ -1083,8 +1237,7 @@ document.addEventListener('DOMContentLoaded', function() {
             : 'inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm text-gray-700';
         btn.textContent = pageNum;
         btn.addEventListener('click', function() {
-            currentPage = pageNum;
-            renderUsers();
+            changeUserPage(pageNum);
         });
         return btn;
     }

@@ -54,7 +54,7 @@
         const recipient = view.hasAttribute('data-swd-archived-recipient');
         const isCase = view.dataset.swdArchiveView === 'case';
         document.getElementById('swdArchiveViewTitle').textContent = recipient ? 'Referral Info' : referral ? 'Referral Details' : isCase ? 'Case Details' : 'Quarterly Report';
-        content.textContent = 'Loading details...';
+        content.textContent = @json(request()->routeIs('admin.quarterly-reports.archived') && request('section') === 'quarterly') && view.dataset.swdArchiveView === 'report' ? '' : 'Loading details...';
         if (!dialog.open) dialog.showModal();
         if (referral || recipient) {
             const template = document.getElementById(recipient ? view.dataset.swdArchivedRecipient : view.dataset.swdArchivedReferral);

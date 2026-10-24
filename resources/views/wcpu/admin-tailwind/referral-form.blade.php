@@ -8,6 +8,10 @@
     $isBcpcReferralCase = strtoupper((string) ($case->type ?? '')) === 'BCPC';
     $isDepartmentAdminReferral = auth()->user()?->isDepartmentAdmin() ?? false;
 @endphp
+@if($isDepartmentAdminReferral)
+@include('admin-tailwind.quarterly-reports._portrait-sidebar')
+@include('admin-tailwind.components.tablet-portrait-sidebar-overlay')
+@endif
 @include('components.multirole-referral-fields')
 
 <!-- Top Header -->

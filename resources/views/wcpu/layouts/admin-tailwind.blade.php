@@ -1069,6 +1069,105 @@
     <script src="{{ asset('js/bcpc-admin-modal-design.js') }}?v={{ filemtime(public_path('js/bcpc-admin-modal-design.js')) }}" defer></script>
     @endif
     <script src="{{ asset('js/portal-modal-presentation.js') }}?v={{ filemtime(public_path('js/portal-modal-presentation.js')) }}" defer></script>
+    @if(auth()->user()?->isDepartmentAdmin())
+    <style>
+        @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-menu {
+                padding-inline: .5rem !important;
+            }
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-link {
+                display: flex !important;
+                justify-content: center !important;
+                padding-inline: 0 !important;
+                gap: 0 !important;
+            }
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-link > span:has(> i) {
+                justify-content: center !important;
+                gap: 0 !important;
+            }
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-text {
+                display: none !important;
+            }
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-link i {
+                margin-inline: 0 !important;
+                text-align: center !important;
+            }
+            html body.portal-ui #sidebar .sidebar-header {
+                box-sizing: border-box;
+                height: 5.5rem !important;
+                min-height: 5.5rem !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+            html body.portal-ui #sidebarToggleBtn {
+                top: 2.75rem !important;
+                transform: translateY(-50%) !important;
+            }
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-header {
+                height: 7rem !important;
+                min-height: 7rem !important;
+                padding: 1.25rem 0 0 !important;
+                align-items: flex-start !important;
+                justify-content: center !important;
+            }
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-header > div {
+                width: 100%;
+                justify-content: center !important;
+                gap: 0 !important;
+            }
+            html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) ~ #sidebarToggleBtn {
+                top: 4.75rem !important;
+                left: 2.25rem !important;
+                transform: translateX(-50%) !important;
+            }
+        }
+    </style>
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin() && request()->routeIs('cases.show', 'admin-barangay-cases', 'admin-add-new-case', 'admin.users.index', 'admin.users.create', 'admin.users.logs', 'admin.referrals', 'admin.referrals.index', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.bcpc-case-monitoring.edit', 'admin.calendar.index', 'admin.quarterly-reports.archived', 'admin.referrals.archived', 'admin.users.archived', 'admin.bcpc-case-monitoring.archived'))
+    <style>
+        @media (max-width: 47.9375rem) {
+            html body.portal-ui #mainContent > header #dashboardMenuToggle {
+                flex: 0 0 2.5rem !important;
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+                min-width: 2.5rem !important;
+                min-height: 2.5rem !important;
+            }
+            html body.portal-ui #mainContent > header #dashboardMenuToggle > i {
+                font-size: 1.25rem !important;
+                line-height: 1 !important;
+            }
+        }
+        @media (max-width: 26.875rem) {
+            html body.portal-ui #mainContent > header #dashboardMenuToggle {
+                min-width: 3rem !important;
+                min-height: 3rem !important;
+            }
+        }
+    </style>
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin() && request()->routeIs('case-profiles.index', 'admin.referrals', 'admin.referrals.index', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.bcpc-case-monitoring.edit', 'admin.users.index', 'admin.quarterly-reports.archived', 'admin.referrals.archived', 'admin.users.archived', 'admin.bcpc-case-monitoring.archived'))
+    @include('admin-tailwind.components.portrait-four-cards')
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin() && (request()->routeIs('case-profiles.index', 'cases.show', 'admin-barangay-cases', 'admin.barangay-cases.show', 'admin-add-new-case', 'admin.users.index', 'admin.users.create', 'admin.users.logs', 'admin.referrals', 'admin.referrals.index', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.calendar.index', 'admin.referrals.archived', 'admin.users.archived', 'admin.bcpc-case-monitoring.archived') || (request()->routeIs('admin.bcpc-case-monitoring.edit') && (request()->has('view') || request()->has('edit') || !request()->has('add'))) || (request()->routeIs('admin.quarterly-reports.archived') && in_array(request('section'), ['barangay-cases', 'quarterly'], true))))
+    @include('admin-tailwind.components.tablet-portrait-sidebar-overlay')
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin() && request()->routeIs('admin-add-new-case', 'admin.users.index', 'admin.users.create'))
+    <style>
+        @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+            html body.portal-ui #mainContent > header:is(#add-case-page-header, #desk-officers-profile-header, #register-user-page-header) div:has(> img[alt="User Profile"]) > .text-right > p:first-child {
+                color: #1f2937 !important;
+            }
+            html body.portal-ui #mainContent > header:is(#add-case-page-header, #desk-officers-profile-header, #register-user-page-header) div:has(> img[alt="User Profile"]) > .text-right > p:last-child {
+                color: #bc0202 !important;
+                background-color: #fff1f2 !important;
+            }
+        }
+    </style>
+    @endif
+    @if(auth()->user()?->isDepartmentAdmin() && (request()->routeIs('admin-barangay-cases', 'admin.barangay-cases.show', 'admin-add-new-case', 'admin.users.index', 'admin.users.create', 'admin.users.logs', 'admin.referrals', 'admin.referrals.index', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.calendar.index', 'admin.referrals.archived', 'admin.users.archived', 'admin.bcpc-case-monitoring.archived') || (request()->routeIs('admin.bcpc-case-monitoring.edit') && !request()->has('add')) || (request()->routeIs('admin.quarterly-reports.archived') && in_array(request('section'), ['barangay-cases', 'quarterly'], true))))
+    @include('admin-tailwind.components.tablet-landscape-sidebar-motion')
+    @endif
 </head>
 <body class="portal-ui {{ request()->routeIs('admin-dashboard') ? 'admin-dashboard-mobile-nav' : '' }} {{ request()->routeIs('case-profiles.index') ? 'case-profiles-mobile-profile-hidden' : '' }} {{ request()->routeIs('case-profiles.index') && auth()->user()?->isDepartmentAdmin() ? 'case-profiles-admin-mobile-nav' : '' }} {{ request()->routeIs('cases.show') && auth()->user()?->isDepartmentAdmin() ? 'case-details-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.users.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-desk-officers-profile-mobile-nav' : '' }} {{ request()->routeIs('admin.users.create') && auth()->user()?->isDepartmentAdmin() ? 'admin-register-user-mobile-nav' : '' }} {{ (request()->routeIs('admin.users.logs', 'admin.users.archived', 'admin.referrals.index', 'admin.referrals', 'admin.referrals.archived', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.bcpc-case-monitoring.edit', 'admin.bcpc-case-monitoring.archived', 'admin.calendar.index') || (request()->routeIs('admin.quarterly-reports.archived') && in_array(request('section'), ['barangay-cases', 'quarterly'], true))) && auth()->user()?->isDepartmentAdmin() ? 'admin-reference-mobile-nav' : '' }} {{ request()->routeIs('admin.referrals', 'admin.referrals.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-referrals-mobile-nav' : '' }} {{ request()->routeIs('admin.referral-info.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-referral-info-mobile-nav' : '' }} {{ request()->routeIs('admin.quarterly-reports.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-quarterly-reports-mobile-nav' : '' }} {{ request()->routeIs('admin.calendar.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-calendar-mobile-nav' : '' }} {{ request()->routeIs('admin.quarterly-reports.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-quarterly-reports-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.referrals.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-referrals-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.users.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-users-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.bcpc-case-monitoring.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-bcpc-case-monitoring-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.bcpc-case-monitoring.edit') && auth()->user()?->isDepartmentAdmin() ? 'admin-bcpc-case-monitoring-mobile-nav' : '' }} {{ request()->routeIs('admin.users.logs') && auth()->user()?->isDepartmentAdmin() ? 'admin-user-logs-mobile-nav' : '' }} {{ request()->routeIs('admin-barangay-cases') && auth()->user()?->isDepartmentAdmin() ? 'barangay-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.barangay-cases.show') ? 'view-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin-add-new-case') && auth()->user()?->isDepartmentAdmin() ? 'add-case-admin-mobile-nav' : '' }} {{ auth()->user()?->isBcpcAdmin() ? 'bcpc-admin-header-theme' : (auth()->user()?->isVawcAdmin() ? 'swd-admin-header-theme' : '') }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
     
@@ -1543,6 +1642,23 @@
             if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'false');
             localStorage.setItem(sidebarStateKey, 'true');
         }
+
+        @if(auth()->user()?->isDepartmentAdmin() && (request()->routeIs('admin-dashboard', 'case-profiles.index', 'cases.show', 'admin-barangay-cases', 'admin.barangay-cases.show', 'admin-add-new-case', 'admin.users.index', 'admin.users.create', 'admin.users.logs', 'admin.referrals', 'admin.referrals.index', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.calendar.index', 'admin.referrals.archived', 'admin.users.archived', 'admin.bcpc-case-monitoring.archived') || (request()->routeIs('admin.bcpc-case-monitoring.edit') && !request()->has('add')) || (request()->routeIs('admin.quarterly-reports.archived') && in_array(request('section'), ['barangay-cases', 'quarterly'], true))))
+        sidebar?.addEventListener('click', function(event) {
+            if (!window.matchMedia('(min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape)').matches) return;
+            if (event.target.closest('nav a[href], #logout-button')) collapseSidebar();
+        });
+        @endif
+
+        @if(auth()->user()?->isDepartmentAdmin() && request()->routeIs('admin.quarterly-reports.index', 'admin.bcpc-case-monitoring.edit'))
+        const monitoringPortraitSidebar = window.matchMedia('(min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)');
+        @if(request()->routeIs('admin.bcpc-case-monitoring.edit'))
+        if (monitoringPortraitSidebar.matches) collapseSidebar();
+        @endif
+        sidebar?.querySelector('a[data-tooltip="BCPC Case Monitoring"]')?.addEventListener('click', function() {
+            if (monitoringPortraitSidebar.matches) collapseSidebar();
+        }, { capture: true });
+        @endif
         
         function expandSidebar() {
             sidebar.classList.remove('sidebar-collapsed');

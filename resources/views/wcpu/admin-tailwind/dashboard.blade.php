@@ -4,6 +4,30 @@
 
 @push('styles')
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar {
+            width: 18rem !important;
+            min-width: 4.5rem !important;
+            max-width: 18rem !important;
+            transition: width .3s cubic-bezier(.22, .61, .36, 1) !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) { width: 4.5rem !important; }
+        html body.portal-ui.admin-dashboard-mobile-nav > #sidebarToggleBtn { transition: left .3s cubic-bezier(.22, .61, .36, 1) !important; }
+        html body.portal-ui.admin-dashboard-mobile-nav > #mainContent { transition: margin-left .3s cubic-bezier(.22, .61, .36, 1), width .3s cubic-bezier(.22, .61, .36, 1) !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) and (prefers-reduced-motion: reduce) {
+        html body.portal-ui.admin-dashboard-mobile-nav > :is(aside#sidebar, #sidebarToggleBtn, #mainContent) { transition: none !important; }
+    }
+    @endif
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui:is(.bcpc-admin-header-theme, .swd-admin-header-theme) .dashboard-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+
     .admin-dashboard-statistics > * { min-width: 0; }
     .admin-dashboard-statistic-content { min-width: 0; }
     .admin-dashboard-statistic-label { overflow-wrap: anywhere; line-height: 1.25; }
@@ -213,6 +237,146 @@
             color: #6b7280 !important;
         }
     }
+
+    @media (min-width: 48rem) and (max-width: 63.9375rem) and (orientation: portrait) {
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar,
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar.sidebar-collapsed-init {
+            position: fixed !important;
+            inset: 0 auto 0 0 !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            border-radius: 0 !important;
+            transform: none !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem !important;
+            padding-left: .75rem !important;
+            padding-right: .5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            min-width: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-text {
+            display: none !important;
+            max-width: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-menu {
+            padding-left: .5rem !important;
+            padding-right: .5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-link,
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar nav :is(a, button) {
+            justify-content: center !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-chevron,
+        html body.portal-ui.admin-dashboard-mobile-nav #sidebar .sidebar-submenu {
+            display: none !important;
+        }
+    }
+    /* Dashboard tablet portrait: expand over the content while keeping the rail's space. */
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar {
+            position: fixed !important;
+            inset: 0 auto 0 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            width: 18rem !important;
+            min-width: 4.5rem !important;
+            max-width: 18rem !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            overflow: hidden !important;
+            transform: none !important;
+            z-index: 60 !important;
+            transition: width .3s ease !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) {
+            width: 4.5rem !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar > .sidebar-header {
+            display: flex !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            box-sizing: border-box;
+            height: 7rem !important;
+            min-height: 7rem !important;
+            flex: 0 0 7rem !important;
+            padding: 1rem .75rem 0 !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) > .sidebar-header {
+            height: 5.5rem !important;
+            min-height: 5.5rem !important;
+            flex-basis: 5.5rem !important;
+            align-items: center !important;
+            padding: 1.25rem .75rem !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar > nav.sidebar-menu {
+            flex: 1 1 0 !important;
+            min-height: 0 !important;
+            overflow-y: auto !important;
+            overscroll-behavior-y: contain;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar > div.sidebar-menu {
+            flex: 0 0 auto !important;
+            height: auto !important;
+            margin-top: auto !important;
+            overflow: visible !important;
+            padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) .sidebar-text {
+            display: inline-block !important;
+            max-width: none !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) :is(.sidebar-link, nav a, nav button) {
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) nav button.sidebar-link {
+            justify-content: space-between !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) .sidebar-chevron {
+            display: inline-block !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > #sidebarToggleBtn {
+            display: flex !important;
+            position: fixed !important;
+            left: 18rem !important;
+            top: 2.5rem !important;
+            transform: translate(-50%, -50%) !important;
+            z-index: 70 !important;
+            transition: left .3s ease, top .3s ease !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) ~ #sidebarToggleBtn {
+            top: 2.75rem !important;
+            left: calc(18rem - .75rem) !important;
+            transform: translateY(-50%) !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) ~ #sidebarToggleBtn {
+            left: 2.25rem !important;
+            top: 5.25rem !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar ~ #mainContent {
+            margin-left: 4.5rem !important;
+            width: calc(100% - 4.5rem) !important;
+        }
+    }
 </style>
 @endpush
 
@@ -261,6 +425,50 @@
         </div>
     </div>
 </header>
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div {
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            gap: .5rem !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: .5rem !important;
+            min-width: 0 !important;
+            flex: 1 1 0 !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type > div {
+            flex: 1 1 0 !important;
+            width: auto !important;
+            min-width: 0 !important;
+            text-align: left !important;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header #dashboardMenuToggle {
+            flex-shrink: 0 !important;
+            margin-top: 0 !important;
+            align-self: center;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type h2 {
+            font-size: 1rem !important;
+            line-height: 1.3 !important;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+        html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div > div:first-of-type p {
+            font-size: .75rem !important;
+            line-height: 1.4 !important;
+            margin-top: .25rem !important;
+            white-space: normal;
+        }
+    }
+</style>
+@endif
 
 <!-- Main Dashboard Content -->
 <main id="admin-dashboard-main" class="px-4 pt-4 pb-4 sm:p-6 lg:p-8">
@@ -358,7 +566,7 @@
                 <div class="admin-dashboard-chart-canvas h-80 sm:h-96 relative">
                     <canvas id="barangayChart"></canvas>
                     @if(empty($barangayCases) || count($barangayCases) === 0)
-                    <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                    <div class="dashboard-empty-state absolute inset-0 flex flex-col items-center justify-center text-gray-400">
                         <i class="fas fa-chart-bar text-4xl mb-2"></i>
                         <p class="text-sm">No case data available by barangay</p>
                     </div>
@@ -380,7 +588,7 @@
                 <div class="admin-dashboard-chart-canvas h-80 sm:h-96 relative">
                     <canvas id="caseTypesChart"></canvas>
                     @if(empty($caseTypes) || count($caseTypes) === 0)
-                    <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                    <div class="dashboard-empty-state absolute inset-0 flex flex-col items-center justify-center text-gray-400">
                         <i class="fas fa-chart-pie text-4xl mb-2"></i>
                         <p class="text-sm">No case type data available</p>
                     </div>

@@ -4,7 +4,17 @@
 
 @section('content')
 @if($isAdmin)
+@include('admin-tailwind.quarterly-reports._portrait-sidebar')
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.admin-reference-mobile-nav > aside#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) ~ #sidebarToggleBtn {
+            top: 2.75rem !important;
+            left: 18rem !important;
+            transform: translate(-50%, -50%) !important;
+        }
+    }
+    @endif
     body.portal-ui.archive-report-modal-preview #case-records .case-records-table-view { display: none !important; }
     body.portal-ui.archive-report-modal-preview #case-records-mobile-cards { display: block !important; }
     body.portal-ui.archive-report-modal-preview #case-records-mobile-cards > .case-record-card { padding: 1rem !important; }
@@ -179,11 +189,18 @@
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="{{ (($isAdmin && request()->boolean('archived')) || (!$isAdmin && $report->archived_at)) ? 'flex-1 min-w-0' : '' }}">
             <div class="flex items-center gap-2 mb-2">
+                @if($isAdmin && auth()->user()?->isDepartmentAdmin() && request('from') === 'edit' && !request()->boolean('archived'))
+                <a href="{{ route('admin.quarterly-reports.edit', $report->id) }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 hover:text-purple-800 transition">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Edit Quarterly Reports</span>
+                </a>
+                @else
                 <a href="{{ ($isAdmin && request()->boolean('archived')) || (!$isAdmin && $report->archived_at) ? ($isAdmin ? route('admin.quarterly-reports.archived', ['section' => 'quarterly']) : route('desk-officer.quarterly-reports.archived')) : ($isAdmin ? route('admin.quarterly-reports.index') : route('desk-officer.quarterly-reports.index')) }}"
                    class="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 hover:text-purple-800 transition">
                     <i class="fas fa-arrow-left"></i>
                     <span>{{ ($isAdmin && request()->boolean('archived')) || (!$isAdmin && $report->archived_at) ? 'Back to Archived Quarterly Reports' : 'Back to Quarterly Reports' }}</span>
                 </a>
+                @endif
                 @unless($isAdmin && ($report->type ?? 'VAWC') === 'BCPC')
                 <span class="text-gray-300">|</span>
                 <span class="quarterly-report-type-label inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider {{ ($report->type ?? 'VAWC') === 'BCPC' ? 'bg-red-100 text-red-700' : 'bg-purple-100 text-purple-700' }}">

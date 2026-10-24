@@ -5,6 +5,26 @@
 @push('styles')
 @if(auth()->user()?->isDepartmentAdmin())
 <style>
+    @media (max-width: 47.9375rem) {
+        #add-case-form-actions {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .75rem;
+            width: 100%;
+        }
+        #add-case-form-actions > :is(a, button) {
+            border-radius: .5rem !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-width: 0;
+            min-height: 2.75rem;
+            padding: .625rem .5rem !important;
+            text-align: center;
+            white-space: nowrap;
+        }
+    }
     @media (max-width: 40rem) {
         html body.portal-ui.add-case-admin-mobile-nav #mobileTopBar { display: none !important; }
         html body.portal-ui.add-case-admin-mobile-nav #mainContent > header#add-case-page-header button {
@@ -622,7 +642,7 @@
         <input type="hidden" name="timezone_used" value="Asia/Manila">
         
         <!-- Form Actions -->
-        <div class="flex justify-end gap-4 pt-4">
+        <div id="add-case-form-actions" class="flex justify-end gap-4 pt-4">
             <a href="{{ route('admin-barangay-cases') }}" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                 Cancel
             </a>

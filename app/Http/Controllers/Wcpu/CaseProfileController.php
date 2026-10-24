@@ -45,9 +45,10 @@ class CaseProfileController extends Controller
             $perpetrators = $perpetrators->map(fn ($records) => $filter($records, 'abuser_name', 'abuser_age', 'abuser_address'))
                 ->filter(fn ($records) => $records->isNotEmpty());
             $paginate = function ($profiles, $pageName) use ($request) {
+                $perPage = $request->user()->isDepartmentAdmin() && $request->boolean('portrait_cards') ? 4 : 5;
                 $page = max(1, (int) $request->input($pageName, 1));
                 return (new \Illuminate\Pagination\LengthAwarePaginator(
-                    $profiles->values()->forPage($page, 5)->values(), $profiles->count(), 5, $page,
+                    $profiles->values()->forPage($page, $perPage)->values(), $profiles->count(), $perPage, $page,
                     ['path' => $request->url(), 'pageName' => $pageName]
                 ))->withQueryString();
             };

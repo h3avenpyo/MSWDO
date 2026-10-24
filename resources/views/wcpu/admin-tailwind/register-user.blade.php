@@ -5,6 +5,27 @@
 @push('styles')
 @if(auth()->user()?->isDepartmentAdmin())
 <style>
+    @media (max-width: 47.9375rem) {
+        #register-user-form-actions > a { border-radius: .5rem !important; }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        #register-user-form-actions > :is(a, button) {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 0;
+            min-height: 2.75rem;
+            padding-inline: .5rem !important;
+            text-align: center;
+            white-space: nowrap;
+            gap: .375rem;
+        }
+        #register-user-form-actions > button > i { margin: 0 !important; flex-shrink: 0; }
+    }
     @media (max-width: 40rem) {
         html body.portal-ui.admin-register-user-mobile-nav #mobileTopBar { display: none !important; }
         html body.portal-ui.admin-register-user-mobile-nav #mainContent > header#register-user-page-header {
@@ -522,14 +543,14 @@
         </div>
         
         <!-- Form Actions -->
-        <div class="flex flex-row justify-between sm:justify-end gap-4">
+        <div id="register-user-form-actions" class="flex flex-row justify-between sm:justify-end gap-4">
             <a href="{{ route('admin.users.index') }}" 
                 class="flex-1 sm:flex-none px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-center">
                 Cancel
             </a>
             <button type="submit" id="submit-btn" disabled
                 class="flex-1 sm:flex-none px-6 py-2.5 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium shadow-sm disabled:bg-red-100 disabled:text-red-800 disabled:border disabled:border-red-200 disabled:cursor-not-allowed">
-                <i class="fas fa-user-plus mr-2"></i>Create User
+                <i class="fas fa-user-plus mr-2" @if(auth()->user()?->isDepartmentAdmin()) style="color: #ffffff !important;" @endif></i>Create User
             </button>
         </div>
     </form>

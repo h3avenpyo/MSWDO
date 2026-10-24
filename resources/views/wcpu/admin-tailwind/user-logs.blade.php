@@ -4,6 +4,58 @@
 
 @push('styles')
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.admin-user-logs-mobile-nav .user-logs-legacy-pagination { display: none !important; }
+        html body.portal-ui.admin-user-logs-mobile-nav .user-logs-tablet-pagination { display: block !important; background: #fff; }
+        html body.portal-ui .user-logs-tablet-pagination > [data-pagination-label] {
+            flex-direction: column;
+            justify-content: center;
+            gap: .5rem;
+            padding: .75rem;
+            text-align: center;
+        }
+        html body.portal-ui .user-logs-tablet-pagination [data-pagination-label] > div:last-child {
+            justify-content: center;
+            gap: clamp(.25rem, 2vw, .625rem);
+            max-width: 100%;
+        }
+        html body.portal-ui .user-logs-tablet-pagination [data-pagination-label] a {
+            flex: 0 0 auto;
+            width: clamp(2rem, 10vw, 2.75rem) !important;
+            min-width: 0 !important;
+            height: 2.75rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: .5rem;
+            background: #fff !important;
+            color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        html body.portal-ui .user-logs-tablet-pagination a[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important;
+            border-color: #C41E3A !important;
+            color: #fff !important;
+        }
+        html body.portal-ui .user-logs-tablet-pagination a > i { color: inherit !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.admin-user-logs-mobile-nav .user-logs-legacy-pagination { display: none !important; }
+        html body.portal-ui.admin-user-logs-mobile-nav .user-logs-tablet-pagination { display: block !important; background: #fff; }
+    }
+    @endif
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.admin-user-logs-mobile-nav .user-logs-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+    }
     /* Prevent page scrolling - only table should scroll */
     html, body { overflow: hidden !important; height: 100vh !important; }
     #mainContent { height: 100vh !important; overflow: hidden !important; }
@@ -243,7 +295,7 @@
                     @empty
                     <tr>
                         <td colspan="5" class="px-6 py-12 text-center">
-                            <div class="flex flex-col items-center">
+                            <div class="user-logs-empty-state flex flex-col items-center">
                                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                     <i class="fas fa-history text-gray-400 text-2xl"></i>
                                 </div>
@@ -258,7 +310,12 @@
         
         <!-- Pagination Controls -->
         @if($activities->hasPages())
-        <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between flex-shrink-0">
+        @if(auth()->user()?->isDepartmentAdmin())
+        <div class="user-logs-tablet-pagination hidden flex-shrink-0">
+            @include('components.archived-pagination', ['paginator' => $activities, 'label' => 'logs', 'pageLinkLimit' => 4])
+        </div>
+        @endif
+        <div class="user-logs-legacy-pagination px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between flex-shrink-0">
             <div class="text-sm text-gray-600">
                 Showing {{ $activities->firstItem() ?? 0 }} - {{ $activities->lastItem() ?? 0 }} of {{ $activities->total() }} logs
             </div>
@@ -337,7 +394,7 @@
                 </div>
             </div>
             @empty
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+            <div class="user-logs-empty-state bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-history text-gray-400 text-2xl"></i>
                 </div>
@@ -348,7 +405,12 @@
         
         <!-- Mobile Pagination -->
         @if($activities->hasPages())
-        <div class="mt-4 px-4 py-3 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-between flex-shrink-0">
+        @if(auth()->user()?->isDepartmentAdmin())
+        <div class="user-logs-tablet-pagination hidden flex-shrink-0">
+            @include('components.archived-pagination', ['paginator' => $activities, 'label' => 'logs', 'pageLinkLimit' => 4])
+        </div>
+        @endif
+        <div class="user-logs-legacy-pagination mt-4 px-4 py-3 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-between flex-shrink-0">
             <div class="text-sm text-gray-600">
                 Page {{ $activities->currentPage() }} of {{ $activities->lastPage() }}
             </div>

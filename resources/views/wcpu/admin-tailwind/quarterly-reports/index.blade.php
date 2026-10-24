@@ -20,6 +20,113 @@
 </header>
 @endif
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        #quarterly-mobile-cards .quarterly-existing-pagination { display: none; }
+        #quarterly-mobile-cards .quarterly-phone-pagination { display: block !important; }
+        #quarterly-mobile-cards .quarterly-phone-pagination > [data-pagination-label] {
+            flex-direction: column; justify-content: center; gap: .5rem; padding: .75rem; text-align: center;
+        }
+        #quarterly-mobile-cards .quarterly-phone-pagination [data-pagination-label] > div:last-child {
+            justify-content: center; gap: clamp(.25rem, 2vw, .625rem); max-width: 100%;
+        }
+        #quarterly-mobile-cards .quarterly-phone-pagination a {
+            flex: 0 0 auto; width: clamp(2rem, 10vw, 2.75rem) !important; min-width: 0 !important;
+            height: 2.75rem !important; padding: 0 !important; margin: 0 !important;
+            border: 1px solid #e5e7eb !important; border-radius: .5rem;
+            background: #fff !important; color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        #quarterly-mobile-cards .quarterly-phone-pagination a[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+        }
+        #quarterly-mobile-cards .quarterly-phone-pagination a > i { color: inherit !important; }
+    }
+    @media (max-width: 85.375rem) {
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-edit {
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0 !important;
+        }
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-edit > span { display: none !important; }
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-edit > i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1rem;
+            height: 1rem;
+            margin: 0 !important;
+            line-height: 1 !important;
+            transform: none !important;
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+    @endif
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        html body.portal-ui.admin-quarterly-reports-mobile-nav #mainContent > header.admin-reference-mobile-header > div {
+            padding: 1rem !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            gap: 1rem !important;
+        }
+        html body.portal-ui.admin-quarterly-reports-mobile-nav #mainContent > header.admin-reference-mobile-header .admin-reference-mobile-leading {
+            flex: 1 1 0 !important;
+            min-width: 0 !important;
+        }
+        html body.portal-ui.admin-quarterly-reports-mobile-nav #mainContent > header.admin-reference-mobile-header > div > div:last-child {
+            margin-left: auto !important;
+            flex: 0 0 auto !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            gap: 1rem !important;
+        }
+        html body.portal-ui.admin-quarterly-reports-mobile-nav #mainContent > header.admin-reference-mobile-header div:has(> img[alt="User Profile"]) {
+            display: flex !important;
+            align-items: center !important;
+            gap: .75rem !important;
+        }
+        html body.portal-ui.admin-quarterly-reports-mobile-nav #mainContent > header.admin-reference-mobile-header .text-right > p:first-child { color: #1f2937 !important; }
+        html body.portal-ui.admin-quarterly-reports-mobile-nav #mainContent > header.admin-reference-mobile-header .text-right > p:last-child { color: #bc0202 !important; }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        html body.portal-ui.admin-quarterly-reports-mobile-nav #mainContent > header.admin-reference-mobile-header .admin-reference-mobile-subtitle {
+            font-size: .75rem !important;
+        }
+    }
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-edit {
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0 !important;
+        }
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-edit > i {
+            margin: 0 !important;
+            text-align: center;
+        }
+    }
+    @media (max-width: 85.375rem) {
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-actions > .quarterly-report-card-view { order: 1 !important; }
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-actions > .quarterly-report-card-edit { order: 2 !important; }
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-actions > .quarterly-report-card-print { order: 3 !important; }
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-actions > .quarterly-report-card-archive { order: 4 !important; }
+        html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-print > span { display: none !important; }
+    }
+    @endif
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.admin-quarterly-reports-mobile-nav #quarterly-mobile-cards > .quarterly-reports-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+    @if(auth()->user()->isDepartmentAdmin())
+    #quarterly-reports-results a[title="Edit report"] { order: 1; }
+    #quarterly-reports-results a[title="Preview / Print"] { order: 2; }
+    #quarterly-reports-results button[title="Archive report"],
+    #quarterly-reports-results .quarterly-report-archive-button { order: 3; }
+    @endif
     #quarterly-reports-content nav [aria-current="page"] span {
         background-color: #C41E3A !important;
         border-color: #C41E3A !important;
@@ -31,10 +138,16 @@
     #quarterly-reports-results .quarterly-report-archive-button { min-width: 5.5rem; transition: none !important; animation: none !important; }
     @endif
     @if(auth()->user()->isDepartmentAdmin())
-    @media (max-width: 47.9375rem) and (orientation: portrait) {
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        #quarterly-reports-admin-actions {
+            margin-left: auto;
+            justify-content: flex-end;
+        }
+    }
+    @media (max-width: 47.9375rem) {
         #quarterly-reports-admin-actions {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: minmax(0, 1fr);
             width: 100%;
             gap: .5rem;
         }
@@ -42,13 +155,13 @@
             display: inline-flex;
             width: 100%;
             min-width: 0;
-            min-height: 2.5rem;
-            padding: .625rem .5rem;
+            min-height: 2.75rem;
+            padding: .75rem;
             align-items: center;
             justify-content: center;
             gap: .375rem;
-            font-size: .75rem;
-            line-height: 1;
+            font-size: .875rem;
+            line-height: 1.25;
             white-space: nowrap;
         }
     }
@@ -144,9 +257,8 @@
         }
     }
 
-    /* Phone-only report cards. The existing table is retained for tablets
-       and desktop screens. */
-    @media (max-width: 47.9375rem) {
+    /* Report cards for phones and portrait tablets. */
+    @media (max-width: 47.9375rem), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
         .quarterly-table-view { display: none !important; }
         #quarterly-mobile-cards { display: block !important; }
         #quarterly-mobile-cards .quarterly-report-card { min-width: 0; padding: 1rem; }
@@ -171,6 +283,35 @@
         }
     }
 
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        #quarterly-mobile-cards .quarterly-report-card-actions {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        #quarterly-mobile-cards .quarterly-report-card-actions > :is(a, button) {
+            align-items: center;
+            white-space: nowrap;
+        }
+    }
+
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        #quarterly-mobile-cards .quarterly-report-card-actions {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-auto-rows: 2.75rem;
+            gap: .375rem;
+        }
+        #quarterly-mobile-cards .quarterly-report-card-actions > :is(a, button) {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            height: 2.75rem !important;
+            min-height: 2.75rem !important;
+            padding: .375rem .25rem !important;
+            font-size: .75rem;
+            white-space: nowrap;
+        }
+    }
+    @endif
     /* Quarterly Reports tablet navigation (768px–1023px): collapsed sidebar on the left, standard header (not top navbar), no collapsed button. */
     @media (min-width: 48rem) and (max-width: 63.9375rem) {
         html body.portal-ui #mobileTopBar { display: none !important; }
@@ -267,6 +408,53 @@
             inset: 0 auto 0 0 !important;
             height: 100vh !important;
             height: 100dvh !important;
+        }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        #quarterly-reports-filter-form {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            align-items: start;
+            gap: 1rem;
+        }
+        #quarterly-reports-filter-form > div { grid-column: auto !important; min-width: 0; }
+        #quarterly-reports-filter-form label { display: none !important; }
+        #quarterly-reports-filter-form :is(input, select, button, a) {
+            box-sizing: border-box;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            font-size: .875rem !important;
+            border-radius: .5rem;
+        }
+        #quarterly-reports-filter-form > div:last-child { align-items: stretch; }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header {
+            background: #fff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header > div {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 1rem !important;
+            padding: 1rem 2rem !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header .admin-reference-mobile-leading {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header #dashboardMenuToggle { display: none !important; }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header h2 { color: #1f2937 !important; }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header p { color: #6b7280 !important; }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header .admin-reference-mobile-subtitle { display: block !important; }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header > div > div:last-child {
+            display: flex !important;
+            flex: 0 0 auto !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+        }
+        html body.portal-ui #mainContent > header.admin-reference-mobile-header div:has(> img[alt="User Profile"]) {
+            display: flex !important;
         }
     }
 </style>
@@ -473,7 +661,7 @@
         @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports'])
         </div>
 
-        <!-- Phone-only report cards -->
+        <!-- Phone and portrait tablet report cards -->
         <div id="quarterly-mobile-cards" class="hidden p-3 space-y-3">
             @forelse($reports as $report)
             <article class="quarterly-report-card bg-white rounded-xl border border-gray-100 shadow-sm">
@@ -513,22 +701,22 @@
                 </div>
 
                 <div class="quarterly-report-card-actions pt-3 border-t border-gray-100">
-                    <a href="{{ route('admin.quarterly-reports.show', $report->id) }}" class="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition" title="View Report">
+                    <a href="{{ route('admin.quarterly-reports.show', $report->id) }}" class="quarterly-report-card-view inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition" title="View Report">
                         <i class="fas fa-eye"></i><span class="{{ auth()->user()->isDepartmentAdmin() ? 'sr-only' : '' }}">View</span>
                     </a>
                     <a href="{{ route('admin.quarterly-reports.download', $report->id) }}{{ auth()->user()->isDepartmentAdmin() ? '?preview=1' : '' }}" {!! auth()->user()->isDepartmentAdmin() ? 'target="_blank" rel="noopener"' : '' !!} class="quarterly-report-card-print inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition" title="Preview / Print" aria-label="Preview / Print">
                         <i class="fas fa-print"></i><span>Print</span>
                     </a>
-                    <a href="{{ route('admin.quarterly-reports.edit', $report->id) }}" class="inline-flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-medium transition" title="Edit report">
+                    <a href="{{ route('admin.quarterly-reports.edit', $report->id) }}" @if(auth()->user()?->isDepartmentAdmin()) data-icon-action="labelled" aria-label="Edit report" @endif class="quarterly-report-card-edit inline-flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-medium transition" title="Edit report">
                         <i class="fas fa-edit"></i><span>Edit</span>
                     </a>
-                    <button type="button" onclick="openArchiveModal({{ $report->id }}, '{{ $report->barangay->name ?? 'Barangay' }} - Q{{ $report->quarter }} {{ $report->year }} ({{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }})')" class="inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-medium transition" title="Archive report">
+                    <button type="button" onclick="openArchiveModal({{ $report->id }}, '{{ $report->barangay->name ?? 'Barangay' }} - Q{{ $report->quarter }} {{ $report->year }} ({{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }})')" class="quarterly-report-card-archive inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-medium transition" title="Archive report">
                         <i class="fas fa-archive"></i><span class="{{ auth()->user()->isDepartmentAdmin() ? 'sr-only' : '' }}">Archive</span>
                     </button>
                 </div>
             </article>
             @empty
-            <div class="bg-white rounded-xl border border-gray-100 p-8 text-center">
+            <div class="quarterly-reports-empty-state bg-white rounded-xl border border-gray-100 p-8 text-center">
                 <i class="fas fa-file-alt text-5xl text-gray-300 mb-4"></i>
                 <p class="text-gray-500 font-medium">No quarterly reports submitted yet</p>
                 <p class="text-sm text-gray-400 mt-1">Reports will appear here once desk officers submit them</p>
@@ -536,7 +724,14 @@
             @endforelse
 
             <div class="pt-1">
+                @if(auth()->user()?->isDepartmentAdmin())
+                <div class="quarterly-phone-pagination hidden">
+                    @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports', 'pageLinkLimit' => 4])
+                </div>
+                @endif
+                <div class="quarterly-existing-pagination">
                 @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports'])
+                </div>
             </div>
         </div>
     </div>

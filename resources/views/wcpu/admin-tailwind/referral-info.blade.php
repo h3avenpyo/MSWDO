@@ -3,7 +3,53 @@
 @section('title', 'Referral Info - iSERVE SILANG Admin')
 
 @push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+@include('admin-tailwind.components.tablet-profile-pagination')
+@endif
 <style>
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.admin-referral-info-mobile-nav #recipientsCardsMobile > .recipients-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent .tablet-profile-pagination {
+            flex-direction: column; justify-content: center; gap: .5rem;
+            padding: .75rem; background: #fff; text-align: center;
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination > div:last-child {
+            display: flex; justify-content: center; gap: clamp(.25rem, 2vw, .625rem); max-width: 100%;
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination :is(#page-numbers, #mobile-page-numbers) { display: contents !important; }
+        html body.portal-ui #mainContent .tablet-profile-pagination button {
+            flex: 0 0 auto; width: clamp(2rem, 10vw, 2.75rem) !important; min-width: 0 !important;
+            height: 2.75rem !important; padding: 0 !important; margin: 0 !important;
+            border: 1px solid #e5e7eb !important; border-radius: .5rem;
+            background: #fff !important; color: #C41E3A !important;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination button[class~="bg-[#C41E3A]"] {
+            background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+        }
+        html body.portal-ui #mainContent .tablet-profile-pagination button:disabled { opacity: .4 !important; }
+        html body.portal-ui #mainContent .tablet-profile-pagination button > i { color: inherit !important; }
+        #addRecipientBtn {
+            width: 100% !important;
+            align-self: stretch;
+            min-height: 2.75rem;
+            justify-content: center;
+        }
+    }
+    @endif
+    @if(auth()->user()->isDepartmentAdmin())
+    #recipients-table .recipient-actions > .toggle-btn,
+    #recipientsCardsMobile .recipient-card-actions > .toggle-btn {
+        border-radius: .5rem !important;
+    }
+    @endif
     /* Prevent page scrolling - only table should scroll */
     html, body { overflow: hidden !important; height: 100vh !important; }
     #mainContent { height: 100vh !important; overflow: hidden !important; }
@@ -66,9 +112,33 @@
         }
     }
 
-    /* Phone-only recipient cards. Tablet and desktop continue using the
-       existing table layout. */
-    @media (max-width: 47.9375rem) {
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        #recipients-table .recipient-actions > button {
+            border-radius: .5rem !important;
+        }
+        #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init):not(.sidebar-open) ~ #mainContent #recipients-table {
+            min-width: 0 !important;
+        }
+        #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init):not(.sidebar-open) ~ #mainContent #recipients-table col {
+            width: auto !important;
+        }
+        #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init):not(.sidebar-open) ~ #mainContent #recipients-table col:last-child {
+            width: 13rem !important;
+        }
+        #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init):not(.sidebar-open) ~ #mainContent #recipients-table .recipient-actions-cell {
+            padding-inline: 1rem !important;
+            text-align: left !important;
+        }
+        #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init):not(.sidebar-open) ~ #mainContent #recipients-table .recipient-actions {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            gap: .375rem !important;
+        }
+    }
+
+    /* Recipient cards for phones and portrait tablets. */
+    @media (max-width: 47.9375rem), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
         html, body { height: auto !important; min-height: 100%; overflow-x: hidden !important; overflow-y: auto !important; }
         #mainContent { height: auto !important; overflow: visible !important; }
         #referral-info-main {
@@ -80,7 +150,7 @@
         #recipients-table-panel { display: none !important; }
         #recipients-mobile-cards { display: flex !important; }
         #recipientsCardsMobile { overflow: visible !important; flex: none !important; }
-        #recipientsCardsMobile .recipient-row { min-width: 0; padding: 1rem; }
+        #recipientsCardsMobile .recipient-row { min-width: 0; padding: 1rem; overflow-wrap: anywhere; }
         #recipientsCardsMobile .recipient-row > div:nth-child(2) { flex-wrap: wrap; gap: .5rem 1rem; }
         #recipientsCardsMobile .recipient-card-actions {
             display: grid !important;
@@ -91,11 +161,29 @@
             width: 100% !important;
             min-width: 0;
             min-height: 3rem;
+            border-radius: .5rem !important;
             padding: .5rem !important;
         }
     }
     @media (min-width: 40.0625rem) and (max-width: 47.9375rem) {
         #recipientsCardsMobile .recipient-card-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        #recipientsCardsMobile .recipient-card-actions {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        #recipientsCardsMobile .recipient-card-actions > button {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            height: 2.75rem;
+            min-height: 2.75rem;
+            padding: .5rem !important;
+            gap: .375rem;
+            font-size: .75rem;
+            line-height: 1.25;
+            white-space: nowrap;
+        }
     }
     @media (max-width: 40rem) {
         html body.portal-ui.admin-reference-mobile-nav #mainContent > header.admin-reference-mobile-header button[aria-label="Notifications"] {
@@ -212,6 +300,28 @@
             height: 100dvh !important;
         }
     }
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        #recipientsCardsMobile .recipient-card-actions {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: .375rem;
+            align-items: stretch;
+        }
+        #recipientsCardsMobile .recipient-card-actions > button {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 100% !important;
+            min-width: 0 !important;
+            height: 2.75rem !important;
+            min-height: 2.75rem !important;
+            padding: .375rem .125rem !important;
+            gap: .125rem;
+            font-size: .625rem;
+            white-space: nowrap;
+        }
+    }
+    @endif
 </style>
 @endpush
 
@@ -320,7 +430,7 @@
         </div>
         
         <!-- Pagination Controls -->
-        <div class="{{ $matchReportTable ? 'px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4 flex-shrink-0' : 'px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between flex-shrink-0' }}">
+        <div class="tablet-profile-pagination {{ $matchReportTable ? 'px-6 py-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4 flex-shrink-0' : 'px-6 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between flex-shrink-0' }}">
             <div class="text-sm text-gray-600">
                 <span id="pagination-info">Showing 0 - 0 of 0 recipients</span>
             </div>
@@ -357,7 +467,7 @@
         </div>
         
         <!-- Mobile Pagination -->
-        <div class="mt-4 px-4 py-3 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-between flex-shrink-0">
+        <div class="tablet-profile-pagination mt-4 px-4 py-3 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-between flex-shrink-0">
             <div class="text-sm text-gray-600">
                 <span id="mobile-pagination-info">Page 1 of 1</span>
             </div>
@@ -369,6 +479,7 @@
                 >
                     <i class="fas fa-chevron-left text-gray-600"></i>
                 </button>
+                <div id="mobile-page-numbers" class="hidden"></div>
                 <button 
                     id="mobile-next-btn" 
                     class="inline-flex items-center justify-center w-9 h-9 bg-white border border-gray-300 hover:bg-gray-50 disabled:bg-red-100 disabled:text-red-800 disabled:border-red-200 disabled:opacity-100 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
@@ -509,10 +620,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     
     // Pagination variables
-    const itemsPerPage = {{ auth()->user()->isDepartmentAdmin() ? 5 : 10 }};
+    const itemsPerPage = {{ auth()->user()->isDepartmentAdmin() ? (request()->boolean('portrait_cards') ? 4 : 5) : 10 }};
     let currentPage = 1;
     let allRecipients = [];
     let filteredRecipients = [];
+    @if(auth()->user()?->isDepartmentAdmin())
+    matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').addEventListener('change', () => updatePagination(Math.ceil(filteredRecipients.length / itemsPerPage)));
+    @endif
+
+    function changeRecipientPage(page) {
+        const keepPosition = @json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches;
+        const top = mobileContainer.getBoundingClientRect().top;
+        const scrollTop = mobileContainer.scrollTop;
+        currentPage = page;
+        renderRecipients();
+        if (keepPosition) {
+            mobileContainer.scrollTop = scrollTop;
+            window.scrollBy({ top: mobileContainer.getBoundingClientRect().top - top, behavior: 'instant' });
+        }
+    }
     
     // Load recipients from Blade
     const rawRecipients = @json($recipients);
@@ -598,7 +724,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mobile cards
         if (pageData.length === 0) {
             mobileContainer.innerHTML = `
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+                <div class="recipients-empty-state bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
                     <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-inbox text-gray-400 text-2xl"></i>
                     </div>
@@ -673,7 +799,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const end = Math.min(currentPage * itemsPerPage, total);
         
         if (paginationInfo) paginationInfo.textContent = `Showing ${start} - ${end} of ${total} recipients`;
-        if (mobilePaginationInfo) mobilePaginationInfo.textContent = `Page ${currentPage} of ${Math.max(1, totalPages)}`;
+        const tabletPagination = @json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches;
+        if (mobilePaginationInfo) mobilePaginationInfo.textContent = tabletPagination ? `Showing ${start} - ${end} of ${total} recipients` : `Page ${currentPage} of ${Math.max(1, totalPages)}`;
         
         // Enable/disable buttons
         const canPrev = currentPage > 1;
@@ -687,8 +814,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Page numbers
         if (pageNumbers) {
             let html = '';
-            const maxVisiblePages = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            const maxVisiblePages = tabletPagination ? 4 : 5;
+            let startPage = tabletPagination ? Math.max(1, Math.min(currentPage - 1, totalPages - 3)) : Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
             
             if (endPage - startPage < maxVisiblePages - 1) {
@@ -703,6 +830,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             }
             pageNumbers.innerHTML = html;
+            const mobileNumbers = document.getElementById('mobile-page-numbers');
+            if (mobileNumbers) mobileNumbers.innerHTML = tabletPagination ? html : '';
         }
     }
     
@@ -716,32 +845,35 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Pagination event listeners
     document.getElementById('prev-page-btn')?.addEventListener('click', () => {
-        if (currentPage > 1) { currentPage--; renderRecipients(); }
+        if (currentPage > 1) { changeRecipientPage(currentPage - 1); }
     });
     
     document.getElementById('next-page-btn')?.addEventListener('click', () => {
         const totalPages = Math.ceil(filteredRecipients.length / itemsPerPage);
-        if (currentPage < totalPages) { currentPage++; renderRecipients(); }
+        if (currentPage < totalPages) { changeRecipientPage(currentPage + 1); }
     });
     
     document.getElementById('mobile-prev-btn')?.addEventListener('click', () => {
-        if (currentPage > 1) { currentPage--; renderRecipients(); }
+        if (currentPage > 1) { changeRecipientPage(currentPage - 1); }
     });
     
     document.getElementById('mobile-next-btn')?.addEventListener('click', () => {
         const totalPages = Math.ceil(filteredRecipients.length / itemsPerPage);
-        if (currentPage < totalPages) { currentPage++; renderRecipients(); }
+        if (currentPage < totalPages) { changeRecipientPage(currentPage + 1); }
     });
     
     document.getElementById('page-numbers')?.addEventListener('click', (e) => {
         const btn = e.target.closest('.page-num');
         if (btn) {
-            currentPage = parseInt(btn.dataset.page);
-            renderRecipients();
+            changeRecipientPage(parseInt(btn.dataset.page));
         }
     });
     
     // Search with debounce
+    document.getElementById('mobile-page-numbers')?.addEventListener('click', event => {
+        const button = event.target.closest('.page-num');
+        if (button) changeRecipientPage(parseInt(button.dataset.page));
+    });
     let searchTimeout;
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);
@@ -768,7 +900,7 @@ document.addEventListener('DOMContentLoaded', function() {
         recipientForm.reset();
         recipientId.value = '';
         document.getElementById('recipientRole').required = @json(auth()->user()->isDepartmentAdmin());
-        openModal();
+        openModal(!@json(auth()->user()->isDepartmentAdmin()));
     });
     
     // View button click
@@ -847,7 +979,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('recipientContact').value = editBtn.dataset.contact || '';
             document.getElementById('recipientRole').value = editBtn.dataset.role || '';
             document.getElementById('recipientRole').required = false;
-            openModal();
+            openModal(!@json(auth()->user()->isDepartmentAdmin()));
         }
     });
     
@@ -999,10 +1131,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Modal controls
-    function openModal() {
+    function openModal(focusInput = true) {
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
-        document.getElementById('recipientName').focus();
+        if (focusInput) document.getElementById('recipientName').focus();
     }
     
     function hideModal() {

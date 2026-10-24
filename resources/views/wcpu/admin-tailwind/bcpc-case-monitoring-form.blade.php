@@ -2,7 +2,22 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/desk-officer-tables.css') }}">
+<style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        #bcpc-monitoring-save-actions {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100%;
+        }
+        #bcpc-monitoring-save-actions > div:first-child { flex: 1 1 auto; min-width: 0; }
+        #bcpc-monitoring-save-actions > div:last-child { flex: 0 0 auto; margin-left: auto; }
+    }
+</style>
 @if(auth()->user()->isDepartmentAdmin())
+@include('admin-tailwind.quarterly-reports._portrait-sidebar')
 <style>
     @media (min-width: 48rem) {
         body:has([data-bcpc-monitoring-form-header]) #mobileTopBar { display: none !important; }
@@ -76,7 +91,7 @@
     $isGenerated = auth()->user()->isBcpcAdmin() && request()->boolean('generate');
     $isBcpcAdminAdd = auth()->user()->isBcpcAdmin() && request()->boolean('add');
     $isMonitoringEdit = auth()->user()->isDepartmentAdmin() && request()->filled('edit');
-    $isReferenceHeader = $isView || $isMonitoringEdit;
+    $isReferenceHeader = $isView || $isMonitoringEdit || (auth()->user()->isDepartmentAdmin() && request()->boolean('add'));
     $data = $monitoring->data ?? [];
     $currentYear = (int) ($year ?? now()->year);
     $yearGroups = [
@@ -355,7 +370,7 @@
             @endif
             @if(!$isView)
             <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
+            <div id="bcpc-monitoring-save-actions" class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
                 <div class="text-sm text-gray-500">
                     <i class="fas fa-info-circle text-purple-600 mr-1"></i>
                     Saving will update the BCPC case monitoring record.

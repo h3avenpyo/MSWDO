@@ -513,10 +513,17 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const response = await fetch(window.location.href, {
                     cache: 'no-store',
+                    @if(auth()->user()->isVawcAdmin() && request()->routeIs('cases.show'))
+                    headers: { 'Accept': 'text/html' },
+                    @else
                     headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    @endif
                 });
                 if (!response.ok) return;
                 const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                @if(auth()->user()->isVawcAdmin() && request()->routeIs('cases.show'))
+                if (!page.querySelector('[aria-label="Notifications"]')) return;
+                @endif
                 const nextList = page.querySelector('#recent-activity-list');
                 const currentList = document.querySelector('#recent-activity-list');
                 if (nextList && currentList && nextList.innerHTML !== currentList.innerHTML) {

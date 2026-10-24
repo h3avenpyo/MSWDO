@@ -203,7 +203,7 @@ class QuarterlyReportController extends Controller
         if (!$isAdmin && $isMultiCaseDepartment) {
             $reports = $query->get();
         } else {
-            $reports = $query->paginate(5)->withQueryString();
+            $reports = $query->paginate($isAdmin && $user->isDepartmentAdmin() && $request->boolean('portrait_cards') ? 4 : 5)->withQueryString();
         }
         
         // Count archived reports for the badge
@@ -1131,6 +1131,7 @@ class QuarterlyReportController extends Controller
      */
     public function archived(Request $request)
     {
+        $archivePageSize = $request->user()->isDepartmentAdmin() && $request->boolean('portrait_cards') ? 4 : 5;
         $user = $request->user();
         if (strtolower($request->user()->position) === 'desk officer') {
             $user = $request->user();
@@ -1213,7 +1214,7 @@ class QuarterlyReportController extends Controller
                 });
             }
 
-            $reports = $reportsQuery->latest('archived_at')->paginate(5)->withQueryString();
+            $reports = $reportsQuery->latest('archived_at')->paginate($archivePageSize)->withQueryString();
             $barangays = Barangay::orderBy('name')->get();
             $activeReportPeriods = QuarterlyReport::where('type', $department)
                 ->whereNull('archived_at')
@@ -1229,7 +1230,7 @@ class QuarterlyReportController extends Controller
             $archivedCaseQuarter = $request->input('quarter');
             $archivedCaseYear = $request->input('year');
             $reports = QuarterlyReport::with(['barangay', 'user'])->where('type', 'VAWC')->whereNotNull('archived_at')
-                ->orderByDesc('archived_at')->paginate(5, ['*'], 'cases_page')->withQueryString();
+                ->orderByDesc('archived_at')->paginate($archivePageSize, ['*'], 'cases_page')->withQueryString();
             $monitorings = null;
             $barangayCases = \App\Models\Wcpu\CaseModel::with(['barangay'])
                 ->withTrashed()
@@ -1246,7 +1247,7 @@ class QuarterlyReportController extends Controller
                     });
                 })
                 ->orderByDesc('deleted_at')
-                ->paginate(5, ['*'], 'barangay_cases_page')
+                ->paginate($archivePageSize, ['*'], 'barangay_cases_page')
                 ->withQueryString();
             $activeReportPeriods = QuarterlyReport::where('type', 'VAWC')
                 ->whereNull('archived_at')
@@ -1283,10 +1284,10 @@ class QuarterlyReportController extends Controller
             }
             $barangayCases = $barangayCasesQuery
                 ->latest('deleted_at')
-                ->paginate(5, ['*'], 'barangay_cases_page')
+                ->paginate($archivePageSize, ['*'], 'barangay_cases_page')
                 ->withQueryString();
-            $reports = $reportsQuery->orderByDesc('archived_at')->paginate(5, ['*'], 'cases_page')->withQueryString();
-            $monitorings = $monitoringQuery->orderByDesc('archived_at')->paginate(5, ['*'], 'monitoring_page')->withQueryString();
+            $reports = $reportsQuery->orderByDesc('archived_at')->paginate($archivePageSize, ['*'], 'cases_page')->withQueryString();
+            $monitorings = $monitoringQuery->orderByDesc('archived_at')->paginate($archivePageSize, ['*'], 'monitoring_page')->withQueryString();
             $activeReportPeriods = QuarterlyReport::where('type', 'BCPC')
                 ->whereNull('archived_at')
                 ->get(['quarter', 'year'])

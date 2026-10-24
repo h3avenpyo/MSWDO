@@ -12,6 +12,195 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
 @endphp
 
 @push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-pagination {
+            padding: 0 !important;
+            background: #fff !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-pagination > .barangay-legacy-pagination { display: none !important; }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-pagination > .barangay-tablet-pagination { display: block !important; }
+        html body.portal-ui.view-cases-admin-mobile-nav .barangay-tablet-pagination > [data-pagination-label] {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            border-top: 0;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .barangay-tablet-pagination > [data-pagination-label] > div:last-child { justify-content: flex-end; flex-wrap: wrap; margin-left: auto; }
+        html body.portal-ui.view-cases-admin-mobile-nav .barangay-tablet-pagination a { min-width: 2.25rem !important; min-height: 2.25rem !important; height: 2.25rem !important; }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        body.portal-ui.view-cases-admin-mobile-nav :is(#caseModal, #editCaseModal) > .fixed {
+            z-index: 100 !important;
+        }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-main { display: flex !important; flex-direction: column !important; }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-main > .view-cases-statistics {
+            order: -2;
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: .5rem !important;
+            width: 100%;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-main > .view-cases-statistics > div { min-width: 0; padding: .75rem !important; }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-main .view-cases-statistics > div > div { gap: .375rem !important; }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-main .view-cases-statistics p:first-child { font-size: .625rem !important; line-height: 1.3; overflow-wrap: anywhere; }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-main > .view-cases-toolbar {
+            order: -1;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            flex-wrap: nowrap !important;
+            width: 100%;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #barangay-cases-view-main .view-cases-toolbar-actions { width: auto !important; margin-left: auto; flex-wrap: nowrap !important; }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<script>
+(() => {
+    const media = matchMedia('(min-width: 48rem) and (max-width: 85.375rem)');
+    const sync = () => {
+        const url = new URL(location.href);
+        if (media.matches === (url.searchParams.get('tablet_cases') === '1')) return;
+        if (media.matches) url.searchParams.set('tablet_cases', '1');
+        else url.searchParams.delete('tablet_cases');
+        url.searchParams.delete('page');
+        location.replace(url.href);
+    };
+    sync();
+    media.addEventListener('change', sync);
+})();
+</script>
+<style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .view-cases-table-desktop { display: none !important; }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .view-cases-table-cards {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 1rem !important;
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .view-cases-table-cards .case-card {
+            width: 100% !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .view-cases-table-cards > .view-cases-empty-state {
+            grid-column: 1 / -1;
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-cards .case-card {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 0 .5rem;
+            padding: .75rem !important;
+            align-items: end;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-cards .case-card > :is(div:first-child, p) { grid-column: 1 / -1; }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-cards .case-card > span {
+            grid-column: 1;
+            grid-row: 4;
+            justify-self: start;
+            align-self: center;
+            margin-top: .5rem !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-cards .case-card-actions {
+            grid-column: 2;
+            grid-row: 4;
+            align-self: center;
+            display: flex !important;
+            justify-content: flex-end !important;
+            flex-wrap: nowrap !important;
+            gap: .5rem !important;
+            margin: .5rem 0 0 !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-cards .case-card-actions :is(button, a, form, form > button) {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex: 0 0 2.25rem !important;
+            width: 2.25rem !important;
+            min-width: 2.25rem !important;
+            height: 2.25rem !important;
+            min-height: 2.25rem !important;
+            padding: 0 !important;
+            border-radius: .5rem !important;
+        }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.view-cases-admin-mobile-nav #view-cases-filter-panel {
+            position: fixed !important;
+            top: max(1rem, env(safe-area-inset-top)) !important;
+            left: 50% !important;
+            right: auto !important;
+            width: min(17rem, calc(100vw - 2rem - env(safe-area-inset-left) - env(safe-area-inset-right))) !important;
+            max-width: 100% !important;
+            transform: translateX(-50%) !important;
+            max-height: calc(100dvh - max(1rem, env(safe-area-inset-top)) - max(1rem, env(safe-area-inset-bottom)));
+            box-sizing: border-box;
+            margin-top: 0 !important;
+            padding: .75rem !important;
+            overflow-y: auto;
+            z-index: 60 !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #view-cases-filter-panel h4 { font-size: .875rem; margin-bottom: .5rem; }
+        html body.portal-ui.view-cases-admin-mobile-nav #view-cases-filter-panel form > .mb-4 { margin-bottom: .625rem; }
+        html body.portal-ui.view-cases-admin-mobile-nav #view-cases-filter-panel :is(label, input, select, button) { font-size: .75rem !important; }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent > #barangay-cases-view-header .view-cases-header-leading :is(h2, p) { color: #fff !important; }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .view-cases-toolbar {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: .5rem !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .view-cases-toolbar > a {
+            width: auto !important;
+            flex: 0 1 auto !important;
+            margin-right: auto !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #mainContent .view-cases-toolbar-actions {
+            width: auto !important;
+            flex: 0 0 auto !important;
+            margin: 0 !important;
+            flex-wrap: nowrap !important;
+        }
+    }
+</style>
+@endif
 @if(auth()->user()?->position !== 'Desk Officer')
 <style>
     @media (min-width: 48rem) {
@@ -1434,6 +1623,171 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
     }
 </style>
 @endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    /* Tablet department-admin view: fixed collapsed sidebar and case cards. */
+    @media (min-width: 48rem) and (max-width: 89.9375rem) {
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-collapsed,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-collapsed-init {
+            position: fixed !important;
+            inset: 0 auto 0 0 !important;
+            width: 4.5rem !important;
+            min-width: 4.5rem !important;
+            max-width: 4.5rem !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            overflow: hidden !important;
+            border-radius: 0 !important;
+            transform: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav.bcpc-admin-header-theme #sidebar,
+        html body.portal-ui.view-cases-admin-mobile-nav.swd-admin-header-theme #sidebar {
+            background: #B11116 !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-header {
+            display: flex !important;
+            min-height: 5.5rem !important;
+            padding-left: .75rem !important;
+            padding-right: .5rem !important;
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-header img {
+            width: 3rem !important;
+            height: 3rem !important;
+            min-width: 3rem !important;
+            flex-shrink: 0 !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-text,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-chevron,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-submenu {
+            display: none !important;
+            max-width: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-menu {
+            min-height: 0 !important;
+            padding-left: .5rem !important;
+            padding-right: .5rem !important;
+            overflow-x: hidden !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar .sidebar-link,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar nav :is(a, button) {
+            justify-content: center !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar ~ #mainContent,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-collapsed ~ #mainContent,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar.sidebar-collapsed-init ~ #mainContent {
+            width: calc(100% - 4.5rem) !important;
+            min-width: 0 !important;
+            margin-left: 4.5rem !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebarToggleBtn {
+            display: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-desktop {
+            display: none !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-cards {
+            display: flex !important;
+            flex-direction: column !important;
+            flex: none !important;
+            gap: .75rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            overflow: visible !important;
+            box-sizing: border-box !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-cards .case-card {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            min-height: 13rem !important;
+            box-sizing: border-box !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-cards .case-card > span {
+            order: 5;
+            align-self: flex-start;
+            margin-top: .5rem;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav .view-cases-table-cards .case-card-actions {
+            order: 6;
+            margin-top: auto !important;
+            margin-bottom: 0 !important;
+        }
+    }
+</style>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) {
+            width: 18rem !important;
+            min-width: 18rem !important;
+            max-width: 18rem !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) .sidebar-text,
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) .sidebar-chevron {
+            display: inline-block !important;
+            max-width: none !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) nav :is(a, button) {
+            justify-content: flex-start !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) nav button.sidebar-link {
+            justify-content: space-between !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) .sidebar-header img {
+            width: 2.25rem !important;
+            min-width: 2.25rem !important;
+            height: 2.25rem !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) ~ #mainContent {
+            width: calc(100% - 18rem) !important;
+            margin-left: 18rem !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) ~ #sidebarToggleBtn {
+            display: flex !important;
+            top: 2.75rem !important;
+            left: calc(18rem - .75rem) !important;
+            transform: translateY(-50%) !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-header {
+            height: 7rem !important;
+            min-height: 7rem !important;
+            padding: 1.25rem 0 0 !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            justify-content: center !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-header > div {
+            width: 100%;
+            justify-content: center !important;
+            gap: 0 !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) .sidebar-header img {
+            width: 2.25rem !important;
+            min-width: 2.25rem !important;
+            height: 2.25rem !important;
+        }
+        html body.portal-ui.view-cases-admin-mobile-nav #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) ~ #sidebarToggleBtn {
+            display: flex !important;
+            top: 4.75rem !important;
+            left: 2.25rem !important;
+            transform: translateX(-50%) !important;
+        }
+    }
+</style>
+@endif
 @endpush
 
 @section('content')
@@ -1604,7 +1958,7 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
                 </button>
 
                 <!-- Filter Dropdown -->
-                <div x-show="open" x-cloak @click.away="open = false" x-transition
+                <div id="view-cases-filter-panel" x-show="open" x-cloak @click.away="open = false" x-transition
                     class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg border border-gray-100 z-20 p-4">
                     <form method="GET" action="{{ route('admin.barangay-cases.show', $barangay->id) }}">
                         @if(request()->filled('type'))
@@ -1990,7 +2344,7 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
                 </span>
             </div>
             @empty
-            <div class="flex flex-col items-center justify-center py-12">
+            <div class="view-cases-empty-state flex flex-col items-center justify-center py-12">
                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                     <i class="fas fa-inbox text-gray-400 text-2xl"></i>
                 </div>
@@ -2003,7 +2357,12 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
         <!-- Pagination -->
         <div
             class="view-cases-pagination {{ $cases->hasPages() ? '' : 'hidden' }} px-6 py-4 border-t border-gray-100 bg-gray-50 flex-shrink-0">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            @if(auth()->user()?->isDepartmentAdmin())
+            <div class="barangay-tablet-pagination hidden">
+                @include('components.archived-pagination', ['paginator' => $cases, 'label' => 'cases', 'pageLinkLimit' => 4])
+            </div>
+            @endif
+            <div class="barangay-legacy-pagination flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p class="text-sm text-gray-600">
                     Showing {{ $cases->firstItem() }} - {{ $cases->lastItem() }} of {{ $cases->total() }} cases
                 </p>
@@ -2016,7 +2375,7 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
                     </span>
                     @else
                     <a href="{{ $cases->previousPageUrl() }}"
-                        class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                        class="{{ auth()->user()?->isDepartmentAdmin() ? 'admin-page-control ' : '' }}px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">
                         <i class="fas fa-chevron-left"></i>
                     </a>
                     @endif
@@ -2032,7 +2391,7 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
                     if ($end - $start < 4) { if ($start==1) { $end=min($lastPage, $start + 4); } elseif
                         ($end==$lastPage) { $start=max(1, $end - 4); } } @endphp @if($start> 1)
                         <a href="{{ $cases->url(1) }}"
-                            class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">1</a>
+                            class="{{ auth()->user()?->isDepartmentAdmin() ? 'admin-page-control ' : '' }}px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">1</a>
                         @if($start > 2)
                         <span class="px-2 py-2 text-gray-400 text-sm">...</span>
                         @endif
@@ -2043,7 +2402,7 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
                             {{ $i }}</span>
                             @else
                             <a href="{{ $cases->url($i) }}"
-                                class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">{{
+                                class="{{ auth()->user()?->isDepartmentAdmin() ? 'admin-page-control ' : '' }}px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">{{
                                 $i }}</a>
                             @endif
                             @endfor
@@ -2052,14 +2411,14 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
                                 class="px-2 py-2 text-gray-400 text-sm">...</span>
                                 @endif
                                 <a href="{{ $cases->url($lastPage) }}"
-                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">{{
+                                    class="{{ auth()->user()?->isDepartmentAdmin() ? 'admin-page-control ' : '' }}px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">{{
                                     $lastPage }}</a>
                                 @endif
 
                                 {{-- Next Button --}}
                                 @if($cases->hasMorePages())
                                 <a href="{{ $cases->nextPageUrl() }}"
-                                    class="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                                    class="{{ auth()->user()?->isDepartmentAdmin() ? 'admin-page-control ' : '' }}px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors">
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
                                 @else
@@ -2075,6 +2434,66 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
 </main>
 
 @push('scripts')
+@if(auth()->user()?->isDepartmentAdmin())
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const portrait = matchMedia('(min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)');
+    ['caseModal', 'editCaseModal'].forEach(id => {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        const home = document.createComment(id + ' position');
+        modal.before(home);
+        const position = () => {
+            const move = () => {
+                if (portrait.matches) document.body.append(modal);
+                else home.after(modal);
+            };
+            if (window.Alpine?.mutateDom) window.Alpine.mutateDom(move);
+            else move();
+        };
+        position();
+        portrait.addEventListener('change', position);
+    });
+});
+</script>
+@endif
+@if(auth()->user()?->isDepartmentAdmin())
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const responsivePagination = matchMedia('(max-width: 85.375rem)');
+    let activeRequest;
+    document.addEventListener('click', async event => {
+        const link = event.target.closest('.view-cases-pagination a[href]');
+        if (!responsivePagination.matches || !link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        activeRequest?.abort();
+        const controller = new AbortController();
+        activeRequest = controller;
+        const cards = document.querySelector('.view-cases-table-cards');
+        cards?.setAttribute('aria-busy', 'true');
+        try {
+            const response = await fetch(link.href, { signal: controller.signal, headers: { Accept: 'text/html' } });
+            if (!response.ok || response.redirected) throw new Error('Unable to load cases');
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            if (controller.signal.aborted) return;
+            const replacements = ['.view-cases-table-cards', '.view-cases-table-desktop', '.view-cases-pagination']
+                .map(selector => [document.querySelector(selector), page.querySelector(selector)]);
+            if (replacements.some(([current, next]) => !current || !next)) throw new Error('Missing cases');
+            const top = cards.getBoundingClientRect().top;
+            replacements.forEach(([current, next]) => current.replaceWith(next));
+            history.replaceState(null, '', link.href);
+            document.dispatchEvent(new CustomEvent('case-list-updated'));
+            const nextCards = document.querySelector('.view-cases-table-cards');
+            window.scrollBy({ top: nextCards.getBoundingClientRect().top - top, behavior: 'instant' });
+        } catch (error) {
+            if (error.name !== 'AbortError') location.assign(link.href);
+        } finally {
+            cards?.removeAttribute('aria-busy');
+        }
+    });
+});
+</script>
+@endif
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     const isSwdAdmin = @json(auth()->user()->isVawcAdmin());
@@ -2236,8 +2655,9 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
         actionButton.dispatchEvent(new CustomEvent('case-modal-action'));
     }, true);
 
+    function bindCaseListActions(root) {
     // View case modal handlers
-    document.querySelectorAll('.view-case').forEach(btn => {
+    root.querySelectorAll('.view-case').forEach(btn => {
         btn.addEventListener('case-modal-action', function() {
             const ajaxUrl = this.dataset.ajaxUrl;
             const caseNumber = this.dataset.caseNumber || '';
@@ -2292,7 +2712,7 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
     });
 
     // Edit case modal handlers
-    document.querySelectorAll('.edit-case').forEach(btn => {
+    root.querySelectorAll('.edit-case').forEach(btn => {
         btn.addEventListener('case-modal-action', function() {
             const ajaxUrl = this.dataset.ajaxUrl;
             const caseNumber = this.dataset.caseNumber || '';
@@ -2344,7 +2764,7 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
     });
 
     // Mobile card click handlers
-    document.querySelectorAll('.case-card').forEach(card => {
+    root.querySelectorAll('.case-card').forEach(card => {
         card.addEventListener('click', function() {
             const ajaxUrl = this.dataset.ajaxUrl;
             const caseNumber = this.dataset.caseNumber || '';
@@ -2380,6 +2800,10 @@ $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()
                 });
         });
     });
+
+    }
+    bindCaseListActions(document);
+    document.addEventListener('case-list-updated', () => bindCaseListActions(document));
 
     // Close modals on Escape key
     document.addEventListener('keydown', function(e) {
@@ -2495,7 +2919,7 @@ document.addEventListener('submit', function(event) {
             return data;
         })
         .then((data) => {
-            if (@json($isBarangayDeskOfficer)) {
+            if (@json($isBarangayDeskOfficer || auth()->user()->isDepartmentAdmin())) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Archived!',
