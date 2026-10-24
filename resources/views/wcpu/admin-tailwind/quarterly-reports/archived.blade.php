@@ -539,6 +539,20 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 function openRestoreModal(id, name) { document.getElementById('restoreReportName').textContent = name; document.getElementById('restoreForm').action = "{{ url('admin/quarterly-reports') }}/" + id + "/restore"; document.getElementById('restoreModal').classList.remove('hidden'); }
 function closeRestoreModal() { document.getElementById('restoreModal').classList.add('hidden'); }
+@if(auth()->user()?->isDepartmentAdmin() && request('section') === 'quarterly')
+document.getElementById('restoreForm')?.addEventListener('submit', function () {
+    this.setAttribute('data-skip-loading-modal', '');
+    closeRestoreModal();
+    Swal.fire({
+        title: 'Restoring Report...',
+        text: 'Please wait while the quarterly report is restored.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading(),
+    });
+});
+@endif
 document.addEventListener('keydown', event => { if (event.key === 'Escape') closeRestoreModal(); });
 const archivedSearch = document.getElementById('archived-report-search'), archivedQuarter = document.getElementById('archived-report-quarter'), archivedYear = document.getElementById('archived-report-year'), archivedBarangay = document.getElementById('archived-report-barangay'), archivedFilterForm = document.getElementById('archived-quarterly-report-filter-form');
 function filterArchivedReports() { const search = (archivedSearch?.value || '').toLowerCase().trim(), quarter = archivedQuarter?.value || '', year = archivedYear?.value || ''; document.querySelectorAll('[data-archived-report]').forEach(item => item.classList.toggle('hidden', !((!search || item.textContent.toLowerCase().includes(search)) && (!quarter || item.dataset.quarter === quarter) && (!year || item.dataset.year === year)))); }

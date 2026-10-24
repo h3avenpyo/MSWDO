@@ -5,6 +5,97 @@
 @push('styles')
 <style>
     @if(auth()->user()?->isDepartmentAdmin())
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-dropdown {
+        width: 20rem !important;
+        max-width: calc(100vw - 1rem) !important;
+        max-height: min(29.625rem, calc(100dvh - 6rem)) !important;
+        background: #fff !important;
+        border: 1px solid #dbe1e8 !important;
+        border-radius: .75rem !important;
+        box-shadow: 0 2px 6px rgb(0 0 0 / 5%) !important;
+    }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-dropdown > div:first-child {
+        flex-shrink: 0;
+        min-height: 3.5rem;
+        padding: 1rem 1.5rem !important;
+        background: #c41e3a !important;
+        color: #fff !important;
+    }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-dropdown h4 { color: #fff !important; white-space: nowrap; }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header #markAllReadBtn {
+        min-width: 0 !important;
+        min-height: 0 !important;
+        padding: .25rem .625rem !important;
+        background: #fff !important;
+        color: #c41e3a !important;
+        border: 0 !important;
+        border-radius: .625rem !important;
+        font-size: .75rem !important;
+        white-space: nowrap;
+    }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-item {
+        min-height: 5.75rem;
+        align-items: center !important;
+        gap: 1rem !important;
+        padding: 1.5rem !important;
+        background: #fff !important;
+        border-color: #f3f4f6 !important;
+    }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-item:hover { background: #f9fafb !important; }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-item > div:first-child {
+        background: #ffe4e8 !important;
+        color: #d4143f !important;
+    }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-item > div:first-child > i { color: #d4143f !important; }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-item p {
+        color: #284c6b !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-item span { color: #ff2548 !important; }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-dropdown > div:last-child {
+        flex-shrink: 0;
+        padding: .75rem 1.5rem !important;
+        background: #f9fafb !important;
+        border-color: #f3f4f6 !important;
+    }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-dropdown-list { scrollbar-width: auto; scrollbar-color: #929292 #fff; }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-dropdown-list::-webkit-scrollbar { width: .75rem; }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-dropdown-list::-webkit-scrollbar-track { background: #fff; }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-dropdown-list::-webkit-scrollbar-thumb { background: #929292; border: 2px solid #fff; border-radius: 1rem; }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header button[aria-label="Notifications"] {
+        box-sizing: border-box !important;
+        width: 2.5rem !important;
+        min-width: 2.5rem !important;
+        height: 2.5rem !important;
+        min-height: 2.5rem !important;
+        padding: 0 !important;
+        border-radius: .625rem !important;
+        background: var(--mswdo-profile, #BC0202) !important;
+        border: 1px solid #8f0202 !important;
+        box-shadow: 0 2px 5px rgba(188, 2, 2, .18) !important;
+        color: #fff !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        align-self: center !important;
+        position: relative !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header button[aria-label="Notifications"]:hover { background: #8f0202 !important; }
+    html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header button[aria-label="Notifications"] > i {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1rem !important;
+        line-height: 1 !important;
+        color: #fff !important;
+        vertical-align: middle !important;
+    }
     @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
         html body.portal-ui.admin-dashboard-mobile-nav > aside#sidebar {
             width: 18rem !important;
@@ -41,6 +132,13 @@
         .admin-dashboard-statistic-card > div { gap: .75rem; }
         .admin-dashboard-statistic-card .admin-dashboard-statistic-icon { width: 3rem; height: 3rem; }
     }
+
+    @if(auth()->user()?->isDepartmentAdmin())
+    @media (min-width: 80rem) and (hover: hover) and (pointer: fine) {
+        .admin-dashboard-statistics { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+        .admin-dashboard-statistics > * { grid-column: auto !important; }
+    }
+    @endif
 
     /* Mobile-first Dashboard layout for 320px–430px Android phones/iPhones. */
     @media (max-width: 26.875rem) {

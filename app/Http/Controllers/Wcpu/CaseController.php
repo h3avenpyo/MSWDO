@@ -557,6 +557,13 @@ class CaseController extends Controller
         abort_unless(Auth::user()->canAccessCaseDepartment($case->type), 403);
         $case->restore();
 
+        if (Auth::user()->isDepartmentAdmin() && request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Barangay case restored successfully.',
+            ]);
+        }
+
         if (Auth::user()->isVawcAdmin()) {
             if (request()->expectsJson()) {
                 return response()->json([

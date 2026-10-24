@@ -127,6 +127,12 @@
     #quarterly-reports-results button[title="Archive report"],
     #quarterly-reports-results .quarterly-report-archive-button { order: 3; }
     @endif
+    @if(auth()->user()->isVawcAdmin())
+    #quarterly-reports-results .swd-quarterly-print { order: 2 !important; }
+    #quarterly-reports-results .swd-quarterly-archive { order: 3 !important; }
+    html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-actions > .quarterly-report-card-print { order: 3 !important; }
+    html body.portal-ui #quarterly-mobile-cards .quarterly-report-card-actions > .quarterly-report-card-archive { order: 4 !important; }
+    @endif
     #quarterly-reports-content nav [aria-current="page"] span {
         background-color: #C41E3A !important;
         border-color: #C41E3A !important;
@@ -625,7 +631,7 @@
                                 </a>
                                 <a href="{{ route('admin.quarterly-reports.download', $report->id) }}{{ auth()->user()->isDepartmentAdmin() ? '?preview=1' : '' }}"
                                    {!! auth()->user()->isDepartmentAdmin() ? 'target="_blank" rel="noopener"' : '' !!}
-                                   class="inline-flex items-center justify-center w-9 h-9 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition"
+                                   class="{{ auth()->user()->isVawcAdmin() ? 'swd-quarterly-print ' : '' }}inline-flex items-center justify-center w-9 h-9 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition"
                                    title="Preview / Print">
                                     <i class="fas fa-print"></i><span class="sr-only">Preview / Print</span>
                                 </a>
@@ -636,7 +642,7 @@
                                 </a>
                                 <button type="button" 
                                         onclick="openArchiveModal({{ $report->id }}, '{{ $report->barangay->name ?? 'Barangay' }} - Q{{ $report->quarter }} {{ $report->year }} ({{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }})')"
-                                        class="{{ auth()->user()->isBcpcAdmin() ? 'quarterly-report-archive-button ' : '' }}inline-flex items-center {{ auth()->user()->isDepartmentAdmin() ? 'justify-center w-9 h-9' : 'gap-1.5 px-3 py-1.5' }} bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 rounded-lg text-xs font-medium {{ auth()->user()->isBcpcAdmin() ? '' : 'transition' }}"
+                                        class="{{ auth()->user()->isBcpcAdmin() ? 'quarterly-report-archive-button ' : (auth()->user()->isVawcAdmin() ? 'swd-quarterly-archive ' : '') }}inline-flex items-center {{ auth()->user()->isDepartmentAdmin() ? 'justify-center w-9 h-9' : 'gap-1.5 px-3 py-1.5' }} bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 rounded-lg text-xs font-medium {{ auth()->user()->isBcpcAdmin() ? '' : 'transition' }}"
                                         title="Archive report">
                                     <i class="fas fa-archive"></i><span class="{{ auth()->user()->isDepartmentAdmin() ? 'sr-only' : '' }}">Archive</span>
                                 </button>
@@ -821,6 +827,21 @@ function closeArchiveModal() {
     document.getElementById('archiveModal').classList.add('hidden');
 }
 
+@if(auth()->user()?->isDepartmentAdmin())
+document.getElementById('archiveForm')?.addEventListener('submit', function () {
+    this.setAttribute('data-skip-loading-modal', '');
+    closeArchiveModal();
+    Swal.fire({
+        title: 'Archiving Report...',
+        text: 'Please wait while the quarterly report is archived.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading(),
+    });
+});
+@endif
+
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeArchiveModal();
 });
@@ -922,7 +943,16 @@ document.getElementById('generateQuarterlyReportForm')?.addEventListener('submit
     }
     event.preventDefault();
     this.closest('dialog')?.close();
+    this.setAttribute('data-skip-loading-modal', '');
     requestAnimationFrame(() => {
+        Swal.fire({
+            title: 'Generating Report...',
+            text: 'Please wait while the quarterly report is generated.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading(),
+        });
         HTMLFormElement.prototype.submit.call(this);
     });
 });

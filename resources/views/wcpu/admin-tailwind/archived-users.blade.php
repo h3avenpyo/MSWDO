@@ -620,11 +620,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    @if(auth()->user()?->isDepartmentAdmin())
+                    Swal.fire({
+                        title: 'Restoring User...',
+                        text: 'Please wait while the user account is restored.',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => Swal.showLoading(),
+                    });
+                    @endif
                     // Make API call to restore
                     fetch(`/admin/users/api/${userId}/restore`, {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            @if(auth()->user()?->isDepartmentAdmin())
+                            'X-Skip-Loading': '1',
+                            @endif
                             'Content-Type': 'application/json'
                         }
                     })

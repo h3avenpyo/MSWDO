@@ -3,6 +3,26 @@
 @if(auth()->user()?->isDepartmentAdmin())
 @push('styles')
 <style>
+    html body.portal-ui.admin-referrals-archived-mobile-nav .archive-action[data-action="restore"] {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0 !important;
+        font-size: 0 !important;
+    }
+    html body.portal-ui.admin-referrals-archived-mobile-nav .archive-action[data-action="restore"] > span { display: none !important; }
+    html body.portal-ui.admin-referrals-archived-mobile-nav .archive-action[data-action="restore"] > i {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 auto;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1rem !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        transform: none !important;
+    }
     @media (max-width: 47.9375rem) {
         html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > [data-pagination-label],
         html body.portal-ui.admin-referrals-archived-mobile-nav [data-archive-list] > .archived-referrals-table-view > [data-pagination-label],
@@ -821,12 +841,15 @@ document.addEventListener('click', async function (event) {
     if (!result.isConfirmed) return;
     button.disabled = true;
     try {
-        if (@json(auth()->user()->isBcpcAdmin())) {
+        const restoreLoading = !deleting && @json(auth()->user()?->isDepartmentAdmin());
+        if (restoreLoading) {
+            Swal.fire({ title: 'Restoring Referral...', text: 'Please wait while the archived record is restored.', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
+        } else if (@json(auth()->user()->isBcpcAdmin())) {
             Swal.fire({ title: 'Processing...', text: `${deleting ? 'Deleting' : 'Restoring'} referral. Please wait.`, allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
         }
         const response = await fetch(button.dataset.url, {
             method: deleting ? 'DELETE' : 'POST',
-            headers: {'X-CSRF-TOKEN': @json(csrf_token()), 'Accept': 'application/json'}
+            headers: {'X-CSRF-TOKEN': @json(csrf_token()), 'Accept': 'application/json', ...(restoreLoading ? { 'X-Skip-Loading': '1' } : {})}
         });
         const data = await response.json();
         if (!response.ok || !data.success) throw new Error(data.message || 'Unable to update archived referral');

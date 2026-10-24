@@ -1046,12 +1046,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    @if(auth()->user()?->isDepartmentAdmin())
+                    Swal.fire({ title: 'Archiving Referral Info...', text: 'Please wait while the referral information is archived.', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
+                    @endif
                     fetch(`/admin/referral-info/${id}`, {
                         method: 'DELETE',
                         @if(auth()->user()->isDepartmentAdmin())
                         body: JSON.stringify({confirm_linked_referrals: hasActiveReferrals}),
                         @endif
                         headers: {
+                            @if(auth()->user()?->isDepartmentAdmin())
+                            'X-Skip-Loading': '1',
+                            @endif
                             'X-CSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json'
                         }

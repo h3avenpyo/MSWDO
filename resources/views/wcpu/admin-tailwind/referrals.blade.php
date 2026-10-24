@@ -1336,10 +1336,8 @@ document.addEventListener('click', async function(event) {
     if (!result.isConfirmed) return;
     button.disabled = true;
     try {
-        if (@json(auth()->user()->isBcpcAdmin())) {
-            Swal.fire({ title: 'Processing...', text: 'Archiving referral. Please wait.', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
-        }
-        const response = await fetch(`/admin/referrals/${button.dataset.id}/archive`, {method: 'POST', headers: {'X-CSRF-TOKEN': @json(csrf_token()), 'Accept': 'application/json'}});
+        Swal.fire({ title: 'Archiving Referral...', text: 'Please wait while the referral is archived.', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
+        const response = await fetch(`/admin/referrals/${button.dataset.id}/archive`, {method: 'POST', headers: {'X-CSRF-TOKEN': @json(csrf_token()), 'Accept': 'application/json', 'X-Skip-Loading': '1'}});
         const data = await response.json();
         if (!response.ok || !data.success) throw new Error(data.message || 'Failed to archive referral');
         if (@json(auth()->user()->isBcpcAdmin())) {

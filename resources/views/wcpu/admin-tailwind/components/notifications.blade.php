@@ -1,4 +1,13 @@
 @php
+    $usesReferenceNotificationStyle = auth()->user()?->isDepartmentAdmin() && request()->routeIs(
+        'admin-dashboard', 'case-profiles.index', 'cases.show', 'admin-barangay-cases',
+        'admin.barangay-cases.show', 'admin-add-new-case', 'admin.users.index',
+        'admin.users.create', 'admin.users.logs', 'admin.referrals', 'admin.referrals.index',
+        'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show',
+        'admin.quarterly-reports.edit', 'admin.bcpc-case-monitoring.edit', 'admin.calendar.index',
+        'admin.quarterly-reports.archived', 'admin.referrals.archived', 'admin.users.archived',
+        'admin.bcpc-case-monitoring.archived'
+    );
     // Get last notification view time from database (user record)
     $lastViewedTime = 0;
     if (Auth::check() && Auth::user()->notifications_last_viewed_at) {
@@ -285,7 +294,10 @@
 @endphp
 
 <!-- Notification Bell -->
-<div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
+@if($usesReferenceNotificationStyle)
+    @include('admin-tailwind.components.notification-reference-style')
+@endif
+<div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false" @if($usesReferenceNotificationStyle) data-admin-notification-reference @endif>
     <button 
         @click="open = !open" 
         class="relative p-2 {{ auth()->user()->isBcpcAdmin() ? 'text-white border border-white hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-purple-700 hover:bg-purple-50' }} rounded-full transition-colors"
@@ -315,10 +327,10 @@
     >
         <!-- Header -->
         <div class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-purple-700 to-purple-600 text-white">
-            <h4 class="font-semibold text-sm">Recent Activity</h4>
+            <h4 class="font-semibold text-sm" @if($usesReferenceNotificationStyle) style="color: #ffffff !important;" @endif>{{ $usesReferenceNotificationStyle ? 'Notifications' : 'Recent Activity' }}</h4>
             <button 
                 id="markAllReadBtn"
-                class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors"
+                class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors {{ auth()->user()?->isDepartmentAdmin() && request()->routeIs('admin-dashboard') ? 'text-white' : '' }}"
                 @if(request()->routeIs('desk-officer.cases.show')) style="background: #ffffff !important; color: #C41E3A !important;" @endif
             >
                 Mark all as read

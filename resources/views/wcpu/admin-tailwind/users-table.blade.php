@@ -1439,9 +1439,15 @@ function confirmArchive(userId, userName) {
         reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
+            @if(auth()->user()?->isDepartmentAdmin())
+            Swal.fire({ title: 'Archiving User...', text: 'Please wait while the user account is archived.', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
+            @endif
             fetch(`/admin/users/${userId}/archive`, {
                 method: 'POST',
                 headers: {
+                    @if(auth()->user()?->isDepartmentAdmin())
+                    'X-Skip-Loading': '1',
+                    @endif
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Content-Type': 'application/json'
                 }
