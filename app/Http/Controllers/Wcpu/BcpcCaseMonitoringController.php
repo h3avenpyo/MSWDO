@@ -124,14 +124,18 @@ class BcpcCaseMonitoringController extends Controller
         $quarter = $request->input('quarter');
         $year = $request->input('year');
 
-        $monitoring = BcpcCaseMonitoring::where([
+        $monitoringQuery = BcpcCaseMonitoring::where([
             'barangay_id' => $barangay->id,
             'quarter' => $quarter,
             'year' => $year,
-        ])->first();
+        ]);
+        $monitoring = $request->filled('monitoring_id')
+            ? $monitoringQuery->findOrFail($request->integer('monitoring_id'))
+            : $monitoringQuery->first();
 
         $data = $monitoring->data ?? [];
-        $yearGroups = ['year_2023' => 'Year 2023', 'year_2024' => 'Year 2024', 'total_2025' => 'Total 2025'];
+        $reportYear = (int) ($year ?: now()->year);
+        $yearGroups = ['year_2023' => 'Year ' . ($reportYear - 2), 'year_2024' => 'Year ' . ($reportYear - 1), 'total_2025' => 'Year ' . $reportYear];
         $sexColumns = ['male' => 'Male', 'female' => 'Female', 'total' => 'Total'];
         $tables = [
             [
@@ -356,8 +360,9 @@ class BcpcCaseMonitoringController extends Controller
             $reportView = $this->print(new Request([
                 'quarter' => $monitoring->quarter,
                 'year' => $monitoring->year,
+                'monitoring_id' => $monitoring->id,
             ]));
-            $pdfContent = Pdf::loadHtml($reportView->render())->output();
+            $pdfContent = Pdf::loadHtml($reportView->render())->setPaper('legal', 'landscape')->output();
             $pdfFilename = "BCPC-Monitoring-Q{$monitoring->quarter}-{$monitoring->year}.pdf";
 
             Mail::mailer('wcpu')->to('bcpcsilang@gmail.com')->send(new PortalActionNotification(

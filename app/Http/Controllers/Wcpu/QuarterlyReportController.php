@@ -772,7 +772,7 @@ class QuarterlyReportController extends Controller
             'endDate' => $endDate,
             'reportData' => $reportData,
             'caseTypes' => $caseTypes,
-            'generatedAt' => now()->format('F j, Y'),
+            'generatedAt' => now('Asia/Manila')->format('F j, Y g:i A'),
             'user' => $user,
         ];
 

@@ -440,8 +440,8 @@
                                 </div>
                             </td>
                             <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-gray-600 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-700">{{ $monitoring->submitted_at?->format('M d, Y') ?? 'Not submitted' }}</div>
-                                <div class="text-xs text-gray-400">{{ $monitoring->submitted_at?->format('g:i A') ?? '' }}</div>
+                                <div class="text-sm font-medium text-gray-700">{{ $monitoring->submitted_at?->timezone('Asia/Manila')->format('M d, Y') ?? 'Not submitted' }}</div>
+                                <div class="text-xs text-gray-400">{{ $monitoring->submitted_at?->timezone('Asia/Manila')->format('g:i A') ?? '' }}</div>
                             </td>
                             <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-center whitespace-nowrap">
                                 <div class="bcpc-monitoring-actions flex items-center justify-center gap-2">
@@ -511,7 +511,7 @@
 
                     <div class="flex items-center justify-between text-xs text-gray-500 mb-3 bg-gray-50 rounded-lg px-3 py-2">
                         <span>Submitted At:</span>
-                        <span class="font-medium text-gray-700">{{ $monitoring->submitted_at?->format('M d, Y g:i A') ?? 'Not submitted' }}</span>
+                        <span class="font-medium text-gray-700">{{ $monitoring->submitted_at?->timezone('Asia/Manila')->format('M d, Y g:i A') ?? 'Not submitted' }}</span>
                     </div>
 
                     <div class="bcpc-monitoring-actions bcpc-monitoring-card-actions border-t border-gray-100">

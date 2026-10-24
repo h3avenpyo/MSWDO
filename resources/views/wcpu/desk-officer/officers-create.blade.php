@@ -8,6 +8,28 @@
 @endphp
 @push('styles')
 <style>
+    @media (min-width: 80.0625rem) {
+        html body.portal-ui #mainContent > header#officers-create-header > div > div {
+            display: flex !important;
+            width: 100% !important;
+            flex: 1 1 auto !important;
+            column-gap: 1rem !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header > div > div > div:first-child {
+            flex: 1 1 0 !important;
+            min-width: 0 !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header > div > div > .portal-page-clock {
+            flex: 0 0 auto !important;
+            order: 0 !important;
+            margin-left: auto !important;
+            margin-right: 0 !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header > div > div > div:last-child {
+            flex: 0 0 auto !important;
+            column-gap: 1rem !important;
+        }
+    }
     /* Ensure no duplicate mobile top bar or duplicate toggle */
     html body.portal-ui #mobileTopBar,
     body.portal-ui #mobileTopBar,

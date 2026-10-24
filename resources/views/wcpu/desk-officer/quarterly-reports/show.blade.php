@@ -629,9 +629,9 @@
             <div class="bg-gray-50 border border-gray-200 rounded-xl p-3.5">
                 <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Generated / Recorded</span>
                 <div class="text-base font-bold text-gray-800 mt-1">
-                    {{ $report->created_at->format('M d, Y') }}
+                    {{ ($report->updated_at ?? $report->created_at)->timezone('Asia/Manila')->format('M d, Y') }}
                 </div>
-                <div class="text-xs text-gray-400">{{ $report->created_at->format('h:i A') }}</div>
+                <div class="text-xs text-gray-400">{{ ($report->updated_at ?? $report->created_at)->timezone('Asia/Manila')->format('h:i A') }}</div>
             </div>
         </div>
     </div>

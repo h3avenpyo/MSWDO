@@ -330,6 +330,7 @@
             <h4 class="font-semibold text-sm" @if($usesReferenceNotificationStyle) style="color: #ffffff !important;" @endif>{{ $usesReferenceNotificationStyle ? 'Notifications' : 'Recent Activity' }}</h4>
             <button 
                 id="markAllReadBtn"
+                type="button"
                 class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors {{ auth()->user()?->isDepartmentAdmin() && request()->routeIs('admin-dashboard') ? 'text-white' : '' }}"
                 @if(request()->routeIs('desk-officer.cases.show')) style="background: #ffffff !important; color: #C41E3A !important;" @endif
             >
@@ -457,8 +458,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.querySelectorAll('.notification-item .bg-purple-500.rounded-full').forEach(dot => {
                         dot.style.display = 'none';
                     });
-                    // Reload to refresh
+                    @if(auth()->user()?->isDepartmentAdmin())
+                    document.getElementById('notifications-unread-count')?.remove();
+                    @else
                     setTimeout(() => window.location.reload(), 300);
+                    @endif
                 }
             })
             .catch(console.error);

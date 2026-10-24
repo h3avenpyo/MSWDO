@@ -142,12 +142,15 @@
     <button 
         @click="open = !open" 
         class="relative p-2 text-gray-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
+        @if($user?->position === 'Desk Officer' && ($user->canAccessCaseDepartment('BCPC') || $user->canAccessCaseDepartment('VAWC')))
+        style="background-color: #c00000 !important; background-image: none !important; border-color: #c00000 !important; color: #ffffff !important;"
+        @endif
         aria-label="Notifications"
         title="Notifications"
     >
-        <i class="fas fa-bell text-xl"></i>
+        <i class="fas fa-bell text-xl" @if($user?->position === 'Desk Officer' && ($user->canAccessCaseDepartment('BCPC') || $user->canAccessCaseDepartment('VAWC'))) style="color: #ffffff !important;" @endif></i>
         @if($unreadCount > 0)
-        <span id="notifications-unread-count" class="notification-badge absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full" @if($isMultiroleNotifications) data-unread-badge @endif style="background-color: #eab308 !important; color: #ffffff !important;">
+        <span id="notifications-unread-count" class="notification-badge absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full" @if($isMultiroleNotifications) data-unread-badge @endif style="background-color: #eab308 !important; color: #ffffff !important; border: 0 !important; outline: none !important; box-shadow: none !important;">
             {{ $unreadCount > 9 ? '9+' : $unreadCount }}
         </span>
         @endif
@@ -172,6 +175,7 @@
             <h4 class="font-semibold text-sm text-white" style="color: #ffffff !important;">Notifications</h4>
             <button 
                 id="deskMarkAllReadBtn"
+                type="button"
                 class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors text-white"
                 style="{{ request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'case-profiles.index', 'desk-officer.cases.index', 'desk-officer.cases.create', 'desk-officer.referrals', 'desk-officer.calendar.index', 'desk-officer.quarterly-reports.index', 'desk-officer.quarterly-reports.create', 'desk-officer.quarterly-reports.show', 'desk-officer.quarterly-reports.edit', 'desk-officer.bcpc-case-monitoring.edit', 'desk-officer.archived-barangay-cases.index', 'desk-officer.referrals.archived', 'desk-officer.quarterly-reports.archived') ? 'background: #ffffff !important; color: #C41E3A !important;' : 'color: #ffffff !important;' }}"
             >
@@ -256,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.querySelectorAll('.desk-notification-item .bg-purple-500.rounded-full').forEach(dot => {
                         dot.style.display = 'none';
                     });
-                    setTimeout(() => window.location.reload(), 300);
+                    document.getElementById('notifications-unread-count')?.remove();
                 }
             })
             .catch(console.error);
