@@ -59,6 +59,43 @@ window.applyArchiveReportModalDesign = (doc, title, allowBcpcMonitoring = false)
     const isQuarterlyReport = reportTitle?.includes('Quarterly Compliance Report');
     const isBcpcMonitoring = allowBcpcMonitoring && reportTitle?.trim() === 'BCPC Case Monitoring';
     if (!isQuarterlyReport && !isBcpcMonitoring) return;
+    if (isQuarterlyReport && doc.body.classList.contains('desk-officer-header-theme') && window.matchMedia('(max-width: 47.9375rem)').matches) {
+        doc.querySelectorAll('#abuse-type-classification .abuse-type-table-view, #case-status-breakdown .case-status-table-view, #case-records .case-records-table-view').forEach(table => {
+            table.style.setProperty('display', 'none', 'important');
+        });
+        doc.querySelectorAll('#abuse-type-mobile-cards, #case-status-mobile-cards, #case-records-mobile-cards').forEach(cards => {
+            cards.style.setProperty('display', 'flex', 'important');
+            cards.style.setProperty('flex-direction', 'column', 'important');
+            cards.style.setProperty('gap', '.75rem', 'important');
+            cards.style.setProperty('padding', '.75rem', 'important');
+            cards.querySelectorAll(':scope > article').forEach(card => {
+                card.style.setProperty('width', '100%');
+                card.style.setProperty('min-width', '0');
+                card.style.setProperty('overflow-wrap', 'anywhere');
+                card.style.setProperty('box-sizing', 'border-box');
+                card.style.setProperty('margin', '0', 'important');
+                card.style.setProperty('padding', '1rem', 'important');
+                card.style.setProperty('text-align', 'left', 'important');
+                card.querySelectorAll('p, span').forEach(label => label.style.setProperty('text-align', 'left', 'important'));
+            });
+        });
+        doc.querySelectorAll('#abuse-type-classification > div:first-child, #case-status-breakdown > div:first-child, #case-records > div:first-child').forEach(header => {
+            header.style.setProperty('text-align', 'left', 'important');
+            header.style.setProperty('padding', '.75rem 1rem', 'important');
+            header.querySelectorAll('h2, p').forEach(label => {
+                label.style.setProperty('text-align', 'left', 'important');
+                label.style.setProperty('padding', '0', 'important');
+                if (label.tagName === 'H2') {
+                    label.style.setProperty('justify-content', 'flex-start', 'important');
+                    label.style.setProperty('gap', '.5rem', 'important');
+                    label.style.setProperty('margin', '0', 'important');
+                } else {
+                    label.style.setProperty('margin', '.25rem 0 0', 'important');
+                    label.style.setProperty('padding-left', '.625rem', 'important');
+                }
+            });
+        });
+    }
     const name = document.createElement('div');
     name.className = 'archive-case-heading';
     name.textContent = reportTitle;

@@ -1,0 +1,61 @@
+/* Match the Admin sidebar only on tablets in landscape. */
+@media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) {
+    html body.portal-ui.desk-officer-header-theme > aside#sidebar#sidebar {
+        position: fixed !important;
+        inset: 0 auto 0 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 18rem !important;
+        min-width: 4.5rem !important;
+        max-width: 18rem !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: hidden !important;
+        transform: none !important;
+        background: #B11116 !important;
+        color: #fff !important;
+        z-index: 60 !important;
+        transition: width .3s cubic-bezier(.22,.61,.36,1) !important;
+    }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar > .sidebar-header {
+        display: flex !important;
+        align-items: center !important;
+        box-sizing: border-box;
+        height: 5.5rem !important;
+        min-height: 5.5rem !important;
+        flex: 0 0 5.5rem !important;
+        padding: .875rem .75rem !important;
+        border-color: rgba(255,255,255,.22) !important;
+    }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar > .sidebar-header > div { justify-content: flex-start !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar .sidebar-header img { width: 2.25rem !important; height: 2.25rem !important; min-width: 2.25rem !important; flex-shrink: 0; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar .sidebar-header h1 { font-size: 1rem !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar .sidebar-menu { padding-inline: .5rem !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar > nav { flex: 1 1 0 !important; min-height: 0 !important; overflow-x: hidden !important; overflow-y: auto !important; overscroll-behavior-y: contain; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar > div.sidebar-menu { flex: 0 0 auto !important; margin-top: auto !important; border-top: 1px solid rgba(255,255,255,.22); }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar .sidebar-link { padding: .75rem 1rem !important; gap: .75rem; color: #fff !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar .sidebar-link > i:not(.fa-chevron-down),
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar .sidebar-link > span > i { width: 1.25rem !important; min-width: 1.25rem !important; font-size: 1rem !important; margin-inline: 0 !important; text-align: center; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar nav a:not(.sidebar-link) { font-size: .875rem !important; line-height: 1.25rem; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar nav a:not(.sidebar-link) > i { width: 1rem !important; font-size: .875rem !important; text-align: center; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar .sidebar-link:hover { background-color: rgba(255,255,255,.12) !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar [class~="bg-purple-600"],
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar [class~="bg-purple-700/70"] { background-color: #C41E3A !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) .sidebar-text { display: inline-block !important; opacity: 1 !important; max-width: none !important; pointer-events: auto !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) { width: 4.5rem !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) > .sidebar-header { height: 7rem !important; min-height: 7rem !important; flex-basis: 7rem !important; padding: 1.25rem 0 0 !important; align-items: flex-start !important; justify-content: center !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) > .sidebar-header > div { width: 100%; justify-content: center !important; gap: 0 !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) .sidebar-header img { width: 3rem !important; height: 3rem !important; min-width: 3rem !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) .sidebar-text { display: none !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) .sidebar-link,
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) .sidebar-link > span { justify-content: center !important; gap: 0 !important; padding-inline: 0 !important; }
+    html body.portal-ui.desk-officer-header-theme > #sidebarToggleBtn#sidebarToggleBtn { display: flex !important; position: fixed !important; top: 2.75rem !important; left: calc(18rem - .75rem) !important; transform: translateY(-50%) !important; z-index: 70 !important; transition: left .3s cubic-bezier(.22,.61,.36,1) !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) ~ #sidebarToggleBtn#sidebarToggleBtn { top: 4.75rem !important; left: 2.25rem !important; transform: translateX(-50%) !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar ~ #mainContent#mainContent { margin-left: 18rem !important; width: calc(100% - 18rem) !important; transition: margin-left .3s cubic-bezier(.22,.61,.36,1), width .3s cubic-bezier(.22,.61,.36,1) !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebar#sidebar:is(.sidebar-collapsed,.sidebar-collapsed-init) ~ #mainContent#mainContent { margin-left: 4.5rem !important; width: calc(100% - 4.5rem) !important; }
+    html body.portal-ui.desk-officer-header-theme #sidebarOverlay#sidebarOverlay { display: none !important; pointer-events: none !important; }
+}
+@media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: landscape) and (prefers-reduced-motion: reduce) {
+    html body.portal-ui.desk-officer-header-theme > :is(#sidebar#sidebar,#sidebarToggleBtn#sidebarToggleBtn,#mainContent#mainContent) { transition: none !important; }
+}

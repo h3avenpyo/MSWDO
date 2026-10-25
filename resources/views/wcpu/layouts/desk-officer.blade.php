@@ -1646,6 +1646,10 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             }
         }
     </style>
+    @if(auth()->user()?->position === 'Desk Officer' && (auth()->user()->canAccessCaseDepartment('BCPC') || auth()->user()->canAccessCaseDepartment('VAWC')))
+    <link rel="stylesheet" href="{{ asset('css/desk-officer-tablet-portrait-sidebar.css') }}?v={{ filemtime(public_path('css/desk-officer-tablet-portrait-sidebar.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/desk-officer-tablet-landscape-sidebar.css') }}?v={{ filemtime(public_path('css/desk-officer-tablet-landscape-sidebar.css')) }}">
+    @endif
 </head>
 
 <body
@@ -2301,6 +2305,12 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         }
         
         // Floating toggle button click
+        @if(auth()->user()?->position === 'Desk Officer' && (auth()->user()->canAccessCaseDepartment('BCPC') || auth()->user()->canAccessCaseDepartment('VAWC')))
+        sidebar?.addEventListener('click', function(event) {
+            if (window.matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').matches
+                && event.target.closest('nav a[href], #logout-button')) collapseSidebar();
+        });
+        @endif
         if (sidebarToggleBtn) {
             sidebarToggleBtn.addEventListener('click', function() {
                 if (sidebar.classList.contains('sidebar-collapsed')) {

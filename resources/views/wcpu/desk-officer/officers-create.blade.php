@@ -79,6 +79,32 @@
     }
 
     @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent #officers-create-header [data-desk-phone-notifications] {
+            position: absolute !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            right: max(.75rem, env(safe-area-inset-right)) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            align-self: center !important;
+            transform: none !important;
+            line-height: 1 !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header > div > div > div:last-child {
+            min-width: 2.5rem !important;
+        }
+        html body.portal-ui #mainContent #officers-create-header [data-desk-phone-notifications] > button[aria-label="Notifications"] {
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-width: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
         @if($isSingleDepartmentDeskOfficer)
         html body.portal-ui #mainContent > header#officers-create-header > div {
             display: block !important;
@@ -107,7 +133,7 @@
             justify-content: center !important;
             align-self: center !important;
             line-height: 1 !important;
-            transform: translateY(.875rem) !important;
+            transform: none !important;
         }
 
         html body.portal-ui #mainContent > header#officers-create-header :is(.portal-header-clock, .desk-officer-user-profile) {

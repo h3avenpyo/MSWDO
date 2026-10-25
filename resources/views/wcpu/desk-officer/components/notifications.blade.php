@@ -138,12 +138,36 @@
 @endphp
 
 <!-- Notification Bell -->
-<div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false" @if($isMultiroleNotifications) data-multirole-notifications data-mark-read-url="{{ route('notifications.mark-read') }}" @endif>
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui [data-desk-phone-notifications] > .notification-dropdown {
+            position: fixed !important;
+            top: var(--desk-notification-top, 4.5rem) !important;
+            left: auto !important;
+            right: max(.75rem, env(safe-area-inset-right)) !important;
+            width: 20rem !important;
+            max-width: calc(100vw - 1.5rem) !important;
+            margin-top: 0 !important;
+            max-height: min(29.625rem, calc(100dvh - var(--desk-notification-top, 4.5rem) - 1rem - env(safe-area-inset-bottom))) !important;
+            z-index: 100 !important;
+            transform-origin: top center;
+        }
+    }
+</style>
+@if($user?->position === 'Desk Officer' && ($user->canAccessCaseDepartment('BCPC') || $user->canAccessCaseDepartment('VAWC')))
+@include('admin-tailwind.components.notification-reference-style', [
+    'notificationStyleScope' => 'html body.portal-ui #mainContent#mainContent [data-desk-phone-notifications]',
+    'notificationReadButton' => '#deskMarkAllReadBtn',
+    'notificationItemSelector' => '.desk-notification-item',
+    'notificationMobileOnly' => true,
+])
+@endif
+<div class="relative" data-desk-phone-notifications x-data="{ open: false, positionDropdown() { if (window.matchMedia('(max-width: 47.9375rem)').matches) { this.$refs.panel.style.setProperty('--desk-notification-top', (this.$refs.bell.getBoundingClientRect().bottom + 8) + 'px'); } } }" @resize.window="positionDropdown()" @scroll.window="if (open) positionDropdown()" @keydown.escape.window="open = false" @if($isMultiroleNotifications) data-multirole-notifications data-mark-read-url="{{ route('notifications.mark-read') }}" @endif>
     <button 
-        @click="open = !open" 
+        x-ref="bell" @click="positionDropdown(); open = !open"
         class="relative p-2 text-gray-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
         @if($user?->position === 'Desk Officer' && ($user->canAccessCaseDepartment('BCPC') || $user->canAccessCaseDepartment('VAWC')))
-        style="background-color: #c00000 !important; background-image: none !important; border-color: #c00000 !important; color: #ffffff !important;"
+        style="background-color: #c00000 !important; background-image: none !important; border: 1px solid #8f0202 !important; color: #ffffff !important;"
         @endif
         aria-label="Notifications"
         title="Notifications"
@@ -158,7 +182,7 @@
     
     <!-- Dropdown -->
     <div 
-        x-show="open" 
+        x-ref="panel" x-show="open"
         x-cloak
         @click.away="open = false"
         x-transition:enter="transition ease-out duration-200"
