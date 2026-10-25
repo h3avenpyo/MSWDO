@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PasswordResetRequest extends WcpuBaseModel
 {
+    protected $table = 'vawc_password_reset_requests';
+
     protected $fillable = [
         'user_id',
         'username',

@@ -20,6 +20,13 @@ class User extends Authenticatable
     protected $connection = 'wcpu';
 
     /**
+     * The table associated with the model in the unified database.
+     *
+     * @var string
+     */
+    protected $table = 'vawc_users';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>

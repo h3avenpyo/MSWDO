@@ -53,7 +53,7 @@ class AuthController extends Controller
 
         // 2. Attempt authentication against WCPU accounts (email or username)
         $wcpuUserQuery = WcpuUser::where('email', $login);
-        if (Schema::connection('wcpu')->hasColumn('users', 'username')) {
+        if (Schema::connection('wcpu')->hasColumn('vawc_users', 'username') || Schema::connection('wcpu')->hasColumn('users', 'username')) {
             $wcpuUserQuery->orWhere('username', $login);
         }
         $wcpuUser = $wcpuUserQuery

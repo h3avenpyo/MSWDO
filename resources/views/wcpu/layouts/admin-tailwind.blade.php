@@ -26,7 +26,7 @@
     <!-- Vite / Tailwind CSS -->
     @if(auth()->user()?->isVawcAdmin() || auth()->user()?->isBcpcAdmin())
         {!! (clone app(\Illuminate\Foundation\Vite::class))
-            ->useHotFile(public_path('build/hot'))
+            ->useHotFile(is_file(public_path('build/hot')) ? public_path('build/hot') : public_path('hot'))
             ->useManifestFilename(is_file(public_path('build/manifest.json')) ? 'manifest.json' : '.vite/manifest.json')
             (['resources/css/app.css', 'resources/js/app.js']) !!}
     @else

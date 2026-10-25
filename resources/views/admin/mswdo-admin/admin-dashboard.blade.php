@@ -590,6 +590,7 @@ $initials = count($words) >= 2
         box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
         padding: 1.5rem;
         margin-bottom: 2rem;
+        overflow-x: clip;
     }
     .report-controls-bar {
         background: #F8FAFC;
@@ -597,15 +598,20 @@ $initials = count($words) >= 2
         border-radius: 14px;
         padding: 1.15rem;
         margin-bottom: 1.25rem;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 0.85rem;
         align-items: flex-end;
+        box-sizing: border-box;
+        max-width: 100%;
     }
     .report-field-group {
         display: flex;
         flex-direction: column;
         gap: 0.35rem;
+        flex: 1 1 180px;
+        min-width: 160px;
+        box-sizing: border-box;
     }
     .report-field-label {
         font-size: 0.72rem;
@@ -641,6 +647,10 @@ $initials = count($words) >= 2
         align-items: center;
         gap: 0.5rem;
         flex-wrap: nowrap;
+        flex: 0 0 auto;
+        margin-left: auto;
+        box-sizing: border-box;
+        max-width: 100%;
     }
     .btn-report-action {
         display: inline-flex;
@@ -657,13 +667,14 @@ $initials = count($words) >= 2
         transition: all 0.2s ease;
         white-space: nowrap;
         border: 1px solid transparent;
+        box-sizing: border-box;
+        flex-shrink: 0;
     }
     .btn-report-generate {
         background: #b11116;
         color: #FFFFFF;
         border-color: #b11116;
-        flex: 1;
-        min-width: 130px;
+        min-width: 120px;
     }
     .btn-report-generate:hover {
         background: #8A0D11;
@@ -812,17 +823,23 @@ $initials = count($words) >= 2
             height: 280px;
         }
         .report-controls-bar {
-            grid-template-columns: repeat(2, 1fr);
+            display: flex;
+            flex-wrap: wrap;
             gap: 0.85rem;
         }
+        .report-field-group {
+            flex: 1 1 calc(50% - 0.5rem);
+            min-width: 160px;
+        }
         .report-actions-wrap {
-            grid-column: span 2;
+            flex: 1 1 100%;
             justify-content: flex-end;
             margin-top: 0.25rem;
+            margin-left: 0;
         }
         .report-actions-wrap .btn-report-generate {
             flex: initial;
-            min-width: 130px;
+            min-width: 120px;
         }
         .report-breakdown-grid {
             grid-template-columns: 1fr;
@@ -845,6 +862,52 @@ $initials = count($words) >= 2
     body.sidebar-collapsed .services-grid > .service-card:last-child,
     .sidebar-collapsed .services-grid > .service-card:last-child {
         grid-column: 1 / -1 !important;
+    }
+
+    /* Prevent Print button and controls from overflowing when sidebar is collapsed */
+    html.sidebar-collapsed .report-controls-bar,
+    body.sidebar-collapsed .report-controls-bar,
+    .sidebar-collapsed .report-controls-bar {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.85rem !important;
+        align-items: flex-end !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    html.sidebar-collapsed .report-field-group,
+    body.sidebar-collapsed .report-field-group,
+    .sidebar-collapsed .report-field-group {
+        flex: 1 1 160px !important;
+        min-width: 140px !important;
+        box-sizing: border-box !important;
+    }
+    html.sidebar-collapsed .report-actions-wrap,
+    body.sidebar-collapsed .report-actions-wrap,
+    .sidebar-collapsed .report-actions-wrap {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        flex: 0 0 auto !important;
+        margin-left: auto !important;
+        max-width: 100% !important;
+        justify-content: flex-end !important;
+        box-sizing: border-box !important;
+    }
+    html.sidebar-collapsed .report-actions-wrap .btn-report-generate,
+    body.sidebar-collapsed .report-actions-wrap .btn-report-generate,
+    .sidebar-collapsed .report-actions-wrap .btn-report-generate {
+        flex: initial !important;
+        min-width: 110px !important;
+    }
+    html.sidebar-collapsed .report-actions-wrap .btn-report-pdf,
+    body.sidebar-collapsed .report-actions-wrap .btn-report-pdf,
+    .sidebar-collapsed .report-actions-wrap .btn-report-pdf,
+    html.sidebar-collapsed .report-actions-wrap .btn-report-print,
+    body.sidebar-collapsed .report-actions-wrap .btn-report-print,
+    .sidebar-collapsed .report-actions-wrap .btn-report-print {
+        flex: initial !important;
+        flex-shrink: 0 !important;
     }
 
     /* ── Mobile Viewports (< 768px) ── */
@@ -1024,10 +1087,16 @@ $initials = count($words) >= 2
             flex: 1 1 100%;
         }
         .report-controls-bar {
-            grid-template-columns: 1fr;
+            display: flex;
+            flex-direction: column;
             padding: 0.85rem;
             gap: 0.75rem;
             border-radius: 12px;
+        }
+        .report-field-group {
+            width: 100%;
+            min-width: 0;
+            flex: 1 1 100%;
         }
         .report-actions-wrap {
             display: grid;
@@ -1035,12 +1104,14 @@ $initials = count($words) >= 2
             gap: 0.5rem;
             width: 100%;
             margin-top: 0.25rem;
+            margin-left: 0;
         }
         .btn-report-generate {
             grid-column: span 2;
             width: 100% !important;
             height: 42px !important;
             font-size: 0.875rem !important;
+            min-width: 0 !important;
         }
         .btn-report-pdf,
         .btn-report-print {
@@ -1473,6 +1544,7 @@ $initials = count($words) >= 2
             </h3>
             <p class="section-subtitle">Produce official weekly, monthly, quarterly, and yearly welfare reports per service division with live metrics and PDF export</p>
         </div>
+        {{--
         <div class="report-head-links">
             <a href="{{ route('admin.social-case.cases') }}" class="btn-pill" title="Jump to Social Cases">
                 <i data-lucide="file-text" class="w-4 h-4 text-indigo-600"></i> Social Cases
@@ -1484,6 +1556,7 @@ $initials = count($words) >= 2
                 <i data-lucide="banknote" class="w-4 h-4"></i> Financial Portal
             </a>
         </div>
+        --}}
     </div>
 
     <!-- Controls Form -->
