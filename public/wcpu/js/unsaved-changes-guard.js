@@ -168,6 +168,7 @@
                 showCancelButton: true,
                 confirmButtonText: 'Discard Changes',
                 cancelButtonText: 'Stay on Page',
+                customClass: { popup: 'portal-unsaved-changes-popup' },
                 confirmButtonColor: '#C41E3A',
                 cancelButtonColor: '#6b7280',
                 reverseButtons: true,

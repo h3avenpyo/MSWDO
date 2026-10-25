@@ -5,6 +5,7 @@ import vm from 'node:vm';
 
 const source = fs.readFileSync(new URL('../../public/js/archived-monitoring-preview.js', import.meta.url), 'utf8');
 const partial = fs.readFileSync(new URL('../../resources/views/wcpu/desk-officer/partials/swd-archive-interactions.blade.php', import.meta.url), 'utf8');
+const assets = fs.readFileSync(new URL('../../resources/views/wcpu/components/archived-monitoring-preview-assets.blade.php', import.meta.url), 'utf8');
 
 function preview() {
     const controls = [
@@ -72,9 +73,9 @@ test('year, sex, and organization labels remain available to assistive technolog
     assert.ok(labels.every(label => !label.attributes.has('for')));
 });
 
-test('phone and tablet assets cover portrait and landscape through 1366px', () => {
-    assert.match(partial, /bcpc-monitoring-card-layout\.css[^\n]+media="screen and \(max-width: 85\.375rem\)"/);
-    assert.match(partial, /bcpc-monitoring-tablet-cards\.css[^\n]+media="screen and \(min-width: 48rem\) and \(max-width: 85\.375rem\)"/);
+test('archive cards cover phones, tablets, and desktops in either orientation', () => {
+    assert.match(assets, /bcpc-monitoring-card-layout\.css[^\n]+media="screen"/);
+    assert.match(assets, /bcpc-monitoring-tablet-cards\.css[^\n]+media="screen and \(min-width: 48rem\)"/);
     const start = partial.indexOf("@if(request()->routeIs('desk-officer.quarterly-reports.archived'))");
     const end = partial.indexOf('@endif', start);
     assert.doesNotMatch(partial.slice(start, end), /orientation:/);
@@ -126,4 +127,63 @@ test('manually selecting All sections also restores the full report', () => {
     select.value = 'section_0'; select.listeners.change();
     select.value = 'all'; select.listeners.change();
     assert.ok(sections.every(section => !section.hidden));
+});
+
+function modalPreview({ ok = true, redirected = false, hasReport = true } = {}) {
+    const window = {}, requests = [], removed = [];
+    const content = { replaceChildren(value) { this.report = value; } };
+    const monitoring = {};
+    let config;
+    vm.runInNewContext(source, {
+        window, AbortController,
+        Swal: {
+            fire(options) { config = options; },
+            getHtmlContainer: () => ({ querySelector: () => content }),
+        },
+        fetch: async (url, options) => {
+            requests.push({ url, ...options });
+            return { ok, redirected, text: async () => '<form></form>' };
+        },
+        DOMParser: class {
+            parseFromString() {
+                return {
+                    querySelectorAll: () => [{ remove() { removed.push('script'); } }],
+                    querySelector: () => hasReport ? monitoring : null,
+                };
+            }
+        },
+    });
+    window.prepareArchivedMonitoringPreview = form => ({ form, readOnly: true });
+    window.openArchivedMonitoringPreview('/admin/bcpc-case-monitoring?view=7&archived=1', 'Monitoring Report', 'admin-archive-view-popup');
+    return { config, requests, content, monitoring, removed };
+}
+
+test('admin modal fetches the authorized record and uses the shared read-only renderer', async () => {
+    const { config, requests, content, monitoring, removed } = modalPreview();
+    await config.didOpen();
+    assert.equal(requests[0].credentials, 'same-origin');
+    assert.equal(requests[0].url, '/admin/bcpc-case-monitoring?view=7&archived=1');
+    assert.equal(content.report.form, monitoring);
+    assert.equal(content.report.readOnly, true);
+    assert.deepEqual(removed, ['script']);
+    assert.match(config.customClass.popup, /admin-archive-view-popup.*archived-monitoring-view-popup/);
+    assert.equal(config.confirmButtonText, 'Close');
+});
+
+test('failed, redirected, and missing monitoring responses show an error without report content', async () => {
+    for (const response of [{ ok: false }, { redirected: true }, { hasReport: false }]) {
+        const { config, content } = modalPreview(response);
+        await config.didOpen();
+        assert.match(content.textContent, /Unable to load/);
+        assert.equal(content.report, undefined);
+    }
+});
+
+test('closing the monitoring modal cancels loading and prevents stale content', async () => {
+    const { config, requests, content } = modalPreview();
+    const loading = config.didOpen();
+    config.willClose();
+    await loading;
+    assert.equal(requests[0].signal.aborted, true);
+    assert.equal(content.report, undefined);
 });

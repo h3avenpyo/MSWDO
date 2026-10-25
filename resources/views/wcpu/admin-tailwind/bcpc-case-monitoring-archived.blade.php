@@ -4,6 +4,11 @@
 
 @push('styles')
 <style>
+    @media (max-width: 85.375rem) {
+        #archived-bcpc-results [data-monitoring-restore] { gap: 0 !important; }
+        #archived-bcpc-results [data-monitoring-restore] > span { display: none !important; }
+        #archived-bcpc-results [data-monitoring-restore] > i { margin: 0 !important; }
+    }
     @if(auth()->user()?->isDepartmentAdmin())
     @media (max-width: 47.9375rem) {
         html body.portal-ui #archived-bcpc-results > [data-pagination-label] { display: none !important; }
@@ -33,31 +38,6 @@
         html body.portal-ui .archived-monitoring-tablet-pagination > [data-pagination-label] > div:last-child { margin-left: auto; justify-content: flex-end; flex-wrap: wrap; }
     }
     @endif
-    @if(auth()->user()?->isDepartmentAdmin())
-    @media (max-width: 85.375rem) {
-        html body.portal-ui .archived-bcpc-monitoring-card-actions > a[data-admin-archive-view="monitoring"] {
-            gap: 0 !important;
-        }
-        html body.portal-ui .archived-bcpc-monitoring-card-actions > a[data-admin-archive-view="monitoring"] > span {
-            display: none !important;
-        }
-    }
-    @endif
-    @media (min-width: 48rem) and (max-width: 85.375rem) {
-        html body.portal-ui:is(.bcpc-admin-header-theme, .swd-admin-header-theme) .archived-bcpc-monitoring-mobile-cards > .archive-empty-state {
-            grid-column: 1 / -1;
-            width: 100%;
-            text-align: center;
-        }
-    }
-
-    @if(auth()->user()?->isBcpcAdmin())
-    @media (max-width: 85.375rem) {
-        .archived-monitoring-restore-label { display: none; }
-    }
-    @endif
-    .archived-static-table { table-layout: fixed; }
-    .archived-static-table th:last-child, .archived-static-table td:last-child { width: 7rem; white-space: nowrap; }
     @media (min-width: 48rem) and (max-width: 80rem) {
         #archived-bcpc-report-filter-form > div {
             display: grid !important;
@@ -82,27 +62,6 @@
             height: 2.5rem !important;
         }
     }
-    @media (max-width: 47.9375rem)@if(auth()->user()?->isBcpcAdmin()), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)@endif {
-        .archived-bcpc-monitoring-table-view { display: none !important; }
-        .archived-bcpc-monitoring-mobile-cards { display: grid !important; gap: .75rem; }
-        .archived-bcpc-monitoring-mobile-cards .archived-bcpc-monitoring-card { min-width: 0; }
-        .archived-bcpc-monitoring-mobile-cards .archived-bcpc-monitoring-card-actions {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: .5rem;
-        }
-        .archived-bcpc-monitoring-mobile-cards .archived-bcpc-monitoring-card-actions > :is(a, button) {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 100% !important;
-            min-width: 0;
-            height: 2.75rem !important;
-            min-height: 2.75rem !important;
-            padding: .5rem !important;
-        }
-    }
-
     /* Archived BCPC Case Monitoring tablet navigation (768px–1023px): collapsed sidebar on the left, standard header (not top navbar), no collapsed button. */
     @media (min-width: 48rem) and (max-width: 63.9375rem) {
         html body.portal-ui #mobileTopBar { display: none !important; }
@@ -312,142 +271,9 @@
         </div>
     </form>
 
-    <!-- Table Container -->
-    <div id="archived-bcpc-results" class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-6">
-        <!-- Desktop Table View -->
-        <div class="archived-bcpc-monitoring-table-view overflow-x-auto hidden md:block">
-            <table class="archived-static-table w-full min-w-[640px] text-sm table-fixed">
-                <colgroup>
-                    <col class="w-[28%]">
-                    <col class="w-[18%]">
-                    <col class="w-[26%]">
-                    <col class="w-[18%]">
-                    <col class="w-[10%] min-w-[7rem]">
-                </colgroup>
-                <thead class="bg-gradient-to-r from-amber-700 to-amber-600 text-white">
-                    <tr>
-                        <th class="px-4 py-3.5 sm:px-5 text-left font-semibold text-xs uppercase tracking-wider">Barangay</th>
-                        <th class="px-4 py-3.5 sm:px-5 text-center font-semibold text-xs uppercase tracking-wider">Period</th>
-                        <th class="px-4 py-3.5 sm:px-5 text-left font-semibold text-xs uppercase tracking-wider">Submitted By</th>
-                        <th class="px-4 py-3.5 sm:px-5 text-left font-semibold text-xs uppercase tracking-wider">Archived At</th>
-                        <th class="px-4 py-3.5 sm:px-5 text-center font-semibold text-xs uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    @forelse($monitorings as $monitoring)
-                        @php($restoreBlocked = !empty(($activeMonitoringPeriods ?? [])[$monitoring->barangay_id . '-' . $monitoring->quarter . '-' . $monitoring->year]))
-                        <tr class="hover:bg-amber-50/40 transition">
-                            <td class="px-4 py-3.5 sm:px-5 sm:py-4">
-                                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                                    <div class="w-9 h-9 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center font-semibold flex-shrink-0">
-                                        <i class="fas fa-map-marker-alt text-sm"></i>
-                                    </div>
-                                    <span class="text-gray-800 font-semibold truncate">{{ $monitoring->barangay->name ?? 'N/A' }}</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold">
-                                    <i class="fas fa-calendar-alt text-xs"></i>
-                                    Q{{ $monitoring->quarter }} {{ $monitoring->year }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 min-w-0">
-                                <div class="text-gray-800 font-medium truncate">
-                                    {{ $monitoring->creator?->first_name }} {{ $monitoring->creator?->last_name }}
-                                </div>
-                                <div class="text-xs text-gray-400 truncate">
-                                    {{ $monitoring->creator?->email }}
-                                </div>
-                            </td>
-                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-gray-600 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-700">{{ $monitoring->archived_at?->format('M d, Y') ?? 'N/A' }}</div>
-                                <div class="text-xs text-gray-400">{{ $monitoring->archived_at?->format('g:i A') ?? '' }}</div>
-                            </td>
-                            <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-center whitespace-nowrap">
-                                <div class="flex items-center justify-center gap-2 [&>a]:inline-flex [&>a]:items-center [&>a]:justify-center [&>button]:inline-flex [&>button]:items-center [&>button]:justify-center">
-                                    <a href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id, 'archived' => 1]) }}" data-admin-archive-view="monitoring" data-modal-title="BCPC Case Monitoring Details"
-                                       class="inline-flex items-center justify-center w-9 h-9 bg-[#C41E3A] hover:bg-[#A01830] text-white rounded-lg text-xs font-medium transition shadow-sm"
-                                       title="View Details" aria-label="View Details">
-                                        <i class="fas fa-eye"></i>
-                                        <span class="sr-only">View Details</span>
-                                    </a>
-                                    <button type="button" {{ $restoreBlocked ? 'disabled' : '' }}
-                                            @unless($restoreBlocked) onclick="restoreMonitoring({{ $monitoring->id }}, '{{ addslashes($monitoring->barangay->name ?? 'Barangay') }}', 'Q{{ $monitoring->quarter }} {{ $monitoring->year }}')" @endunless
-                                            class="inline-flex items-center justify-center w-9 h-9 {{ $restoreBlocked ? '!bg-red-100 hover:!bg-red-100 !text-red-800 !border !border-red-200 cursor-not-allowed pointer-events-none' : 'bg-[#C41E3A] hover:bg-[#A01830] text-white' }} rounded-lg text-xs font-medium transition shadow-sm"
-                                            title="{{ $restoreBlocked ? 'An active BCPC monitoring case already exists for this barangay, quarter, and year' : 'Restore Record' }}">
-                                        <i class="fas fa-undo"></i>
-                                        <span class="sr-only">Restore</span>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-4 py-12 text-center text-gray-500">
-                                <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <i class="fas fa-archive text-3xl"></i>
-                                </div>
-                                <p class="text-gray-700 font-semibold text-base">No archived BCPC case monitoring records found.</p>
-                                <p class="text-gray-400 text-xs mt-1">Archived case monitoring reports will appear here.</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Mobile Cards View -->
-        <div class="archived-bcpc-monitoring-mobile-cards md:hidden p-3 space-y-3">
-            @forelse($monitorings as $monitoring)
-                @php($restoreBlocked = !empty(($activeMonitoringPeriods ?? [])[$monitoring->barangay_id . '-' . $monitoring->quarter . '-' . $monitoring->year]))
-                <div class="archived-bcpc-monitoring-card border border-gray-100 rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition">
-                    <div class="flex items-center justify-between gap-2 mb-3">
-                        <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-9 h-9 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center font-bold flex-shrink-0 text-sm">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <div class="truncate">
-                                <h3 class="font-bold text-gray-800 text-sm truncate">{{ $monitoring->barangay->name ?? 'N/A' }}</h3>
-                                <p class="text-xs text-gray-500 truncate">{{ $monitoring->creator?->first_name }} {{ $monitoring->creator?->last_name }}</p>
-                            </div>
-                        </div>
-                        <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-[10px]"></i>
-                            Q{{ $monitoring->quarter }} {{ $monitoring->year }}
-                        </span>
-                    </div>
-
-                    <div class="flex items-center justify-between text-xs text-gray-500 mb-3 bg-gray-50 rounded-lg px-3 py-2">
-                        <span>Archived At:</span>
-                        <span class="font-medium text-gray-700">{{ $monitoring->archived_at?->format('M d, Y g:i A') ?? 'N/A' }}</span>
-                    </div>
-
-                    <div class="archived-bcpc-monitoring-card-actions grid grid-cols-2 gap-2 pt-2 border-t border-gray-100 [&>a]:inline-flex [&>a]:items-center [&>a]:justify-center [&>button]:inline-flex [&>button]:items-center [&>button]:justify-center">
-                        <a href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id, 'archived' => 1]) }}" data-admin-archive-view="monitoring" data-modal-title="BCPC Case Monitoring Details"
-                           class="inline-flex items-center justify-center gap-1.5 w-full h-10 bg-[#C41E3A] hover:bg-[#A01830] text-white rounded-lg text-xs font-medium transition shadow-sm"
-                           title="View Details" aria-label="View Details">
-                            <i class="fas fa-eye text-xs"></i>
-                            <span>View</span>
-                        </a>
-                        <button type="button" {{ $restoreBlocked ? 'disabled' : '' }}
-                                @unless($restoreBlocked) onclick="restoreMonitoring({{ $monitoring->id }}, '{{ addslashes($monitoring->barangay->name ?? 'Barangay') }}', 'Q{{ $monitoring->quarter }} {{ $monitoring->year }}')" @endunless
-                                class="inline-flex items-center justify-center gap-1.5 w-full h-10 {{ $restoreBlocked ? '!bg-red-100 hover:!bg-red-100 !text-red-800 !border !border-red-200 cursor-not-allowed pointer-events-none' : 'bg-[#C41E3A] hover:bg-[#A01830] text-white' }} rounded-lg text-xs font-medium transition shadow-sm"
-                                title="{{ $restoreBlocked ? 'An active BCPC monitoring case already exists for this barangay, quarter, and year' : 'Restore Record' }}">
-                            <i class="fas fa-undo text-xs"></i>
-                            <span @if(auth()->user()?->isBcpcAdmin()) class="archived-monitoring-restore-label" @endif>Restore</span>
-                        </button>
-                    </div>
-                </div>
-            @empty
-                <div class="archive-empty-state text-center py-10 text-gray-500">
-                    <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <i class="fas fa-archive text-2xl"></i>
-                    </div>
-                    <p class="text-gray-700 font-semibold text-sm">No archived BCPC case monitoring records found.</p>
-                </div>
-            @endforelse
-        </div>
-
+    <!-- Use the desk officer's desktop table and mobile/tablet cards. -->
+    <div id="archived-bcpc-results" class="mb-6">
+        @include('components.archived-monitoring-records', ['archivedMonitorings' => $monitorings, 'archiveRoutePrefix' => 'admin'])
         @include('components.archived-pagination', ['paginator' => $monitorings, 'label' => 'reports'])
         @if(auth()->user()?->isDepartmentAdmin())
         <div class="archived-monitoring-tablet-pagination hidden">

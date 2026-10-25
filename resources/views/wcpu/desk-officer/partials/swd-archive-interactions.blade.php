@@ -1,75 +1,6 @@
-@if(in_array(auth()->user()->defaultCaseDepartment(), ['VAWC', 'BCPC'], true) && !auth()->user()->isMultiCaseDepartment())
+@if(in_array(auth()->user()->defaultCaseDepartment(), ['VAWC', 'BCPC'], true) && (!auth()->user()->isMultiCaseDepartment() || request()->routeIs('desk-officer.quarterly-reports.archived')))
 @if(request()->routeIs('desk-officer.quarterly-reports.archived'))
-<link rel="stylesheet" href="{{ asset('css/bcpc-monitoring-card-layout.css') }}?v={{ filemtime(public_path('css/bcpc-monitoring-card-layout.css')) }}" media="screen and (max-width: 85.375rem)">
-<link rel="stylesheet" href="{{ asset('css/bcpc-monitoring-tablet-cards.css') }}?v={{ filemtime(public_path('css/bcpc-monitoring-tablet-cards.css')) }}" media="screen and (min-width: 48rem) and (max-width: 85.375rem)">
-<script src="{{ asset('js/archived-monitoring-preview.js') }}?v={{ filemtime(public_path('js/archived-monitoring-preview.js')) }}"></script>
-<style>
-    .archived-monitoring-preview [data-monitoring-section][hidden] { display: none !important; }
-    .archived-monitoring-preview .archived-monitoring-section-filter {
-        padding: 1rem;
-        border: 1px solid #e5e7eb;
-        border-radius: .75rem;
-        background: #fff;
-    }
-    .archived-monitoring-preview .archived-monitoring-section-filter > label {
-        display: block;
-        margin-bottom: .5rem;
-        font-size: .875rem;
-        font-weight: 600;
-    }
-    .archived-monitoring-preview .archived-monitoring-filter-controls {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: .5rem;
-    }
-    .archived-monitoring-preview .archived-monitoring-filter-controls > :is(select, button) {
-        min-width: 0;
-        min-height: 2.75rem;
-        padding: .625rem .75rem;
-        border: 1px solid #d1d5db;
-        border-radius: .5rem;
-        background-color: #fff;
-        color: #374151;
-        font-size: 1rem;
-    }
-    .archived-monitoring-preview .archived-monitoring-filter-controls > button { background: #f3f4f6; }
-    @media (max-width: 26.875rem) {
-        .archived-monitoring-preview .archived-monitoring-filter-controls { grid-template-columns: minmax(0, 1fr); }
-    }
-    @media (max-width: 85.375rem) {
-        .swal2-popup.archived-monitoring-view-popup {
-            display: flex !important;
-            flex-direction: column;
-            min-width: 0;
-            max-height: calc(100dvh - 1.5rem);
-        }
-        .swal2-popup.archived-monitoring-view-popup .swal2-title { flex: 0 0 auto; }
-        .swal2-popup.archived-monitoring-view-popup .swal2-close { position: absolute !important; top: 0; right: 0; }
-        .swal2-popup.archived-monitoring-view-popup .swal2-html-container {
-            flex: 1 1 auto;
-            min-height: 0;
-            max-height: none;
-            overflow: auto;
-        }
-        .swal2-popup.archived-monitoring-view-popup .swd-archive-detail {
-            max-height: none;
-            overflow: visible;
-            padding: 0;
-        }
-        .swal2-popup.archived-monitoring-view-popup .swal2-actions { flex: 0 0 auto; margin: .5rem 0 1rem; }
-        #bcpc-monitoring-form.archived-monitoring-preview { min-width: 0; width: 100%; }
-        #bcpc-monitoring-form.archived-monitoring-preview .archived-monitoring-value {
-            min-width: 0;
-            padding: .625rem .375rem;
-            border-radius: .5rem;
-            background: #f3f4f6;
-            line-height: 1.5;
-            text-align: center;
-            overflow-wrap: anywhere;
-        }
-        #bcpc-monitoring-form.archived-monitoring-preview .bcpc-organizations-table .archived-monitoring-value { text-align: left; }
-    }
-</style>
+@include('components.archived-monitoring-preview-assets')
 @endif
 <style>
     .swd-archive-detail { text-align: left; max-height: 65vh; overflow: auto; padding: .25rem; font-size: .875rem; color: #374151; }
@@ -310,7 +241,8 @@
         const title = isReferral ? 'Referral Details' : view.title === 'View Case' ? 'Case Details' : view.title === 'View Record' || view.closest('.archived-monitoring-card') ? 'Monitoring Report' : 'Quarterly Report';
         const isReportPreview = isMultiRoleArchivedReports && ['Quarterly Report', 'Monitoring Report'].includes(title);
         const isCasePreview = isMultiRoleArchivedCases && title === 'Case Details';
-        if (useSwdDetailModal) {
+        // Monitoring reports share the BCPC desk officer's read-only layout across roles.
+        if (useSwdDetailModal || (isMultiRoleArchivedReports && title === 'Monitoring Report')) {
             openSwdDetailModal(view, isReferral, title);
             return;
         }

@@ -319,9 +319,6 @@
         }
     }
     @endif
-    body.portal-ui.archive-report-modal-preview #case-records .case-records-table-view { display: none !important; }
-    body.portal-ui.archive-report-modal-preview #case-records-mobile-cards { display: block !important; }
-    body.portal-ui.archive-report-modal-preview #case-records-mobile-cards > .case-record-card { padding: 1rem !important; }
     /* Admin phone view: Case Records use cards; tablet and desktop retain
        the original table. */
     @media (max-width: 47.9375rem) {

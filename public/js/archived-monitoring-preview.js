@@ -55,3 +55,34 @@ window.prepareArchivedMonitoringPreview = monitoring => {
     }
     return details;
 };
+
+window.openArchivedMonitoringPreview = (url, title = 'Monitoring Report', popupClass = 'desk-archive-view-popup') => {
+    const controller = new AbortController();
+    Swal.fire({
+        title,
+        width: 'min(1100px, 95vw)',
+        customClass: { popup: `archive-view-modal-popup ${popupClass} swd-archive-detail-popup archived-monitoring-view-popup` },
+        html: '<div class="swd-archive-detail" aria-live="polite">Loading details...</div>',
+        showCloseButton: true,
+        showConfirmButton: true,
+        confirmButtonText: 'Close',
+        confirmButtonColor: '#7c3aed',
+        willClose: () => controller.abort(),
+        didOpen: async () => {
+            const content = Swal.getHtmlContainer()?.querySelector('.swd-archive-detail');
+            if (!content) return;
+            try {
+                const response = await fetch(url, { credentials: 'same-origin', signal: controller.signal });
+                if (!response.ok || response.redirected) throw new Error('Unable to load the archived record.');
+                const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                if (controller.signal.aborted || Swal.getHtmlContainer()?.querySelector('.swd-archive-detail') !== content) return;
+                page.querySelectorAll('script').forEach(script => script.remove());
+                const monitoring = page.querySelector('#bcpc-monitoring-form');
+                if (!monitoring) throw new Error('Unable to load monitoring report details.');
+                content.replaceChildren(window.prepareArchivedMonitoringPreview(monitoring));
+            } catch (error) {
+                if (!controller.signal.aborted && Swal.getHtmlContainer()?.querySelector('.swd-archive-detail') === content) content.textContent = error.message;
+            }
+        },
+    });
+};

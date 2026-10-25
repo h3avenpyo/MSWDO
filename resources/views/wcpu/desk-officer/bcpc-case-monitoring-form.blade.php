@@ -12,7 +12,21 @@
 <link rel="stylesheet" href="{{ asset('css/bcpc-monitoring-tablet-cards.css') }}?v={{ filemtime(public_path('css/bcpc-monitoring-tablet-cards.css')) }}" media="screen and (min-width: 48rem) and (max-width: 80rem)">
 @endif
 <style>
+    @if(auth()->user()?->position === 'Desk Officer' && (auth()->user()?->isMultiCaseDepartment() || auth()->user()?->defaultCaseDepartment() === 'BCPC') && request()->filled('edit') && !$isView)
+    @media (min-width: 80rem) {
+        #bcpc-monitoring-form > .bcpc-monitoring-form-actions > a[data-back] { order: 1 !important; }
+        #bcpc-monitoring-form > .bcpc-monitoring-form-actions {
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(4.5rem, .35fr);
+        }
+    }
+    @endif
     @media (max-width: 47.9375rem) {
+        @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment() && request()->filled('edit') && !$isView)
+        #bcpc-monitoring-form > .bcpc-monitoring-form-actions > a[data-back] {
+            order: 1 !important;
+            grid-column: 1 / -1;
+        }
+        @endif
         @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'BCPC' && !auth()->user()?->isMultiCaseDepartment())
         #bcpc-monitoring-form > .bcpc-monitoring-form-actions > a[data-back] { order: 1 !important; }
         @endif

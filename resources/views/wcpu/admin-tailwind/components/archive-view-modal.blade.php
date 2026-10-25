@@ -1,3 +1,6 @@
+@if(request()->routeIs('admin.bcpc-case-monitoring.archived'))
+@include('components.archived-monitoring-preview-assets')
+@endif
 <script>
 const makeAdminArchiveFrameReadOnly = frame => {
     const doc = frame.contentDocument;
@@ -68,6 +71,10 @@ document.addEventListener('click', event => {
 
     const title = link.dataset.modalTitle || 'Archived Record Details';
     const type = link.dataset.adminArchiveView || 'report';
+    if (type === 'monitoring' && @json(request()->routeIs('admin.bcpc-case-monitoring.archived'))) {
+        window.openArchivedMonitoringPreview(link.href, 'Monitoring Report', 'admin-archive-view-popup admin-archive-view-popup--monitoring');
+        return;
+    }
     const isSwdArchivedCase = @json(auth()->user()?->isVawcAdmin()) && type === 'case';
     const frame = document.createElement('iframe');
     frame.className = 'admin-archive-view-frame';
