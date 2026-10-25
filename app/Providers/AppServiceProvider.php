@@ -70,8 +70,8 @@ class AppServiceProvider extends ServiceProvider
                         });
                     }
                 }
-                if ($wcpuSchema->hasTable('users') && !$wcpuSchema->hasColumn('users', 'username')) {
-                    $wcpuSchema->table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                if ($wcpuSchema->hasTable('vawc_users') && !$wcpuSchema->hasColumn('vawc_users', 'username')) {
+                    $wcpuSchema->table('vawc_users', function (\Illuminate\Database\Schema\Blueprint $table) {
                         $table->string('username', 255)->nullable()->after('email');
                     });
                 }

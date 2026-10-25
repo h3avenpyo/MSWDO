@@ -20,12 +20,12 @@ class ModuleSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // MSWDO1 database
+            // Core MSWDO modules
             SocialCaseModuleSeeder::class,
             SeniorCitizenModuleSeeder::class,
             FinancialModuleSeeder::class,
 
-            // WCPU database (u341236762_wcpu_silang2)
+            // VAWC / BCPC modules
             WcpuAdminSeeder::class,
             WcpuDeskOfficerSeeder::class,
         ]);

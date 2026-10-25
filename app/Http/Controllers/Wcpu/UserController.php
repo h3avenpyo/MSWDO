@@ -23,7 +23,8 @@ class UserController extends Controller
      */
     private function hasUsernameColumn(): bool
     {
-        return Schema::connection('wcpu')->hasColumn('users', 'username');
+        return Schema::connection('wcpu')->hasColumn('vawc_users', 'username')
+            || Schema::connection('wcpu')->hasColumn('users', 'username');
     }
 
     /**

@@ -612,7 +612,7 @@ class AdminController extends Controller
         /** @var User $user */
 
         $validated = $request->validate([
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+            'email' => ['required', 'email', Rule::unique($user->getTable(), 'email')->ignore($user->id)],
             'password' => ['required', 'current_password'],
         ]);
 
@@ -733,7 +733,7 @@ class AdminController extends Controller
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'last_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:' . $user->getTable() . ',email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
             'phone_number' => ["nullable", "string", "max:20", new \App\Rules\ContactNumber(null, 20)],
             'position' => 'nullable|string|max:255',

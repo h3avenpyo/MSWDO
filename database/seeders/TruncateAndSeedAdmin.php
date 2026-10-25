@@ -14,38 +14,22 @@ class TruncateAndSeedAdmin extends Seeder
      */
     public function run(): void
     {
-        // 1. Truncate MSWDO1 tables (except migrations)
+        // 1. Truncate unified database tables preserving migrations, barangays, and case_types
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS = 0;');
 
-        $mswdoTables = DB::connection('mysql')->select('SHOW TABLES');
-        foreach ($mswdoTables as $tableObj) {
+        $tables = DB::connection('mysql')->select('SHOW TABLES');
+        $excludedTables = ['migrations', 'vawc_migrations', 'barangays', 'case_types'];
+        foreach ($tables as $tableObj) {
             $tableName = ((array)$tableObj)[key((array)$tableObj)];
-            if ($tableName !== 'migrations') {
+            if (!in_array($tableName, $excludedTables, true)) {
                 DB::connection('mysql')->table($tableName)->truncate();
                 if ($this->command) {
-                    $this->command->info("Truncated MSWDO1 table: {$tableName}");
+                    $this->command->info("Truncated table: {$tableName}");
                 }
             }
         }
 
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS = 1;');
-
-        // 2. Truncate WCPU (u341236762_wcpu_silang2) preserving migrations, barangays, case_types
-        DB::connection('wcpu')->statement('SET FOREIGN_KEY_CHECKS = 0;');
-
-        $wcpuTables = DB::connection('wcpu')->select('SHOW TABLES');
-        $wcpuExcluded = ['migrations', 'barangays', 'case_types'];
-        foreach ($wcpuTables as $tableObj) {
-            $tableName = ((array)$tableObj)[key((array)$tableObj)];
-            if (!in_array($tableName, $wcpuExcluded)) {
-                DB::connection('wcpu')->table($tableName)->truncate();
-                if ($this->command) {
-                    $this->command->info("Truncated WCPU table: {$tableName}");
-                }
-            }
-        }
-
-        DB::connection('wcpu')->statement('SET FOREIGN_KEY_CHECKS = 1;');
 
         // 3. Seed administrator account in MSWDO1
         User::create([

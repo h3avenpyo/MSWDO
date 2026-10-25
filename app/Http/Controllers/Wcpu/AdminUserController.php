@@ -108,7 +108,8 @@ class AdminUserController extends Controller
      */
     public function getUsersJson(Request $request)
     {
-        $hasUsername = \Illuminate\Support\Facades\Schema::connection('wcpu')->hasColumn('users', 'username');
+        $hasUsername = \Illuminate\Support\Facades\Schema::connection('wcpu')->hasColumn('vawc_users', 'username')
+            || \Illuminate\Support\Facades\Schema::connection('wcpu')->hasColumn('users', 'username');
         $columns = ['id', 'first_name', 'last_name', 'email', 'position', 'department', 'barangay', 'is_active', 'bcpc_is_active', 'vawc_is_active', 'created_at'];
         if ($hasUsername) {
             $columns[] = 'username';
