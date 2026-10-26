@@ -1061,6 +1061,8 @@ public function create()
             'guardian_abuser_name' => ['nullable', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'abuse_type' => 'required|string|max:255',
             'guardian_abuser_contact' => ['nullable', new \App\Rules\ContactNumber(11)],
+            'guardian_abuser_address' => 'nullable|string|max:255',
+            'relationship_to_abuser' => 'nullable|string|max:255',
             'client_contact' => ['nullable', new \App\Rules\ContactNumber(11)],
             'other_abuse_details' => 'required_if:abuse_type,Others|nullable|string|max:1000',
             'incident_date' => 'required|date',
@@ -1075,7 +1077,7 @@ public function create()
         ]);
 
          $user = Auth::user();
-         $barangay = Barangay::where('name', $user->barangay)->firstOrFail();
+         $barangay = Barangay::where('name', $user->barangay)->orWhere('id', $user->barangay)->firstOrFail();
 
          // Explicitly assign properties to avoid mass-assignment blocking and ensure abuser fields persist
          $case->victim_name = $validated['victim_name'];
@@ -1083,6 +1085,11 @@ public function create()
          $case->victim_gender = $validated['victim_gender'];
          $case->victim_contact = $validated['victim_contact'] ?? null;
          $case->victim_address = $validated['victim_address'];
+         foreach (['guardian', 'guardian_contact', 'guardian_address', 'guardian_abuser_name', 'guardian_abuser_contact', 'guardian_abuser_address', 'relationship_to_abuser'] as $field) {
+             if (array_key_exists($field, $validated)) {
+                 $case->{$field} = $validated[$field];
+             }
+         }
          
          // Abuser fields -> ensure these write to the abuser_name / abuser_age DB columns
          $case->abuser_name = $validated['perpetrator_name'];

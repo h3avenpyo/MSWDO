@@ -7,6 +7,16 @@
     $isMultiroleReferral = auth()->check() && auth()->user()->position === 'Desk Officer' && auth()->user()->isMultiCaseDepartment();
     $isBcpcReferralCase = strtoupper((string) ($case->type ?? '')) === 'BCPC';
     $isDepartmentAdminReferral = auth()->user()?->isDepartmentAdmin() ?? false;
+    $adminReferralReturnUrl = route('admin.referrals');
+    if ($isDepartmentAdminReferral) {
+        $returnKey = 'admin_referral_return.' . auth()->id() . '.' . $case->id;
+        $previousUrl = url()->previous();
+        if (parse_url($previousUrl, PHP_URL_HOST) === request()->getHost()
+            && parse_url($previousUrl, PHP_URL_PATH) !== request()->getPathInfo()) {
+            session([$returnKey => $previousUrl]);
+        }
+        $adminReferralReturnUrl = session($returnKey, $adminReferralReturnUrl);
+    }
 @endphp
 @if($isDepartmentAdminReferral)
 @include('admin-tailwind.quarterly-reports._portrait-sidebar')
@@ -362,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const btn = form.querySelector('button[type="submit"]');
                 const originalHtml = btn.innerHTML;
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2" style="color: #ffffff !important;"></i>Submitting...';
                 Swal.fire({
                     title: 'Submitting Referral...',
                     text: 'Please wait while the referral is being saved.',
@@ -388,6 +398,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     return data;
                 })
                 .then(data => {
+                    @if(auth()->user()?->position === 'Desk Officer')
+                    const referredCases = JSON.parse(sessionStorage.getItem('desk-successful-referrals') || '[]');
+                    if (!referredCases.includes(@json((string) $case->id))) referredCases.push(@json((string) $case->id));
+                    sessionStorage.setItem('desk-successful-referrals', JSON.stringify(referredCases));
+                    @endif
+                    window.portalUnsavedChanges?.markSaved(form);
                     Swal.fire({
                         title: 'Success!',
                         html: `<div class="text-center">
@@ -406,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         @elseif(auth()->user()?->position === 'Desk Officer')
                         window.location.replace('{{ route("desk-officer.cases.index") }}?referral_success=1');
                         @elseif(auth()->user()?->isDepartmentAdmin())
-                        window.location.replace('{{ route("admin.referrals") }}');
+                        window.location.replace(@json($adminReferralReturnUrl));
                         @else
                         window.location.replace('{{ route("admin-barangay-cases") }}?referral_success=1');
                         @endif

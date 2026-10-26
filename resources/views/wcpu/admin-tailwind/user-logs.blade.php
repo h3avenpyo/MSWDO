@@ -528,7 +528,6 @@ document.addEventListener('DOMContentLoaded', function() {
             { key: 'role', label: 'Role', icon: 'fa-user-tag' },
             { key: 'date', label: 'Date', icon: 'fa-calendar' },
             { key: 'time', label: 'Time', icon: 'fa-clock' },
-            { key: 'description', label: 'Description', icon: 'fa-align-left' }
         ];
         
         fields.forEach(field => {

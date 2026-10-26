@@ -21,7 +21,9 @@ class ReferralInfoController extends Controller
 
     public function index()
     {
-        $recipients = ReportRecipient::orderBy('created_at', 'desc')->get();
+        $recipients = ReportRecipient::query()
+            ->when(auth()->user()?->isDepartmentAdmin(), fn ($query) => $query->whereIn('role', $this->allowedRoles()))
+            ->orderBy('created_at', 'desc')->get();
         $recipients->each(function (ReportRecipient $recipient): void {
             $recipient->setAttribute('has_active_referrals', CaseReferral::where('recipient_email', $recipient->email)->exists());
         });

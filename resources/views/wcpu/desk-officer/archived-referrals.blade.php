@@ -635,7 +635,18 @@ window.portalPaginationElements('.restore-archived-referral-form').forEach(form 
             cancelButtonText: 'Cancel',
             confirmButtonColor: '#7c3aed'
         }).then(result => {
-            if (result.isConfirmed) form.submit();
+            if (!result.isConfirmed) return;
+            form.setAttribute('data-skip-loading-modal', '');
+            Swal.fire({
+                title: 'Restoring Referral...',
+                text: 'Please wait while the referral is restored.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => Swal.showLoading(),
+            });
+            window.portalUnsavedChanges?.allowSubmission?.(form);
+            form.submit();
         });
     });
 });

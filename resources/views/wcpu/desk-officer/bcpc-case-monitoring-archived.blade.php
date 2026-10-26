@@ -259,8 +259,8 @@ function restoreMonitoring(id, barangayName, period) {
     }).then((result) => {
         if (result.isConfirmed) {
             Swal.fire({
-                title: 'Restoring...',
-                text: 'Please wait while we restore this record.',
+                title: 'Restoring Monitoring Report...',
+                text: 'Please wait while the monitoring report is restored.',
                 allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
                 didOpen: () => { Swal.showLoading(); }
             });

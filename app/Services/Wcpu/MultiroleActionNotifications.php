@@ -41,10 +41,11 @@ class MultiroleActionNotifications
             ->log(($department === 'VAWC' ? 'SWD' : $department).' '.$kind.' '.$label.' was '.$verb.'.');
     }
 
-    public static function forUser(User $user): array
+    public static function forUser(User $user, bool $ownActivitiesOnly = false): array
     {
         $readIds = $user->read_notifications ?? [];
         return Activity::with('causer')->where('log_name', 'multirole_workflow')->whereJsonContains('properties->recipient_ids', (int) $user->id)
+            ->when($ownActivitiesOnly, fn ($query) => $query->where('causer_id', $user->id)->where('causer_type', $user->getMorphClass()))
             ->latest('id')->limit(20)->get()->map(function ($entry) use ($user, $readIds) {
                 $officer = $user->position === 'Desk Officer';
                 $kind = $entry->properties['kind'] ?? 'case';

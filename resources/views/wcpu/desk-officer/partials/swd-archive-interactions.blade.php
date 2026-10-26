@@ -345,10 +345,27 @@
         if (!result.isConfirmed) return;
         if (@json(auth()->user()->defaultCaseDepartment() === 'BCPC' || auth()->user()->isMultiCaseDepartment()) && form.matches('.restore-confirm-form, .restore-monitoring-form')) {
             try {
+                if (form.matches('.restore-confirm-form, .restore-monitoring-form')) {
+                    const isMonitoring = form.matches('.restore-monitoring-form');
+                    Swal.fire({
+                        title: isMonitoring ? 'Restoring Monitoring Report...' : 'Restoring Quarterly Report...',
+                        text: isMonitoring ? 'Please wait while the monitoring report is restored.' : 'Please wait while the quarterly report is restored.',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => Swal.showLoading(),
+                    });
+                }
                 const response = await fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { Accept: 'application/json' } });
                 const data = await response.json();
                 if (!response.ok || !data.success) throw new Error(data.message || 'Unable to restore the report.');
-                await Swal.fire({ icon: 'success', title: 'Report Restored', text: data.message, confirmButtonText: 'OK' });
+                await Swal.fire({
+                    icon: 'success',
+                    title: form.matches('.restore-confirm-form') ? 'Success' : 'Report Restored',
+                    text: data.message,
+                    confirmButtonText: 'OK',
+                    ...(form.matches('.restore-confirm-form') ? { confirmButtonColor: '#C41E3A' } : {}),
+                });
                 location.reload();
             } catch (error) {
                 Swal.fire({ icon: 'error', title: 'Unable to Restore', text: error.message });
@@ -356,6 +373,27 @@
             return;
         }
         if (restore) {
+            if (form.matches('.restore-archived-referral-form, .restore-confirm-form, .restore-case-form, .restore-monitoring-form')) {
+                const isQuarterlyReport = form.matches('.restore-confirm-form');
+                const isCase = form.matches('.restore-case-form');
+                const isMonitoring = form.matches('.restore-monitoring-form');
+                form.setAttribute('data-skip-loading-modal', '');
+                Swal.fire({
+                    title: isMonitoring ? 'Restoring Monitoring Report...' : (isCase ? 'Restoring Case...' : (isQuarterlyReport ? 'Restoring Quarterly Report...' : 'Restoring Referral...')),
+                    text: isMonitoring ? 'Please wait while the monitoring report is restored.' : (isCase ? 'Please wait while the case is restored.' : (isQuarterlyReport ? 'Please wait while the quarterly report is restored.' : 'Please wait while the referral is restored.')),
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        requestAnimationFrame(() => requestAnimationFrame(() => {
+                            window.portalUnsavedChanges?.allowSubmission?.(form);
+                            HTMLFormElement.prototype.submit.call(form);
+                        }));
+                    },
+                });
+                return;
+            }
             HTMLFormElement.prototype.submit.call(form);
             return;
         }

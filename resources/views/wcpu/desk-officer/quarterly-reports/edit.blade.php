@@ -416,7 +416,7 @@
             <!-- Action buttons -->
             <div id="quarterly-report-edit-actions" class="pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                    <a href="{{ route($quarterlyShowRoute, auth()->user()?->isDepartmentAdmin() ? ['id' => $report->id, 'from' => 'edit'] : $report->id) }}" @if(auth()->user()?->isDepartmentAdmin()) data-icon-action="labelled" @elseif($isAdminEditor) target="_blank" @endif class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
+                    <a href="{{ route($quarterlyShowRoute, [$report->id, 'from' => 'edit']) }}" @if(auth()->user()?->isDepartmentAdmin()) data-icon-action="labelled" @elseif($isAdminEditor) target="_blank" @endif class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
                         <i class="fas fa-file-pdf"></i>
                         <span>View Current PDF</span>
                     </a>

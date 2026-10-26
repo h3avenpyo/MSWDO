@@ -21,6 +21,14 @@ class EnforceInactivityTimeout
         if ($guard) {
             $last = $request->session()->get('last_user_activity_at', now()->timestamp);
             if (now()->timestamp - $last >= 1800) {
+                $user = Auth::guard($guard)->user();
+                if ($user?->position === 'Desk Officer') {
+                    activity('auth')->causedBy($user)->withProperties([
+                        'ip_address' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                        'reason' => 'inactivity',
+                    ])->log('User logged out due to inactivity');
+                }
                 Auth::guard($guard)->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();

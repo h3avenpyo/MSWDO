@@ -6,7 +6,7 @@
         'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show',
         'admin.quarterly-reports.edit', 'admin.bcpc-case-monitoring.edit', 'admin.calendar.index',
         'admin.quarterly-reports.archived', 'admin.referrals.archived', 'admin.users.archived',
-        'admin.bcpc-case-monitoring.archived'
+        'admin.bcpc-case-monitoring.archived', 'cases.refer.form'
     );
     // Get last notification view time from database (user record)
     $lastViewedTime = 0;
@@ -302,6 +302,9 @@
         @click="open = !open" 
         class="relative p-2 {{ auth()->user()->isBcpcAdmin() ? 'text-white border border-white hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-purple-700 hover:bg-purple-50' }} rounded-full transition-colors"
         aria-label="Notifications"
+        @if(request()->routeIs('desk-officer.cases.show') && auth()->user()?->position === 'Desk Officer' && (auth()->user()->canAccessCaseDepartment('BCPC') || auth()->user()->canAccessCaseDepartment('VAWC')))
+        style="background-color: #c00000 !important; background-image: none !important; border: 1px solid #8f0202 !important; color: #ffffff !important;"
+        @endif
     >
         <i class="fas fa-bell text-xl"></i>
         @if($unreadCount > 0)

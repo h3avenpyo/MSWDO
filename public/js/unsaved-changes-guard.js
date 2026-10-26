@@ -254,6 +254,9 @@
         isDirty: hasUnsavedChanges,
         reset,
         markSaved,
+        allowSubmission: form => {
+            if (isEditableForm(form)) isSubmitting = true;
+        },
         confirmExit,
     };
 })();

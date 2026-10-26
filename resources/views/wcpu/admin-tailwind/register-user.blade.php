@@ -767,6 +767,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (result.isConfirmed) {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i>Creating Account...';
+                registerForm.setAttribute('data-skip-loading-modal', '');
+                Swal.fire({
+                    title: 'Creating Account...',
+                    text: 'Please wait while the account is being created.',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading(),
+                });
+                window.portalUnsavedChanges?.allowSubmission(registerForm);
                 registerForm.submit();
             }
         });

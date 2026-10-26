@@ -47,9 +47,9 @@
         ];
     }
 
-    // Recent cases in Desk Officer's barangay
+    // Recent cases belonging to the signed-in Desk Officer.
     try {
-        $casesQuery = \App\Models\Wcpu\CaseModel::query();
+        $casesQuery = \App\Models\Wcpu\CaseModel::where('created_by', $user->id);
         if ($barangayId) {
             $casesQuery->where('case_designation', $barangayId);
         }
@@ -106,13 +106,13 @@
         $id = 'desk_referral_created_' . $referral->id;
         $activities[] = ['id' => $id, 'type' => 'referral_created', 'icon' => 'share-square', 'text' => 'Referral <strong>' . e($referral->referral_number ?? ('#' . $referral->id)) . '</strong> was added', 'time' => $referral->created_at?->diffForHumans() ?? 'Just now', 'timestamp' => $timestamp, 'unread' => !in_array($id, $readNotificationIds) && $timestamp > $lastViewedTime && $timestamp <= $currentTime, 'url' => route('desk-officer.referrals.show', $referral->id)];
     }
-    foreach (\App\Models\Wcpu\Event::forUser($user)->latest()->limit(10)->get() as $event) {
+    foreach (\App\Models\Wcpu\Event::forUser($user)->where('created_by', $user->id)->latest()->limit(10)->get() as $event) {
         $timestamp = $event->created_at?->getTimestamp() ?? $currentTime;
         $id = 'desk_event_created_' . $event->id;
         $activities[] = ['id' => $id, 'type' => 'event_created', 'icon' => 'calendar-alt', 'text' => 'Event <strong>' . e($event->title) . '</strong> on ' . e($event->event_date?->format('M d, Y') ?? 'an upcoming date') . ' was added', 'time' => $event->created_at?->diffForHumans() ?? 'Just now', 'timestamp' => $timestamp, 'unread' => !in_array($id, $readNotificationIds) && $timestamp > $lastViewedTime && $timestamp <= $currentTime, 'url' => route('desk-officer.calendar.index', ['event' => $event->id])];
     }
 
-    $activities = array_merge($activities, \App\Services\Wcpu\MultiroleActionNotifications::forUser($user));
+    $activities = array_merge($activities, \App\Services\Wcpu\MultiroleActionNotifications::forUser($user, true));
     usort($activities, function($a, $b) {
         return $b['timestamp'] <=> $a['timestamp'];
     });
@@ -162,7 +162,7 @@
     'notificationMobileOnly' => true,
 ])
 @endif
-<div class="relative" data-desk-phone-notifications x-data="{ open: false, positionDropdown() { if (window.matchMedia('(max-width: 47.9375rem)').matches) { this.$refs.panel.style.setProperty('--desk-notification-top', (this.$refs.bell.getBoundingClientRect().bottom + 8) + 'px'); } } }" @resize.window="positionDropdown()" @scroll.window="if (open) positionDropdown()" @keydown.escape.window="open = false" @if($isMultiroleNotifications) data-multirole-notifications data-mark-read-url="{{ route('notifications.mark-read') }}" @endif>
+<div class="relative" data-desk-phone-notifications x-data="{ open: false, positionDropdown() { if (window.matchMedia('(max-width: 47.9375rem)').matches) { this.$refs.panel.style.setProperty('--desk-notification-top', (this.$refs.bell.getBoundingClientRect().bottom + 8) + 'px'); } } }" @resize.window="positionDropdown()" @scroll.window="if (open) positionDropdown()" @keydown.escape.window="open = false" data-multirole-notifications data-mark-read-url="{{ route('notifications.mark-read') }}">
     <button 
         x-ref="bell" @click="positionDropdown(); open = !open"
         class="relative p-2 text-gray-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
@@ -174,7 +174,7 @@
     >
         <i class="fas fa-bell text-xl" @if($user?->position === 'Desk Officer' && ($user->canAccessCaseDepartment('BCPC') || $user->canAccessCaseDepartment('VAWC'))) style="color: #ffffff !important;" @endif></i>
         @if($unreadCount > 0)
-        <span id="notifications-unread-count" class="notification-badge absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full" @if($isMultiroleNotifications) data-unread-badge @endif style="background-color: #eab308 !important; color: #ffffff !important; border: 0 !important; outline: none !important; box-shadow: none !important;">
+        <span id="notifications-unread-count" class="notification-badge absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full" data-unread-badge style="background-color: #eab308 !important; color: #ffffff !important; border: 0 !important; outline: none !important; box-shadow: none !important;">
             {{ $unreadCount > 9 ? '9+' : $unreadCount }}
         </span>
         @endif
@@ -201,7 +201,7 @@
                 id="deskMarkAllReadBtn"
                 type="button"
                 class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors text-white"
-                style="{{ request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'case-profiles.index', 'desk-officer.cases.index', 'desk-officer.cases.create', 'desk-officer.referrals', 'desk-officer.calendar.index', 'desk-officer.quarterly-reports.index', 'desk-officer.quarterly-reports.create', 'desk-officer.quarterly-reports.show', 'desk-officer.quarterly-reports.edit', 'desk-officer.bcpc-case-monitoring.edit', 'desk-officer.archived-barangay-cases.index', 'desk-officer.referrals.archived', 'desk-officer.quarterly-reports.archived') ? 'background: #ffffff !important; color: #C41E3A !important;' : 'color: #ffffff !important;' }}"
+                style="{{ request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'case-profiles.index', 'desk-officer.cases.index', 'desk-officer.cases.create', 'desk-officer.cases.show', 'admin.barangay-cases.show', 'desk-officer.referrals', 'desk-officer.calendar.index', 'desk-officer.quarterly-reports.index', 'desk-officer.quarterly-reports.create', 'desk-officer.quarterly-reports.show', 'desk-officer.quarterly-reports.edit', 'desk-officer.bcpc-case-monitoring.edit', 'desk-officer.archived-barangay-cases.index', 'desk-officer.referrals.archived', 'desk-officer.quarterly-reports.archived') ? 'background: #ffffff !important; color: #C41E3A !important;' : 'color: #ffffff !important;' }}"
             >
                 Mark all as read
             </button>
@@ -216,7 +216,7 @@
                 class="flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors desk-notification-item
                        {{ $activity['unread'] ?? false ? 'bg-purple-50/50 border-l-4 border-purple-500' : '' }}"
                 data-notification-id="{{ $activity['id'] ?? '' }}"
-                @if($isMultiroleNotifications) data-unread="{{ !empty($activity['unread']) ? 'true' : 'false' }}" @endif
+                data-unread="{{ !empty($activity['unread']) ? 'true' : 'false' }}"
             >
                 <div class="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
                     <i class="fas fa-{{ $activity['icon'] ?? 'bell' }}"></i>
@@ -245,76 +245,5 @@
 </div>
 
 @push('scripts')
-@if($isMultiroleNotifications)
 <script src="{{ asset('js/multirole-notifications.js') }}?v={{ filemtime(public_path('js/multirole-notifications.js')) }}"></script>
-@else
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const markAllReadBtn = document.getElementById('deskMarkAllReadBtn');
-    const showUnavailableNotification = () => {
-        const message = 'This notification is no longer available.';
-        if (window.Swal) {
-            window.Swal.fire({ icon: 'info', text: message, confirmButtonColor: '#C41E3A' });
-        } else {
-            window.alert(message);
-        }
-    };
-    if (markAllReadBtn) {
-        markAllReadBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const csrfToken = document.querySelector('meta[name="csrf-token"]');
-            if (!csrfToken) return;
-            
-            fetch('/notifications/mark-read', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken.content,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelectorAll('.desk-notification-item').forEach(item => {
-                        item.classList.remove('bg-purple-50/50', 'border-l-4', 'border-purple-500');
-                    });
-                    document.querySelectorAll('.desk-notification-item .bg-purple-500.rounded-full').forEach(dot => {
-                        dot.style.display = 'none';
-                    });
-                    document.getElementById('notifications-unread-count')?.remove();
-                }
-            })
-            .catch(console.error);
-        });
-    }
-
-    document.querySelectorAll('.desk-notification-item').forEach(item => {
-        item.addEventListener('click', async function(event) {
-            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-            const href = this.getAttribute('href');
-            if (!href || href === '#' || href.startsWith('javascript:')) return;
-
-            event.preventDefault();
-            try {
-                const response = await fetch(href, {
-                    method: 'HEAD',
-                    credentials: 'same-origin',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                });
-                if (response.ok) {
-                    window.location.assign(href);
-                    return;
-                }
-            } catch (_) {
-                // A missing record is handled as an unavailable notification.
-            }
-            showUnavailableNotification();
-        });
-    });
-});
-</script>
-@endif
 @endpush

@@ -532,6 +532,11 @@
                     <i class="fas fa-arrow-left"></i>
                     <span>Back to Edit Quarterly Reports</span>
                 </a>
+                @elseif(!$isAdmin && auth()->user()?->position === 'Desk Officer' && request('from') === 'edit' && !$report->archived_at)
+                <a href="{{ route('desk-officer.quarterly-reports.edit', $report->id) }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 hover:text-purple-800 transition">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Edit Quarterly Reports</span>
+                </a>
                 @else
                 <a href="{{ ($isAdmin && request()->boolean('archived')) || (!$isAdmin && $report->archived_at) ? ($isAdmin ? route('admin.quarterly-reports.archived', ['section' => 'quarterly']) : route('desk-officer.quarterly-reports.archived')) : ($isAdmin ? route('admin.quarterly-reports.index') : route('desk-officer.quarterly-reports.index')) }}"
                    class="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 hover:text-purple-800 transition">

@@ -876,11 +876,20 @@ document.addEventListener('click', async event => {
         confirmButtonColor: '#ef4444'
     });
     if (!confirmation.isConfirmed) return;
+    Swal.fire({
+        title: 'Archiving Referral...',
+        text: 'Please wait while the referral is archived.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading(),
+    });
     try {
         const response = await fetch(button.dataset.url, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': @json(csrf_token()),
+                'X-Skip-Loading': '1',
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }

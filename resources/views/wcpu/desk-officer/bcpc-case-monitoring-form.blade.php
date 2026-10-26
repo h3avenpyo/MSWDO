@@ -442,6 +442,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const monitoringForm = document.getElementById('bcpc-monitoring-form');
     const saveAndSendButton = document.getElementById('save-and-send-to-admin');
 
+    monitoringForm?.addEventListener('submit', () => {
+        monitoringForm.setAttribute('data-skip-loading-modal', '');
+        Swal.fire({
+            title: 'Saving BCPC Monitoring...',
+            text: 'Please wait while the BCPC monitoring report is saved.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading(),
+        });
+    });
+
     if (!monitoringForm || !saveAndSendButton) return;
 
     saveAndSendButton.addEventListener('click', async (event) => {

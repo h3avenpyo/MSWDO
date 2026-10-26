@@ -23,7 +23,8 @@
 <div class="hidden" 
      data-case-number="{{ $case->case_number }}"
      data-case-id="{{ $case->id }}"
-     @if(auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'BCPC') data-case-status="{{ $case->status }}" @endif
+     data-case-status="{{ $case->status }}"
+     data-has-referral="{{ $case->hasBeenReferred() ? '1' : '0' }}"
      data-barangay-id="{{ $case->case_designation ?? '' }}"
      data-barangay-name="{{ $case->barangay->name ?? '' }}"
      data-victim-email="{{ $case->victim_contact ?? '' }}"></div>
@@ -185,6 +186,27 @@
                     <span class="text-sm text-gray-800">{{ $case->relationship_to_abuser }}</span>
                 </div>
                 @endif
+            </div>
+        </div>
+        @endif
+
+        @if((auth()->user()?->isDepartmentAdmin() || auth()->user()?->position === 'Desk Officer') && (filled($case->witness_name) || filled($case->witness_contact)))
+        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden md:col-span-2">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                <h4 class="font-semibold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-user text-[#C41E3A]"></i>
+                    Witness Information
+                </h4>
+            </div>
+            <div class="divide-y divide-gray-100">
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-start gap-1">
+                    <span class="text-sm font-medium text-gray-500 sm:w-32 flex-shrink-0">Witness Name:</span>
+                    <span class="text-sm text-gray-800">{{ $case->witness_name ?: 'N/A' }}</span>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-start gap-1">
+                    <span class="text-sm font-medium text-gray-500 sm:w-32 flex-shrink-0">Contact Number:</span>
+                    <span class="text-sm text-gray-800">{{ $case->witness_contact ?: 'N/A' }}</span>
+                </div>
             </div>
         </div>
         @endif

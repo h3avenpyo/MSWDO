@@ -480,7 +480,11 @@
             </div>
         </div>
         <div class="flex items-center gap-4">
-            @include('admin-tailwind.components.notifications')
+            @if(auth()->user()?->position === 'Desk Officer')
+                @include('desk-officer.components.notifications')
+            @else
+                @include('admin-tailwind.components.notifications')
+            @endif
             <div class="hidden sm:flex items-center gap-3">
                 <img src="{{ asset('images/mswdo_logo.jpg') }}" alt="User Profile" class="w-10 h-10 rounded-full object-cover bg-gray-100">
                 <div class="text-right">

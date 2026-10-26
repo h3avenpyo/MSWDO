@@ -1009,11 +1009,18 @@ class AdminController extends Controller
             $query = \Spatie\Activitylog\Models\Activity::with(['causer']);
             
             // Only show Desk Officer logs, exclude Administrator
+            $visibleDeskOfficerIds = null;
+            if (Auth::user()->isDepartmentAdmin()) {
+                $department = Auth::user()->isBcpcAdmin() ? 'BCPC' : 'VAWC';
+                $visibleDeskOfficerIds = \App\Models\Wcpu\User::where('position', 'Desk Officer')
+                    ->get(['id', 'position', 'department'])
+                    ->filter(fn ($officer) => in_array($department, $officer->configuredCaseDepartments(), true))
+                    ->modelKeys();
+                $query->whereIn('causer_id', $visibleDeskOfficerIds)
+                    ->where('causer_type', Auth::user()->getMorphClass());
+            }
             $query->whereHas('causer', function($q) {
                 $q->where('position', 'Desk Officer');
-                if (Auth::user()->isVawcAdmin()) {
-                    $q->whereRaw('LOWER(department) LIKE ?', ['%vawc%']);
-                }
             });
 
             if (request()->filled('search')) {
@@ -1070,16 +1077,59 @@ class AdminController extends Controller
                     }
 
                     // Format the date and time
-                    $date = $activity->created_at ? $activity->created_at->format('M d, Y') : 'N/A';
-                    $time = $activity->created_at ? $activity->created_at->format('h:i A') : 'N/A';
+                    $performedAt = $activity->created_at?->copy()->timezone('Asia/Manila');
+                    $date = $performedAt ? $performedAt->format('M d, Y') : 'N/A';
+                    $time = $performedAt ? $performedAt->format('h:i:s A') : 'N/A';
 
                     // Determine the action type and icon
-                    $action = $activity->description ?? 'Performed an action';
+                    $action = trim((string) $activity->description);
+                    if ($action === '' && $activity->log_name === 'auth') {
+                        $authPath = parse_url($properties['url'] ?? '', PHP_URL_PATH);
+                        if (!empty($properties['failure_reason'])) {
+                            $action = 'Failed login attempt';
+                        } elseif (($properties['reason'] ?? '') === 'inactivity') {
+                            $action = 'User logged out due to inactivity';
+                        } elseif (in_array($authPath, ['/logout', '/wcpu/logout'], true)) {
+                            $action = 'User logged out';
+                        } elseif (isset($properties['ip_address'], $properties['user_agent']) && count($properties) === 2) {
+                            $action = 'User logged in';
+                        }
+                    }
+                    if ($action === '' && $activity->subject_type === \App\Models\Wcpu\CaseModel::class) {
+                        if (!empty($properties['referral_number'])) {
+                            $action = 'Referred case - ' . $properties['referral_number'];
+                        } elseif (!empty($properties['case_number']) && isset($properties['barangay'], $properties['victim_name'])) {
+                            $action = 'Created case ' . $properties['case_number'] . ' for ' . $properties['barangay'] . ' barangay';
+                        }
+                    }
+                    if ($action === '' && $activity->event) {
+                        $recordType = match ($activity->subject_type) {
+                            \App\Models\Wcpu\CaseModel::class => 'case',
+                            \App\Models\Wcpu\CaseReferral::class => 'referral',
+                            \App\Models\Wcpu\QuarterlyReport::class => 'quarterly report',
+                            \App\Models\Wcpu\BcpcCaseMonitoring::class => 'BCPC monitoring report',
+                            \App\Models\Wcpu\Event::class => 'calendar event',
+                            default => 'record',
+                        };
+                        $action = ucfirst($activity->event) . ' ' . $recordType . ' #' . $activity->subject_id;
+                    }
+                    $action = $action !== '' ? $action : 'Activity description unavailable';
+                    $sessionAction = match (strtolower(trim($action))) {
+                        'user logged in' => 'Log In',
+                        'user logged out' => 'Log Out',
+                        'user logged out due to inactivity' => 'Log Out (Inactivity)',
+                        default => null,
+                    };
+                    if ($sessionAction) {
+                        $action = $sessionAction;
+                    }
                     $icon = 'fa-info-circle';
                     
                     $actionLower = strtolower($action);
-                    if (str_contains($actionLower, 'login')) {
+                    if ($sessionAction === 'Log In' || str_contains($actionLower, 'login')) {
                         $icon = 'fa-sign-in-alt';
+                    } elseif ($sessionAction && str_starts_with($sessionAction, 'Log Out')) {
+                        $icon = 'fa-sign-out-alt';
                     } elseif (str_contains($actionLower, 'create') || str_contains($actionLower, 'add')) {
                         $icon = 'fa-plus-circle';
                     } elseif (str_contains($actionLower, 'update') || str_contains($actionLower, 'edit')) {
@@ -1108,7 +1158,7 @@ class AdminController extends Controller
                         'full_details' => [
                             'log_id' => $activity->id,
                             'action' => $action,
-                            'description' => $activity->description,
+                            'description' => $action,
                             'user' => $userName,
                             'user_id' => $causer ? $causer->id . ' - ' . $userName : 'System',
                             // Keep this key aligned with the user-log modal.
@@ -1391,6 +1441,7 @@ class AdminController extends Controller
             
             $cases = $casesQuery->select([
                     'id',
+                    'created_by',
                     'case_number',
                     'date_reported',
                     'victim_name',
@@ -1400,12 +1451,13 @@ class AdminController extends Controller
                     'created_at',
                     'updated_at'
                 ])
+                ->with('createdBy')
                 ->withExists('referrals as has_referral')
                 // Desk Officers and Department Admins return here after saving an edit; show that updated case first.
                 ->when($deskOfficerBarangayId !== null || Auth::user()->isDepartmentAdmin(), fn ($query) => $query->orderByDesc('updated_at'))
                 ->orderBy('created_at', 'desc')
                 ->orderBy('id', 'desc')
-                ->paginate($department ? (Auth::user()->isDepartmentAdmin() && request()->boolean('tablet_cases') ? 4 : 5) : 10)
+                ->paginate(request()->boolean('tablet_cases') && (Auth::user()->isDepartmentAdmin() || Auth::user()->position === 'Desk Officer') ? 4 : ($department ? 5 : 10))
                 ->withQueryString()
                 ->appends([
                     'status' => $status,

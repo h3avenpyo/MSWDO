@@ -45,9 +45,9 @@ class ActivityLog extends BaseActivity
      *
      * @return string
      */
-    public function getDescriptionAttribute($value): string
+    public function getDescriptionAttribute($value): ?string
     {
-        return (string) $value;
+        return $value === null ? null : (string) $value;
     }
 
     /**

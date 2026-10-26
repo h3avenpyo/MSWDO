@@ -15,6 +15,21 @@
 @endphp
 
 @push('styles')
+    @if ($isBarangayDeskOfficer || $isMultiroleDeskOfficer)
+        <style>
+            @media (min-width: 48rem) and (max-width: 85.375rem) {
+                html body.portal-ui > :is(#caseModal, #editCaseModal) > .fixed {
+                    z-index: 100 !important;
+                    padding: 1rem !important;
+                }
+                html body.portal-ui > :is(#caseModal, #editCaseModal) > .fixed > div {
+                    max-width: 56rem;
+                    max-height: calc(100dvh - 2rem) !important;
+                    min-width: 0;
+                }
+            }
+        </style>
+    @endif
     @if ($isBarangayDeskOfficer)
         <style>
             @media (max-width: 47.9375rem) {
@@ -1932,12 +1947,97 @@
             }
         </style>
     @endif
+    @if ($isBarangayDeskOfficer || $isMultiroleDeskOfficer)
+    <style>
+        @media (min-width: 48rem) and (max-width: 85.375rem) {
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .view-cases-table-desktop { display: none !important; }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .view-cases-table-cards {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 1rem !important;
+                max-height: none !important;
+                overflow: visible !important;
+            }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+                padding: 1rem !important;
+            }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .case-card * { box-sizing: border-box !important; }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .case-card :is(h1, h2, h3, h4, p, a, span, div) {
+                min-width: 0;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+            }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .case-card > div:first-child {
+                flex-wrap: wrap;
+                gap: .5rem !important;
+            }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .case-card > div:first-child > div {
+                min-width: 0;
+                flex: 1 1 auto;
+            }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .case-card-actions {
+                order: 10 !important;
+                position: static !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
+                gap: .5rem !important;
+                flex-wrap: nowrap !important;
+                margin-top: auto !important;
+                padding-top: .75rem !important;
+            }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .case-card > span {
+                align-self: flex-start;
+                margin-bottom: .5rem;
+            }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .case-card-actions :is(button, a, form, form > button) {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 2.75rem !important;
+                min-width: 2.75rem !important;
+                height: 2.75rem !important;
+                min-height: 2.75rem !important;
+                padding: 0 !important;
+                flex: 0 0 auto !important;
+            }
+            html body.portal-ui.view-cases-desk-mobile-nav #mainContent #barangay-cases-view-main .view-cases-table-cards > .view-cases-empty-state {
+                grid-column: 1 / -1;
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+    <script>
+        (() => {
+            const tablet = matchMedia('(min-width: 48rem) and (max-width: 85.375rem)');
+            const sync = () => {
+                const url = new URL(location.href);
+                if (tablet.matches === (url.searchParams.get('tablet_cases') === '1')) return;
+                if (tablet.matches) url.searchParams.set('tablet_cases', '1');
+                else url.searchParams.delete('tablet_cases');
+                url.searchParams.delete('page');
+                location.replace(url.href);
+            };
+            sync();
+            tablet.addEventListener('change', sync);
+        })();
+    </script>
+    @endif
 @endpush
 
 @section('content')
 
     <!-- View Case Modal -->
-    <div x-data="{ open: false, content: '', caseNumber: '', caseId: '', caseStatus: '', printUrl: '', referUrl: '', isBcpcAdmin: {{ auth()->user()->isBcpcAdmin() ? 'true' : 'false' }}, isVawcAdmin: {{ auth()->user()->isVawcAdmin() ? 'true' : 'false' }}, isBarangayDeskOfficer: {{ $isBarangayDeskOfficer ? 'true' : 'false' }}, allowBackdropClose: {{ auth()->user()->isDepartmentAdmin() ? 'false' : 'true' }} }" x-cloak
+    <div x-data="{ open: false, content: '', caseNumber: '', caseId: '', caseStatus: '', printUrl: '', referUrl: '', isBcpcAdmin: {{ auth()->user()->isBcpcAdmin() ? 'true' : 'false' }}, isVawcAdmin: {{ auth()->user()->isVawcAdmin() ? 'true' : 'false' }}, isBarangayDeskOfficer: {{ $isBarangayDeskOfficer ? 'true' : 'false' }}, isDeskOfficer: {{ auth()->user()?->position === 'Desk Officer' ? 'true' : 'false' }}, allowBackdropClose: {{ auth()->user()->isDepartmentAdmin() ? 'false' : 'true' }} }" x-cloak
         @open-case-modal.window="open = true; content = $event.detail.content; caseNumber = $event.detail.caseNumber || ''; caseId = $event.detail.caseId || ''; caseStatus = $event.detail.caseStatus || ''; printUrl = $event.detail.printUrl || '#';"
         @close-case-modal.window="open = false" id="caseModal"
         x-effect="open ? document.body.classList.add('overflow-hidden') : document.body.classList.remove('overflow-hidden')">
@@ -1966,14 +2066,14 @@
                             <i class="fas fa-print"></i>
                             <span class="hidden sm:inline">Print</span>
                         </a>
-                        <a :href="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((
+                        <a :href="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((
                             caseStatus || '').trim().toLowerCase()) ? null : (referUrl || ('/admin/cases/' +
                             caseId + '/refer'))"
-                            :aria-disabled="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((
+                            :aria-disabled="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((
                                 caseStatus || '').trim().toLowerCase())"
-                            :tabindex="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((
+                            :tabindex="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((
                                 caseStatus || '').trim().toLowerCase()) ? -1 : 0"
-                            :class="(isBarangayDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((
+                            :class="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) && /referred|closed|complet/.test((
                                     caseStatus || '').trim().toLowerCase()) ?
                                 'cursor-not-allowed border border-red-200 bg-red-50 text-red-800 pointer-events-none' :
                                 'bg-purple-700 text-white hover:bg-purple-800'"
@@ -2392,7 +2492,8 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-600">
                                     <span class="inline-flex items-center gap-1 text-purple-700 font-medium">
-                                        <i class="fas fa-user-circle text-xs" aria-hidden="true"></i> You
+                                        <i class="fas fa-user-circle text-xs" aria-hidden="true"></i>
+                                        {{ auth()->user()->isDepartmentAdmin() && (int) $case->created_by !== (int) auth()->id() ? (trim(($case->createdBy?->first_name ?? '') . ' ' . ($case->createdBy?->last_name ?? '')) ?: ($case->createdBy?->username ?? 'N/A')) : 'You' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
@@ -2497,7 +2598,7 @@
                         </div>
                         <p class="text-sm text-gray-800 mb-2">{{ censorLastName($case->victim_name) }}</p>
                         <p class="text-xs text-gray-500 mb-2"><i class="fas fa-user-circle text-purple-700"
-                                aria-hidden="true"></i> Generated by: You</p>
+                                aria-hidden="true"></i> Generated by: {{ auth()->user()->isDepartmentAdmin() && (int) $case->created_by !== (int) auth()->id() ? (trim(($case->createdBy?->first_name ?? '') . ' ' . ($case->createdBy?->last_name ?? '')) ?: ($case->createdBy?->username ?? 'N/A')) : 'You' }}</p>
                         <div class="case-card-actions flex items-center justify-end gap-2 mb-3">
                             <button type="button"
                                 class="view-case {{ auth()->user()->isVawcAdmin() ? 'swd-view-action' : (auth()->user()->isBcpcAdmin() ? 'bcpc-view-action' : '') }} inline-flex w-10 h-10 items-center justify-center rounded-lg bg-[#C41E3A] border border-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors"
@@ -2656,11 +2757,11 @@
     </main>
 
     @push('scripts')
-        @if (auth()->user()?->isDepartmentAdmin())
+        @if (auth()->user()?->isDepartmentAdmin() || $isBarangayDeskOfficer || $isMultiroleDeskOfficer)
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
                     const portrait = matchMedia(
-                    '(min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)');
+                    @json(auth()->user()?->position === 'Desk Officer' ? '(min-width: 48rem) and (max-width: 85.375rem)' : '(min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait)'));
                     ['caseModal', 'editCaseModal'].forEach(id => {
                         const modal = document.getElementById(id);
                         if (!modal) return;
@@ -2680,10 +2781,10 @@
                 });
             </script>
         @endif
-        @if (auth()->user()?->isDepartmentAdmin())
+        @if (auth()->user()?->isDepartmentAdmin() || $isBarangayDeskOfficer || $isMultiroleDeskOfficer)
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
-                    const responsivePagination = matchMedia('(max-width: 85.375rem)');
+                    const responsivePagination = matchMedia(@json(auth()->user()?->position === 'Desk Officer' ? '(min-width: 48rem) and (max-width: 85.375rem)' : '(max-width: 85.375rem)'));
                     let activeRequest;
                     document.addEventListener('click', async event => {
                         const link = event.target.closest('.view-cases-pagination a[href]');
@@ -3182,6 +3283,10 @@
                             }
                         })
                         .then(async response => {
+                            if (!response.ok) {
+                                const error = await response.json().catch(() => ({}));
+                                throw new Error(Object.values(error.errors || {}).flat().join('\n') || error.message || 'Unable to update the case.');
+                            }
                             if (response.redirected) {
                                 Swal.fire({
                                         title: 'Success!',

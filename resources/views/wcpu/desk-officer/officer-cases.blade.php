@@ -33,11 +33,11 @@
           <a :href="printUrl" target="_blank" class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
             <i class="fas fa-print"></i><span>Print</span>
           </a>
-          <a id="bcpc-refer-case-button" :href="canRefer ? referUrl : '#'" :aria-disabled="(!canRefer).toString()" class="inline-flex items-center gap-2 px-3 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium">
+          <a id="bcpc-refer-case-button" :href="canRefer ? referUrl : null" :aria-disabled="(!canRefer).toString()" :tabindex="canRefer ? 0 : -1" @click="if (!canRefer) $event.preventDefault()" :class="{ 'opacity-50 cursor-not-allowed pointer-events-none': !canRefer }" class="inline-flex items-center gap-2 px-3 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium">
             <i class="fas fa-share-square"></i><span>Refer Case</span>
           </a>
           @else
-          <a x-show="isOwner" :href="referUrl" class="btn btn-success btn-sm">
+          <a x-show="isOwner" :href="canRefer ? referUrl : null" :aria-disabled="(!canRefer).toString()" :tabindex="canRefer ? 0 : -1" @click="if (!canRefer) $event.preventDefault()" :class="{ 'opacity-50 cursor-not-allowed pointer-events-none': !canRefer }" class="btn btn-success btn-sm">
             <i class="fas fa-share-square me-1"></i> Refer Case
           </a>
           <a href="#" @click.prevent="window.previewCasePrint(printUrl, caseNumber)" class="btn btn-primary btn-sm">
@@ -2887,6 +2887,30 @@
 @endif
 
 @push('scripts')
+@if(auth()->user()?->position === 'Desk Officer' && auth()->user()->isMultiCaseDepartment())
+<script>
+document.addEventListener('submit', async event => {
+    const form = event.target;
+    if (!form.matches('form[data-confirm-action="archive"]')) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const result = await Swal.fire({
+        icon: 'warning', title: 'Archive Case?',
+        text: form.dataset.confirmMessage,
+        showCancelButton: true, confirmButtonText: 'Archive', confirmButtonColor: '#C41E3A',
+    });
+    if (!result.isConfirmed) return;
+    form.setAttribute('data-skip-loading-modal', '');
+    Swal.fire({
+        title: 'Archiving Case...', text: 'Please wait while the case is archived.',
+        allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false,
+        didOpen: () => Swal.showLoading(),
+    });
+    window.portalUnsavedChanges?.allowSubmission?.(form);
+    HTMLFormElement.prototype.submit.call(form);
+}, true);
+</script>
+@endif
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Search functionality
@@ -3248,7 +3272,12 @@ function attachEditFormHandler() {
         // Show loading state
         Swal.fire({
             title: 'Updating Case',
+            @if(auth()->user()?->position === 'Desk Officer' && auth()->user()->isMultiCaseDepartment())
+            text: 'Please wait while the case is updated.',
+            didOpen: () => Swal.showLoading(),
+            @else
             html: '<div class="text-center"><i class="fas fa-spinner fa-spin text-4xl text-purple-500 mb-3"></i><p class="text-gray-700">Please wait...</p></div>',
+            @endif
             showConfirmButton: false,
             allowOutsideClick: false,
             allowEscapeKey: false

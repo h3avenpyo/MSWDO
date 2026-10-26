@@ -1192,7 +1192,7 @@ $chartColors = $isBCPC
 
 <!-- Main Dashboard Content -->
 <main id="desk-officer-dashboard-content" @if(!$isBCPC && $dashboardUser->position === 'Desk Officer' &&
-    $dashboardUser->canAccessCaseDepartment('VAWC')) data-swd-dashboard-fit @endif class="px-4 pt-4 pb-4 sm:p-6 lg:p-8"
+    $dashboardUser->canAccessCaseDepartment('VAWC') && ($stats['totalCases'] ?? 0) > 0) data-swd-dashboard-fit @endif class="px-4 pt-4 pb-4 sm:p-6 lg:p-8"
     style="padding-bottom: max(2rem, calc(1rem + env(safe-area-inset-bottom))) !important;">
     <!-- Page Title -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">

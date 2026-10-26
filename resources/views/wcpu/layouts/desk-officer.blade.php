@@ -2057,6 +2057,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
 
     @php
     $showSwdQuarterlyResult = request()->routeIs('desk-officer.quarterly-reports.*')
+    && !request()->routeIs('desk-officer.quarterly-reports.archived')
     && auth()->user()?->position === 'Desk Officer'
     && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)
     && !auth()->user()?->isMultiCaseDepartment()
@@ -2095,7 +2096,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             icon: @json(session('success') ? 'success' : 'error'),
             title: @json(session('success') ? 'Success' : 'Error'),
             text: @json(session('success') ?: session('error')),
-            confirmButtonColor: @json(request()->routeIs('desk-officer.quarterly-reports.*') && auth()->user()?->defaultCaseDepartment() === 'BCPC' ? '#C41E3A' : '#7e22ce'),
+            confirmButtonColor: @json(request()->routeIs('desk-officer.quarterly-reports.archived') || (request()->routeIs('desk-officer.quarterly-reports.*') && auth()->user()?->defaultCaseDepartment() === 'BCPC') ? '#C41E3A' : '#7e22ce'),
             confirmButtonText: 'OK',
             showConfirmButton: true
         });
@@ -2523,7 +2524,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         }
 
         window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
+            if (event.persisted && !window.restoringDeskCasePopup && !window.hasPendingDeskCaseReturn?.()) {
                 window.location.reload();
             }
         });
@@ -2532,6 +2533,9 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
 
     <script src="{{ asset('js/desk-officer-pagination.js') }}?v={{ filemtime(public_path('js/desk-officer-pagination.js')) }}"></script>
     @stack('scripts')
+    @if(auth()->user()?->position === 'Desk Officer' && (auth()->user()->canAccessCaseDepartment('BCPC') || auth()->user()->canAccessCaseDepartment('VAWC')))
+    <script src="{{ asset('js/desk-case-referral-return.js') }}?v={{ filemtime(public_path('js/desk-case-referral-return.js')) }}"></script>
+    @endif
     @if(Auth::user()?->position === 'Desk Officer' && in_array($defaultCaseDepartment, ['VAWC', 'BCPC'], true) &&
     $isArchiveListPage)
     @include('desk-officer.partials.swd-archive-interactions')
