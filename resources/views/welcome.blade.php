@@ -9,7 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/service-map.js'])
     <link rel="icon" type="image/x-icon" href="{{ asset('IserveIcon.ico') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -552,13 +552,14 @@
     <!-- ===================================== -->
     <section id="programs" class="py-10 sm:py-14 md:py-18 bg-white border-t border-gray-100">
 
-        <div class="max-w-5xl mx-auto px-3 sm:px-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
                     Programs &amp; Activities in Action
                 </h2>
                 <p class="text-gray-600 mt-2 text-xs sm:text-sm md:text-base max-w-xl mx-auto px-2">
-                    Snapshots of MSWDO Silang social welfare services, client consultations, and assistance operations.
+                    Highlights of BCPC activities, financial assistance, social case consultations, and child protection
+                    meetings and seminars in Silang.
                 </p>
             </div>
 
@@ -567,13 +568,10 @@
                 <!-- Slides -->
                 @php
                 $carouselImages = [
-                ['file' => 'fa1.jpg', 'title' => 'Financial Assistance Intake & Verification'],
-                ['file' => 'fa2.jpg', 'title' => 'Senior Citizen & Sectoral Assistance Desk'],
-                ['file' => 'fa3.jpg', 'title' => 'Direct Cash Assistance Release'],
-                ['file' => 'socialcase1.jpg', 'title' => 'Social Case Study Intake & Interview'],
-                ['file' => 'socialcase2.jpg', 'title' => 'Personalized Welfare Consultation'],
-                ['file' => 'socialcase3.jpg', 'title' => 'Community Intake & Evaluation Desk'],
-                ['file' => 'socialcase4.jpg', 'title' => 'Social Case Report Documentation & Review'],
+                ['file' => 'bcpccollages.jpg', 'title' => 'BCPC Training & Community Child Protection Activities'],
+                ['file' => 'facollage.jpg', 'title' => 'Financial Assistance Intake & Cash Distribution'],
+                ['file' => 'socialcaseCollage.jpg', 'title' => 'Social Case Study Interviews & Client Consultations'],
+                ['file' => '2024.png', 'title' => 'Child Protection Council Meetings & Cyber Safety Seminar'],
                 ];
                 @endphp
 
@@ -581,14 +579,13 @@
                 <div class="carousel-slide absolute inset-0 w-full h-full"
                     style="transition: opacity 0.8s ease-in-out; opacity: {{ $index === 0 ? '1' : '0' }}; z-index: {{ $index === 0 ? '10' : '1' }}; pointer-events: {{ $index === 0 ? 'auto' : 'none' }};"
                     data-index="{{ $index }}">
-                    <img src="{{ asset('images/' . $item['file']) }}" alt="{{ $item['title'] }}"
-                        class="w-full h-full object-cover object-center"
-                        loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
-                    <!-- Clean gradient overlay -->
-                    <div
-                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none">
+                    <div class="absolute inset-0">
+                        <img src="{{ asset('images/' . $item['file']) }}" alt="{{ $item['title'] }}"
+                            class="w-full h-full object-cover object-center"
+                            loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
                     </div>
-                    <!-- Caption positioned cleanly on bottom left -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
+                    <!-- Overlay captions keep the image area full size. -->
                     <div class="programs-carousel-caption absolute bottom-0 inset-x-0 z-10 pointer-events-none">
                         <p class="programs-carousel-title font-semibold text-white drop-shadow-md line-clamp-2">
                             {{ $item['title'] }}
@@ -617,74 +614,28 @@
                 <span class="contact-subtitle">Get In Touch</span>
                 <h2 class="contact-title">Contact Us</h2>
                 <p class="contact-description">
-                    Reach out to the Municipal Social Welfare and Development Office. We're here to help and answer any
-                    questions you may have.
+                    Find local service locations on the map and use the emergency hotlines to reach the support you need.
                 </p>
             </div>
             <div class="contact-grid">
-                <!-- Office Info Card -->
-                <div class="contact-card">
-                    <h3 class="card-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
-                            stroke="currentColor" class="w-5 h-5 text-[#b11116] shrink-0">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A2.25 2.25 0 0 0 18 8.083h-3.75V6.75a2.25 2.25 0 0 0-4.5 0v1.333H6a2.25 2.25 0 0 0-2.25 2.25V21" />
-                        </svg>
-                        Office Information
-                    </h3>
-                    <div class="info-list">
-                        <div class="info-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
-                                stroke="currentColor" class="info-icon">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                            </svg>
-                            <div class="info-content">
-                                <h4 class="info-label">Address</h4>
-                                <p class="info-text">Municipal Hall, Silang, Cavite</p>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
-                                stroke="currentColor" class="info-icon">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.824-1.802-5.188-4.166-7-7l1.3-1.3c.362-.272.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.11-1.008H5.036a2.25 2.25 0 0 0-2.25 2.25v1.356Z" />
-                            </svg>
-                            <div class="info-content">
-                                <h4 class="info-label">Phone</h4>
-                                <p class="info-text">
-                                    <a href="tel:0464140202" class="info-link">(046) 414-0202</a>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
-                                stroke="currentColor" class="info-icon">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                            </svg>
-                            <div class="info-content">
-                                <h4 class="info-label">Email</h4>
-                                <p class="info-text">
-                                    <a href="mailto:socialwelfaresilang@gmail.com"
-                                        class="info-link">socialwelfaresilang@gmail.com</a>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75"
-                                stroke="currentColor" class="info-icon">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <div class="info-content">
-                                <h4 class="info-label">Office Hours</h4>
-                                <p class="info-text">Monday - Friday<br>8:00 AM – 5:00 PM</p>
-                            </div>
-                        </div>
+                <!-- Local Services Map -->
+                <div class="service-map-card" aria-labelledby="service-map-heading">
+                    <div class="service-map-header">
+                        <h3 id="service-map-heading" class="card-title">Find Local Services</h3>
+                        <label for="serviceSelect" class="service-map-label">Select a service</label>
+                        <select id="serviceSelect" class="service-map-select" aria-describedby="serviceMapStatus">
+                            <option value="none">Select service</option>
+                            <option value="hospital">Hospitals</option>
+                            <option value="police">Police Stations</option>
+                            <option value="barangay">Barangay Halls</option>
+                            <option value="orphanage">Orphanages &amp; Children Homes</option>
+                            <option value="municipal">Municipal Hall</option>
+                        </select>
+                        <p id="serviceMapStatus" class="service-map-status" role="status" aria-live="polite">
+                            Choose a service to show its locations on the map.
+                        </p>
                     </div>
+                    <div id="mapContainer" class="service-map" role="region" aria-label="Map of local services in Silang"></div>
                 </div>
                 <!-- Emergency Hotlines -->
                 <div class="emergency-card">
@@ -747,6 +698,25 @@
                             <span class="hotline-label">Inchican BFP Sub-Station:</span>
                             <span class="hotline-value">(046) 420-9989</span>
                         </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">Makabata Helpline:</span>
+                            <span class="hotline-value">1383</span>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">Bantay Bata Hotline:</span>
+                            <span class="hotline-value">163</span>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">NCMH Mental Health:</span>
+                            <span class="hotline-value text-right">
+                                <span class="block">1553</span>
+                                <span class="block">1-800-1888-1553</span>
+                            </span>
+                        </div>
+                        <div class="hotline-item hidden-mobile">
+                            <span class="hotline-label">DSWD Help:</span>
+                            <span class="hotline-value">0932-933-3251</span>
+                        </div>
                     </div>
                     <button id="showAllHotlines"
                         class="lg:hidden mt-4 text-warm-gold font-semibold text-sm hover:underline">
@@ -761,22 +731,22 @@
     <!-- ===================================== -->
     <footer class="text-white" style="background: linear-gradient(180deg, #8A0D11 0%, #68080B 100%);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 lg:py-20">
-            <div class="grid gap-6 sm:gap-8 lg:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 sm:text-center lg:text-left">
                 <div class="hidden sm:block lg:col-span-1">
                     <h2 class="text-2xl sm:text-3xl font-bold text-white">
                         MSWDO Silang
                     </h2>
-                    <p class="mt-4 sm:mt-5 text-white/80 leading-7 sm:leading-8 text-sm sm:text-base hidden lg:block">
+                    <p class="mt-3 lg:mt-5 max-w-2xl mx-auto lg:mx-0 lg:max-w-none text-white/80 leading-7 lg:leading-8 text-sm sm:text-base">
                         Municipal Social Welfare and Development Office committed to
                         providing quality, transparent, and compassionate public
                         service.
                     </p>
                 </div>
-                <div class="hidden sm:block">
-                    <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-white">
+                <div class="hidden sm:flex sm:flex-wrap sm:items-center sm:justify-center gap-x-8 gap-y-3 lg:block">
+                    <h3 class="font-bold text-lg sm:text-xl lg:mb-5 text-white">
                         Quick Links
                     </h3>
-                    <ul class="space-y-2 sm:space-y-3 text-white/80 text-sm sm:text-base">
+                    <ul class="flex flex-wrap justify-center gap-x-6 gap-y-3 lg:block lg:space-y-3 text-white/80 text-sm sm:text-base">
                         <li><a href="#home" class="hover:text-warm-gold transition">Home</a></li>
                         <li><a href="#services" class="hover:text-warm-gold transition">Services</a></li>
                         <li><a href="#about" class="hover:text-warm-gold transition">About</a></li>
@@ -796,15 +766,33 @@
                         <li>Social Case Study</li>
                     </ul>
                 </div>
-                <div class="hidden lg:block">
+                <div class="min-w-0 rounded-2xl border border-white/15 bg-white/5 p-5 sm:p-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
                     <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-white">
-                        Office Hours
+                        Office Information
                     </h3>
-                    <p class="text-white/80 leading-6 sm:leading-7 text-sm sm:text-base">
-                        Monday - Friday
-                        <br><br>
-                        8:00 AM - 5:00 PM
-                    </p>
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-x-8 gap-y-5 text-sm leading-6">
+                        <div class="min-w-0">
+                            <dt class="text-warm-gold font-semibold">Address</dt>
+                            <dd class="text-white/80">Municipal Hall, Silang, Cavite</dd>
+                        </div>
+                        <div class="min-w-0">
+                            <dt class="text-warm-gold font-semibold">Phone</dt>
+                            <dd>
+                                <a href="tel:0464140202" class="inline-block py-1 text-white/80 hover:text-warm-gold transition">(046) 414-0202</a>
+                            </dd>
+                        </div>
+                        <div class="min-w-0">
+                            <dt class="text-warm-gold font-semibold">Email</dt>
+                            <dd>
+                                <a href="mailto:socialwelfaresilang@gmail.com"
+                                    class="inline-block max-w-full py-1 text-white/80 hover:text-warm-gold transition [overflow-wrap:anywhere]">socialwelfaresilang@gmail.com</a>
+                            </dd>
+                        </div>
+                        <div class="min-w-0">
+                            <dt class="text-warm-gold font-semibold">Office Hours</dt>
+                            <dd class="text-white/80">Monday - Friday<br>8:00 AM – 5:00 PM</dd>
+                        </div>
+                    </dl>
                 </div>
             </div>
             <div

@@ -312,7 +312,7 @@
     line-height: 1.6;
 }
 
-/* Responsive Grid: Laptop-first proportional structure */
+/* Map and hotlines stack on smaller screens and sit side by side on laptops. */
 .contact-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -320,19 +320,85 @@
     align-items: stretch;
 }
 
-/* Laptops (1024px to 1365px): Dedicated 350px for Office Info, remaining flex for Hotlines */
+.contact-grid > * {
+    min-width: 0;
+}
+
 @media (min-width: 1024px) {
     .contact-grid {
-        grid-template-columns: 350px minmax(0, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1.75rem;
     }
 }
 
-/* Wide Laptops & Desktop (1366px+): 380px for Office Info */
-@media (min-width: 1366px) {
-    .contact-grid {
-        grid-template-columns: 380px minmax(0, 1fr);
-        gap: 2rem;
+.service-map-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.service-map-header {
+    padding: 1.5rem;
+}
+
+.service-map-header .card-title {
+    margin-bottom: 1rem;
+}
+
+.service-map-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #475569;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.service-map-select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    border: 1px solid #CBD5E1;
+    border-radius: 0.75rem;
+    background-color: #FFFFFF;
+    color: #1F2937;
+    font: inherit;
+}
+
+.service-map-select:focus-visible {
+    outline: 2px solid #b11116;
+    outline-offset: 2px;
+}
+
+.service-map-status {
+    margin-top: 0.75rem;
+    min-height: 2.5em;
+    color: #64748B;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+.service-map {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    min-height: 340px;
+    flex: 1;
+    background: #E2E8F0;
+}
+
+@media (min-width: 640px) {
+    .service-map {
+        min-height: 420px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .service-map {
+        min-height: 480px;
     }
 }
 
@@ -482,6 +548,7 @@
 
 .emergency-header {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -517,7 +584,7 @@
     white-space: nowrap;
 }
 
-/* Emergency Grid: Clean 2 columns on laptops, 3 columns on wide desktop */
+/* Hotline columns adapt to the space beside the map. */
 .emergency-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -532,18 +599,18 @@
     }
 }
 
-/* Laptops (1024px to 1365px): Clean 2-column layout prevents crunched labels */
+/* Smaller laptops: one column inside the half-width hotline card. */
 @media (min-width: 1024px) {
     .emergency-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: minmax(0, 1fr);
         gap: 0.7rem 2rem;
     }
 }
 
-/* Wide Laptops & Desktop (1366px+): 3 columns have ample space */
+/* Wide desktop: two columns inside the hotline card. */
 @media (min-width: 1366px) {
     .emergency-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.7rem 1.75rem;
     }
 }
