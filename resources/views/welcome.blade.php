@@ -213,7 +213,7 @@
                         assistance programs for every Silangueño.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-8 max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-8 max-w-6xl mx-auto">
                     <!-- Service 1: Financial Assistance -->
                     <div
                         class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
@@ -287,6 +287,47 @@
                             <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
                                 Senior citizen registration, ID card issuance, and birthday cash gift benefits and
                                 payouts for eligible Silangueño senior citizens.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Service 5: Persons with Disability -->
+                    <div
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <circle cx="12" cy="4" r="2" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="m4 8 8 2 8-2m-8 2v5m0 0-4 6m4-6 4 6" />
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-lg sm:text-xl text-[#b11116]">Persons with Disability</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
+                                Assistance, referrals, and access to support programs for persons with disability
+                                and their families.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Service 6: Solo Parents -->
+                    <div
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <circle cx="9" cy="6" r="3" />
+                                    <circle cx="18" cy="11" r="2" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 21v-3a6 6 0 0 1 12 0v3m0 0v-2a3 3 0 0 1 6 0v2" />
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-lg sm:text-xl text-[#b11116]">Solo Parents</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
+                                Guidance, referrals, and access to support programs to help solo parents care for
+                                their children and strengthen their families.
                             </p>
                         </div>
                     </div>
