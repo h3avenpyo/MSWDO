@@ -953,25 +953,34 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Pagination and filter variables
     const itemsPerPage = {{ auth()->user()->isDepartmentAdmin() ? (request()->boolean('portrait_cards') ? 4 : 5) : 10 }};
-    let currentPage = 1;
+    let currentPage = @json(auth()->user()?->isDepartmentAdmin()) ? Math.max(1, Number(new URLSearchParams(location.search).get('page')) || 1) : 1;
     let allUsers = [];
     let filteredUsers = [];
     @if(auth()->user()?->isDepartmentAdmin())
     matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').addEventListener('change', () => renderPageNumbers(Math.ceil(filteredUsers.length / itemsPerPage)));
     @endif
 
-    function changeUserPage(page) {
-        const keepPosition = @json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches;
+    function changeUserPage(page, pushHistory = true) {
+        const keepPosition = @json(auth()->user()?->isDepartmentAdmin());
         const top = mobileView.getBoundingClientRect().top;
         const scrollTop = mobileView.scrollTop;
         currentPage = page;
         renderUsers();
+        if (@json(auth()->user()?->isDepartmentAdmin()) && pushHistory) {
+            const url = new URL(location.href);
+            url.searchParams.set('page', currentPage);
+            if (url.href !== location.href) history.pushState({}, '', url);
+        }
         if (keepPosition) {
             mobileView.scrollTop = scrollTop;
             window.scrollBy({ top: mobileView.getBoundingClientRect().top - top, behavior: 'instant' });
         }
     }
     
+    @if(auth()->user()?->isDepartmentAdmin())
+    window.addEventListener('popstate', () => changeUserPage(Math.max(1, Number(new URLSearchParams(location.search).get('page')) || 1), false));
+    @endif
+
     // Pagination handlers
     if (prevPageBtn) {
         prevPageBtn.addEventListener('click', function() {
@@ -1045,6 +1054,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function renderUsers() {
+        if (@json(auth()->user()?->isDepartmentAdmin())) currentPage = Math.max(1, Math.min(currentPage, Math.ceil(filteredUsers.length / itemsPerPage) || 1));
         const totalItems = filteredUsers.length;
         const totalPages = Math.ceil(totalItems / itemsPerPage);
         const startIndex = (currentPage - 1) * itemsPerPage;
@@ -1119,10 +1129,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td class="px-6 py-4 text-center">${statusBadge}</td>
                 <td class="px-6 py-4 text-center">
                     <div class="flex items-center justify-center gap-2">
-                        <button type="button" onclick="viewUserDetails(${user.id})" class="inline-flex items-center justify-center px-3 py-1.5 bg-[#C41E3A] text-white border border-[#C41E3A] hover:bg-[#A01830] rounded-lg text-xs font-medium transition-colors" title="View Details">
+                        <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif onclick="viewUserDetails(${user.id})" class="inline-flex items-center justify-center px-3 py-1.5 bg-[#C41E3A] text-white border border-[#C41E3A] hover:bg-[#A01830] rounded-lg text-xs font-medium transition-colors" title="View Details">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button type="button" onclick="openEditModal(${user.id})" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="Edit User">
+                        <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif onclick="openEditModal(${user.id})" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="Edit User">
                             <i class="fas fa-edit"></i>
                         </button>
                         ${adminCaseDepartments.includes('BCPC') && /bcpc/i.test(user.department || '') ? `<button type="button" onclick="confirmDepartmentStatus(${user.id}, '${user.full_name}', 'BCPC', ${user.bcpc_is_active !== false})" class="p-2 text-white hover:opacity-90 rounded-lg transition-colors ${user.bcpc_is_active !== false ? 'bcpc-disable-control' : 'bcpc-enable-control'}" style="background-color: ${user.bcpc_is_active !== false ? '#08306b' : '#c35817'}" title="${user.bcpc_is_active !== false ? 'Disable BCPC access' : 'Enable BCPC access'}"><i class="fas fa-child"></i></button>` : ''}
@@ -1165,10 +1175,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p><span class="text-gray-400">Barangay:</span> ${user.barangay_name}</p>
                 </div>
                 <div class="user-profile-card-actions flex flex-wrap gap-2">
-                    <button type="button" onclick="viewUserDetails(${user.id})" class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#C41E3A] text-white border border-[#C41E3A] rounded-lg text-sm font-medium hover:bg-[#A01830] transition-colors">
+                    <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif onclick="viewUserDetails(${user.id})" class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#C41E3A] text-white border border-[#C41E3A] rounded-lg text-sm font-medium hover:bg-[#A01830] transition-colors">
                         <i class="fas fa-eye"></i> View
                     </button>
-                    <button type="button" onclick="openEditModal(${user.id})" class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors">
+                    <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif onclick="openEditModal(${user.id})" class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors">
                         <i class="fas fa-edit"></i> Edit
                     </button>
                     ${adminCaseDepartments.includes('BCPC') && /bcpc/i.test(user.department || '') ? `<button type="button" onclick="confirmDepartmentStatus(${user.id}, '${user.full_name}', 'BCPC', ${user.bcpc_is_active !== false})" class="inline-flex items-center justify-center px-3 py-2 text-white border rounded-lg text-sm font-medium hover:opacity-90 transition-colors ${user.bcpc_is_active !== false ? 'bcpc-disable-control' : 'bcpc-enable-control'}" style="background-color: ${user.bcpc_is_active !== false ? '#08306b' : '#c35817'}; border-color: ${user.bcpc_is_active !== false ? '#08306b' : '#c35817'}" title="${user.bcpc_is_active !== false ? 'Disable BCPC access' : 'Enable BCPC access'}"><i class="fas fa-child"></i></button>` : ''}
@@ -1188,7 +1198,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (totalPages <= 1) return;
 
-        if (@json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches) {
+        if (@json(auth()->user()?->isDepartmentAdmin())) {
             const first = Math.max(1, Math.min(currentPage - 1, totalPages - 3));
             for (let page = first; page <= Math.min(totalPages, first + 3); page++) pageNumbersContainer.appendChild(createPageButton(page));
             return;
@@ -2063,3 +2073,5 @@ function togglePassword(inputId) {
 @endpush
 
 @endsection
+
+@include('admin-tailwind.components.profile-pagination')

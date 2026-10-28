@@ -624,18 +624,18 @@
                         </td>
                         <td class="px-6 py-4 text-center">
                             <div class="{{ auth()->user()->isBcpcAdmin() ? 'quarterly-report-actions ' : '' }}flex items-center justify-center gap-2">
-                                <a href="{{ route('admin.quarterly-reports.show', $report->id) }}" 
+                                <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important;" @endif href="{{ route('admin.quarterly-reports.show', $report->id) }}"
                                    class="inline-flex items-center {{ auth()->user()->isDepartmentAdmin() ? 'justify-center w-9 h-9' : 'gap-1.5 px-3 py-1.5' }} bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
                                    title="View Report">
                                     <i class="fas fa-eye"></i><span class="{{ auth()->user()->isDepartmentAdmin() ? 'sr-only' : '' }}">View</span>
                                 </a>
-                                <a href="{{ route('admin.quarterly-reports.download', $report->id) }}{{ auth()->user()->isDepartmentAdmin() ? '?preview=1' : '' }}"
+                                <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #0F766E !important; border-color: #0F766E !important;" @endif href="{{ route('admin.quarterly-reports.download', $report->id) }}{{ auth()->user()->isDepartmentAdmin() ? '?preview=1' : '' }}"
                                    {!! auth()->user()->isDepartmentAdmin() ? 'target="_blank" rel="noopener"' : '' !!}
                                    class="{{ auth()->user()->isVawcAdmin() ? 'swd-quarterly-print ' : '' }}inline-flex items-center justify-center w-9 h-9 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition"
                                    title="Preview / Print" data-quarterly-print>
                                     <i class="fas fa-print"></i><span class="sr-only">Preview / Print</span>
                                 </a>
-                                <a href="{{ route('admin.quarterly-reports.edit', $report->id) }}"
+                                <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #D97706 !important; border-color: #D97706 !important;" @endif href="{{ route('admin.quarterly-reports.edit', $report->id) }}"
                                    class="inline-flex items-center justify-center w-9 h-9 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-medium transition"
                                    title="Edit report">
                                     <i class="fas fa-edit"></i><span class="sr-only">Edit</span>
@@ -664,7 +664,7 @@
             </table>
         </div>
         
-        @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports'])
+        @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports', 'pageLinkLimit' => auth()->user()?->isDepartmentAdmin() ? 4 : null])
         </div>
 
         <!-- Phone and portrait tablet report cards -->
@@ -707,13 +707,13 @@
                 </div>
 
                 <div class="quarterly-report-card-actions pt-3 border-t border-gray-100">
-                    <a href="{{ route('admin.quarterly-reports.show', $report->id) }}" class="quarterly-report-card-view inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition" title="View Report">
+                    <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important;" @endif href="{{ route('admin.quarterly-reports.show', $report->id) }}" class="quarterly-report-card-view inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition" title="View Report">
                         <i class="fas fa-eye"></i><span class="{{ auth()->user()->isDepartmentAdmin() ? 'sr-only' : '' }}">View</span>
                     </a>
-                    <a href="{{ route('admin.quarterly-reports.download', $report->id) }}{{ auth()->user()->isDepartmentAdmin() ? '?preview=1' : '' }}" {!! auth()->user()->isDepartmentAdmin() ? 'target="_blank" rel="noopener"' : '' !!} class="quarterly-report-card-print inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition" title="Preview / Print" aria-label="Preview / Print">
+                    <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #0F766E !important; border-color: #0F766E !important;" @endif href="{{ route('admin.quarterly-reports.download', $report->id) }}{{ auth()->user()->isDepartmentAdmin() ? '?preview=1' : '' }}" {!! auth()->user()->isDepartmentAdmin() ? 'target="_blank" rel="noopener"' : '' !!} class="quarterly-report-card-print inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition" title="Preview / Print" aria-label="Preview / Print">
                         <i class="fas fa-print"></i><span>Print</span>
                     </a>
-                    <a href="{{ route('admin.quarterly-reports.edit', $report->id) }}" @if(auth()->user()?->isDepartmentAdmin()) data-icon-action="labelled" aria-label="Edit report" @endif class="quarterly-report-card-edit inline-flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-medium transition" title="Edit report">
+                    <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #D97706 !important; border-color: #D97706 !important;" @endif href="{{ route('admin.quarterly-reports.edit', $report->id) }}" @if(auth()->user()?->isDepartmentAdmin()) data-icon-action="labelled" aria-label="Edit report" @endif class="quarterly-report-card-edit inline-flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-medium transition" title="Edit report">
                         <i class="fas fa-edit"></i><span>Edit</span>
                     </a>
                     <button type="button" onclick="openArchiveModal({{ $report->id }}, '{{ $report->barangay->name ?? 'Barangay' }} - Q{{ $report->quarter }} {{ $report->year }} ({{ str_replace('VAWC', 'SWD', $report->type ?? 'VAWC') }})')" class="quarterly-report-card-archive inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-medium transition" title="Archive report">
@@ -736,7 +736,7 @@
                 </div>
                 @endif
                 <div class="quarterly-existing-pagination">
-                @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports'])
+                @include('components.archived-pagination', ['paginator' => $reports, 'label' => 'reports', 'pageLinkLimit' => auth()->user()?->isDepartmentAdmin() ? 4 : null])
                 </div>
             </div>
         </div>
@@ -1034,3 +1034,5 @@ document.getElementById('printAllQuarterlyReportsButton')?.addEventListener('cli
 
 </script>
 @endsection
+
+@include('admin-tailwind.components.profile-pagination', ['paginationRegions' => ['#quarterly-reports-results'], 'paginationLinks' => '#quarterly-reports-results [data-pagination-label] a[href]'])

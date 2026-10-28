@@ -454,7 +454,7 @@ BCPC cases'])
                             $case->deleted_at?->timezone('Asia/Manila')->format('M d, Y h:i A') }}</td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <a href="{{ ($department ?? 'VAWC') === 'BCPC' ? route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'archived' => 1]) : route('cases.show', ['id' => $case->id, 'archived' => 1]) }}"
+                                <a @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif href="{{ ($department ?? 'VAWC') === 'BCPC' ? route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'archived' => 1]) : route('cases.show', ['id' => $case->id, 'archived' => 1]) }}"
                                     title="View Case"
                                     class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#C41E3A] text-white hover:bg-[#A01830]">
                                     <i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span>
@@ -463,7 +463,7 @@ BCPC cases'])
                                     action="{{ route('desk-officer.archived-barangay-cases.restore', $case->id) }}"
                                     class="restore-case-form" data-case-number="{{ $case->case_number }}">
                                     @csrf
-                                    <button type="submit" title="Restore Case"
+                                    <button @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @endif type="submit" title="Restore Case"
                                         class="inline-flex h-9 w-9 justify-center items-center rounded-lg bg-purple-700 text-white hover:bg-purple-800">
                                         <i class="fas fa-undo" aria-hidden="true"></i><span
                                             class="sr-only">Restore</span>
@@ -516,11 +516,11 @@ BCPC cases'])
                     </div>
                 </dl>
                 <div class="archived-case-card-actions border-t border-gray-100 pt-3">
-                    <a href="{{ ($department ?? 'VAWC') === 'BCPC' ? route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'archived' => 1]) : route('cases.show', ['id' => $case->id, 'archived' => 1]) }}"
+                    <a @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif href="{{ ($department ?? 'VAWC') === 'BCPC' ? route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'archived' => 1]) : route('cases.show', ['id' => $case->id, 'archived' => 1]) }}"
                         title="View Case" class="rounded-lg bg-[#C41E3A] text-white"><i class="fas fa-eye"></i><span
                             class="sr-only">View</span></a>
                     <form method="POST" action="{{ route('desk-officer.archived-barangay-cases.restore', $case->id) }}"
-                        class="restore-case-form" data-case-number="{{ $case->case_number }}">@csrf<button type="submit"
+                        class="restore-case-form" data-case-number="{{ $case->case_number }}">@csrf<button @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @endif type="submit"
                             title="Restore Case" class="rounded-lg bg-[#C41E3A] text-white"><i
                                 class="fas fa-undo"></i><span class="sr-only">Restore</span></button></form>
                     @if(in_array(($department ?? 'VAWC'), ['BCPC', 'VAWC'], true) &&

@@ -15,6 +15,22 @@
 @endphp
 
 @push('styles')
+    @if(auth()->user()?->isDepartmentAdmin())
+    <style>
+        html body.portal-ui #mainContent .view-cases-pagination { padding: 0 !important; background: #fff !important; }
+        html body.portal-ui #mainContent .view-cases-pagination .barangay-legacy-pagination { display: none !important; }
+        html body.portal-ui #mainContent .view-cases-pagination .barangay-tablet-pagination { display: block !important; }
+        html body.portal-ui #mainContent .view-cases-pagination [data-pagination-label] { display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; justify-content: space-between !important; gap: 1rem !important; padding: 1rem 1.5rem !important; }
+        html body.portal-ui #mainContent .view-cases-pagination [data-pagination-label] > div:last-child { gap: .5rem !important; }
+        html body.portal-ui #mainContent .view-cases-pagination [data-pagination-label] a { width: 2.25rem !important; min-width: 0 !important; height: 2.25rem !important; padding: 0 !important; margin: 0 !important; border-radius: .5rem !important; }
+        @media (max-width: 47.9375rem) {
+            html body.portal-ui #mainContent .view-cases-pagination [data-pagination-label] { padding: .75rem !important; gap: .75rem !important; }
+            html body.portal-ui #mainContent .view-cases-pagination [data-pagination-label] > div:last-child { gap: .25rem !important; }
+            html body.portal-ui #mainContent .view-cases-pagination [data-pagination-label] a { width: 2rem !important; height: 2rem !important; font-size: .6875rem !important; }
+        }
+    </style>
+    @endif
+
     @if ($isBarangayDeskOfficer || $isMultiroleDeskOfficer)
         <style>
             @media (min-width: 48rem) and (max-width: 85.375rem) {
@@ -2499,7 +2515,7 @@
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <button type="button"
-                                            class="view-case {{ auth()->user()->isVawcAdmin() ? 'swd-view-action' : (auth()->user()->isBcpcAdmin() ? 'bcpc-view-action' : '') }} {{ auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'VAWC' ? 'flex-none' : '' }} inline-flex w-10 h-10 items-center justify-center rounded-lg bg-[#C41E3A] border border-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors"
+                                            @if(auth()->user()?->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="view-case {{ auth()->user()->isVawcAdmin() ? 'swd-view-action' : (auth()->user()->isBcpcAdmin() ? 'bcpc-view-action' : '') }} {{ auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'VAWC' ? 'flex-none' : '' }} inline-flex w-10 h-10 items-center justify-center rounded-lg bg-[#C41E3A] border border-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors"
                                             data-ajax-url="{{ route('cases.show', $case->id) }}"
                                             data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}"
                                             data-case-id="{{ $case->id }}"
@@ -2526,7 +2542,7 @@
                                                     : $isClosedCase);
                                         @endphp
                                         <button type="button"
-                                            class="edit-case inline-flex items-center justify-center {{ $isCaseDeskOfficer ? 'w-10 h-10 flex-none' : 'w-9 h-9' }} rounded-lg border transition-colors {{ $editDisabled ? 'cursor-not-allowed border-red-200 bg-red-50 text-red-600 shadow-sm opacity-100' : 'border-gray-400 text-gray-600 hover:bg-gray-50' }}"
+                                            @if((auth()->user()?->isDepartmentAdmin() && !$editDisabled) || (auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()) && !$editDisabled)) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif class="edit-case inline-flex items-center justify-center {{ $isCaseDeskOfficer ? 'w-10 h-10 flex-none' : 'w-9 h-9' }} rounded-lg border transition-colors {{ $editDisabled ? 'cursor-not-allowed border-red-200 bg-red-50 text-red-600 shadow-sm opacity-100' : 'border-gray-400 text-gray-600 hover:bg-gray-50' }}"
                                             data-ajax-url="{{ route('cases.edit', $case->id) }}"
                                             data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}"
                                             title="{{ $editDisabled ? ($isClosedCase ? 'Editing is unavailable for closed cases' : 'Editing is unavailable for referred cases') : 'Edit Case' }}"
@@ -2601,7 +2617,7 @@
                                 aria-hidden="true"></i> Generated by: {{ auth()->user()->isDepartmentAdmin() && (int) $case->created_by !== (int) auth()->id() ? (trim(($case->createdBy?->first_name ?? '') . ' ' . ($case->createdBy?->last_name ?? '')) ?: ($case->createdBy?->username ?? 'N/A')) : 'You' }}</p>
                         <div class="case-card-actions flex items-center justify-end gap-2 mb-3">
                             <button type="button"
-                                class="view-case {{ auth()->user()->isVawcAdmin() ? 'swd-view-action' : (auth()->user()->isBcpcAdmin() ? 'bcpc-view-action' : '') }} inline-flex w-10 h-10 items-center justify-center rounded-lg bg-[#C41E3A] border border-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors"
+                                @if(auth()->user()?->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="view-case {{ auth()->user()->isVawcAdmin() ? 'swd-view-action' : (auth()->user()->isBcpcAdmin() ? 'bcpc-view-action' : '') }} inline-flex w-10 h-10 items-center justify-center rounded-lg bg-[#C41E3A] border border-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors"
                                 data-ajax-url="{{ route('cases.show', $case->id) }}"
                                 data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}"
                                 data-case-id="{{ $case->id }}"
@@ -2624,7 +2640,7 @@
                                         : $isClosedCase);
                             @endphp
                             <button type="button"
-                                class="edit-case inline-flex items-center justify-center w-10 h-10 rounded-lg border transition-colors {{ $editDisabled ? 'cursor-not-allowed border-red-200 bg-red-50 text-red-600 shadow-sm opacity-100' : 'border-gray-400 text-gray-600 hover:bg-gray-50' }}"
+                                @if((auth()->user()?->isDepartmentAdmin() && !$editDisabled) || (auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()) && !$editDisabled)) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif class="edit-case inline-flex items-center justify-center w-10 h-10 rounded-lg border transition-colors {{ $editDisabled ? 'cursor-not-allowed border-red-200 bg-red-50 text-red-600 shadow-sm opacity-100' : 'border-gray-400 text-gray-600 hover:bg-gray-50' }}"
                                 data-ajax-url="{{ route('cases.edit', $case->id) }}"
                                 data-case-number="{{ $isSwdDeskOfficer ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? '') : $case->case_number }}"
                                 title="{{ $editDisabled ? ($isClosedCase ? 'Editing is unavailable for closed cases' : 'Editing is unavailable for referred cases') : 'Edit Case' }}"
@@ -2786,18 +2802,14 @@
                 document.addEventListener('DOMContentLoaded', () => {
                     const responsivePagination = matchMedia(@json(auth()->user()?->position === 'Desk Officer' ? '(min-width: 48rem) and (max-width: 85.375rem)' : '(max-width: 85.375rem)'));
                     let activeRequest;
-                    document.addEventListener('click', async event => {
-                        const link = event.target.closest('.view-cases-pagination a[href]');
-                        if (!responsivePagination.matches || !link || event.defaultPrevented || event.button !==
-                            0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-                        event.preventDefault();
+                    async function loadCases(url, pushHistory) {
                         activeRequest?.abort();
                         const controller = new AbortController();
                         activeRequest = controller;
                         const cards = document.querySelector('.view-cases-table-cards');
                         cards?.setAttribute('aria-busy', 'true');
                         try {
-                            const response = await fetch(link.href, {
+                            const response = await fetch(url, {
                                 signal: controller.signal,
                                 headers: {
                                     Accept: 'text/html'
@@ -2815,7 +2827,9 @@
                                 'Missing cases');
                             const top = cards.getBoundingClientRect().top;
                             replacements.forEach(([current, next]) => current.replaceWith(next));
-                            history.replaceState(null, '', link.href);
+                            if (@json(auth()->user()?->isDepartmentAdmin())) {
+                                if (pushHistory) history.pushState(null, '', url);
+                            } else history.replaceState(null, '', url);
                             document.dispatchEvent(new CustomEvent('case-list-updated'));
                             const nextCards = document.querySelector('.view-cases-table-cards');
                             window.scrollBy({
@@ -2823,11 +2837,25 @@
                                 behavior: 'instant'
                             });
                         } catch (error) {
-                            if (error.name !== 'AbortError') location.assign(link.href);
+                            if (error.name !== 'AbortError' && activeRequest === controller) {
+                                if (@json(auth()->user()?->isDepartmentAdmin())) {
+                                    Swal.fire('Unable to load cases', 'Please try the page link again.', 'error');
+                                } else location.assign(url);
+                            }
                         } finally {
                             cards?.removeAttribute('aria-busy');
                         }
+                    }
+                    document.addEventListener('click', event => {
+                        const link = event.target.closest('.view-cases-pagination a[href]');
+                        if ((!@json(auth()->user()?->isDepartmentAdmin()) && !responsivePagination.matches) || !link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+                        event.preventDefault();
+                        if (link.getAttribute('href') === '#' || link.classList.contains('pointer-events-none') || link.href === location.href) return;
+                        loadCases(link.href, true);
                     });
+                    @if(auth()->user()?->isDepartmentAdmin())
+                    window.addEventListener('popstate', () => loadCases(location.href, false));
+                    @endif
                 });
             </script>
         @endif

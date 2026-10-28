@@ -458,11 +458,11 @@
                                 <td class="px-5 py-4">{{ $record->deleted_at?->format('M d, Y h:i A') }}</td>
                                 <td class="px-5 py-4 text-center">
                                     <div class="flex items-center justify-center gap-3">
-                                        <a class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[#C41E3A] text-white no-underline hover:bg-[#A01830] active:bg-[#8B1429] transition-colors" href="{{ route('cases.show', ['id' => $record->id, 'archived' => 1]) }}" data-admin-archive-view="case" data-swd-archive-view="case" data-modal-title="Case Details" title="View Case"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span></a>
+                                        <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[#C41E3A] text-white no-underline hover:bg-[#A01830] active:bg-[#8B1429] transition-colors" href="{{ route('cases.show', ['id' => $record->id, 'archived' => 1]) }}" data-admin-archive-view="case" data-swd-archive-view="case" data-modal-title="Case Details" title="View Case"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span></a>
                                         @if($record->trashed())
                                         <form method="POST" action="{{ route('cases.restore', $record->id) }}" class="restore-confirm-form" data-skip-loading-modal>
                                             @csrf
-                                            <button type="submit" aria-label="Restore" class="px-3 py-2 rounded-lg text-white transition-colors" style="background-color: #C41E3A !important;"><i class="fas fa-undo" aria-hidden="true"></i><span>Restore</span></button>
+                                            <button type="submit" aria-label="Restore" class="px-3 py-2 rounded-lg text-white transition-colors" @if(auth()->user()?->isDepartmentAdmin()) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @else style="background-color: #C41E3A !important;" @endif><i class="fas fa-undo" aria-hidden="true"></i><span>Restore</span></button>
                                         </form>
                                         @elseif(auth()->user()->isVawcAdmin())
                                         <span class="px-3 py-2 rounded-lg bg-green-100 text-green-700 text-sm font-medium">Restored</span>
@@ -478,10 +478,10 @@
                                         ? (($activeMonitoringPeriods ?? [])["{$record->quarter}-{$record->year}"] ?? false)
                                         : (auth()->user()->isDepartmentAdmin() && ($activeReportPeriods["{$record->quarter}-{$record->year}"] ?? false)))
                                     <div class="flex items-center justify-center gap-3">
-                                        <a class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors" href="{{ $isMonitoring ? route('admin.bcpc-case-monitoring.edit', ['view' => $record->id, 'archived' => 1]) : route('admin.quarterly-reports.show', ['id' => $record->id, 'archived' => 1]) }}" data-admin-archive-view="{{ $isMonitoring ? 'monitoring' : 'report' }}" data-modal-title="{{ $isMonitoring ? 'BCPC Monitoring Report Details' : 'Quarterly Report Details' }}" title="View Details" aria-label="View Details"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></a>
+                                        <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[#C41E3A] text-white hover:bg-[#A01830] active:bg-[#8B1429] transition-colors" href="{{ $isMonitoring ? route('admin.bcpc-case-monitoring.edit', ['view' => $record->id, 'archived' => 1]) : route('admin.quarterly-reports.show', ['id' => $record->id, 'archived' => 1]) }}" data-admin-archive-view="{{ $isMonitoring ? 'monitoring' : 'report' }}" data-modal-title="{{ $isMonitoring ? 'BCPC Monitoring Report Details' : 'Quarterly Report Details' }}" title="View Details" aria-label="View Details"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View Details</span></a>
                                         <form method="POST" class="restore-confirm-form" data-skip-loading-modal action="{{ $isMonitoring ? route('admin.bcpc-case-monitoring.restore', $record->id) : route('admin.quarterly-reports.restore', $record->id) }}">
                                             @csrf
-                                            <button type="submit" @disabled($restoreBlocked) class="px-3 py-2 rounded-lg {{ $restoreBlocked ? 'bg-red-100 text-red-800 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white' }} transition-colors">Restore</button>
+                                            <button @if(auth()->user()?->isDepartmentAdmin() && !$restoreBlocked) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @endif type="submit" @disabled($restoreBlocked) class="px-3 py-2 rounded-lg {{ $restoreBlocked ? 'bg-red-100 text-red-800 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white' }} transition-colors">Restore</button>
                                         </form>
                                     </div>
                                 </td>
@@ -539,11 +539,11 @@
                         </div>
                     </div>
                     <div class="archived-barangay-case-actions pt-3 border-t border-gray-100">
-                        <a class="inline-flex items-center gap-1 rounded-lg bg-[#C41E3A] text-white text-xs font-medium no-underline hover:bg-[#A01830]" href="{{ route('cases.show', ['id' => $record->id, 'archived' => 1]) }}" data-admin-archive-view="case" data-swd-archive-view="case" data-modal-title="Case Details" title="View Case"><i class="fas fa-eye" aria-hidden="true"></i><span>View</span></a>
+                        <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="inline-flex items-center gap-1 rounded-lg bg-[#C41E3A] text-white text-xs font-medium no-underline hover:bg-[#A01830]" href="{{ route('cases.show', ['id' => $record->id, 'archived' => 1]) }}" data-admin-archive-view="case" data-swd-archive-view="case" data-modal-title="Case Details" title="View Case"><i class="fas fa-eye" aria-hidden="true"></i><span>View</span></a>
                         @if($record->trashed())
                         <form method="POST" action="{{ route('cases.restore', $record->id) }}" class="restore-confirm-form" data-skip-loading-modal>
                             @csrf
-                            <button type="submit" data-icon-action="labelled" class="inline-flex items-center gap-1 rounded-lg bg-[#C41E3A] text-white text-xs font-medium" style="background-color: #C41E3A !important;" title="Restore" aria-label="Restore"><i class="fas fa-undo" aria-hidden="true"></i></button>
+                            <button type="submit" data-icon-action="labelled" class="inline-flex items-center gap-1 rounded-lg bg-[#C41E3A] text-white text-xs font-medium" @if(auth()->user()?->isDepartmentAdmin()) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @else style="background-color: #C41E3A !important;" @endif title="Restore" aria-label="Restore"><i class="fas fa-undo" aria-hidden="true"></i></button>
                         </form>
                         @elseif(auth()->user()->isVawcAdmin())
                         <span class="col-span-2 inline-flex min-h-12 items-center justify-center rounded-lg bg-green-100 text-green-700 text-sm font-medium">Restored</span>

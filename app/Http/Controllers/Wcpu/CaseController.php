@@ -1007,6 +1007,10 @@ class CaseController extends Controller
             session()->forget('referral_restriction');
             session()->flash('referral_success', true);
 
+            if (Auth::user()?->position === 'Desk Officer') {
+                \App\Services\Wcpu\MultiroleActionNotifications::recordCaseReferred($case, Auth::user(), $referral->referral_number);
+            }
+
             try {
                 activity('case')
                     ->performedOn($case)

@@ -2408,6 +2408,13 @@
             }
             @endif
         }
+        @media (max-width: 47.9375rem) {
+            body.portal-ui #caseModal .case-modal-top-header .case-modal-header-actions {
+                justify-content: flex-start !important;
+                margin-left: 0 !important;
+                margin-right: auto !important;
+            }
+        }
     </style>
 @endpush
 
@@ -2664,7 +2671,7 @@
                             data-case-number="{{ $case->case_number }}"
                             data-case-id="{{ $case->id }}"
                             data-case-status="{{ $case->status }}"
-                            title="View Case">
+                            style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" title="View Case">
                             <i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span>
                         </button>
                         @endif
@@ -2678,7 +2685,7 @@
                            class="edit-case inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-400 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
                            data-ajax-url="{{ route('desk-officer.cases.edit', ['hash' => encrypt($case->id)]) }}"
                            data-case-number="{{ $case->case_number }}"
-                           title="Edit Case">
+                           style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" title="Edit Case">
                             <i class="fas fa-edit"></i>
                         </a>
                         @endif
@@ -2755,7 +2762,7 @@
                         {{ $case->createdBy ? $case->createdBy->first_name . ' ' . substr($case->createdBy->last_name ?? '', 0, 1) . '.' : 'Unknown' }}
                     @endif
                 </div>
-                <div class="case-card-updated"><i class="fas fa-sync text-xs mr-1 text-purple-400"></i>{{ $case->updated_at->format('M d, Y') }}</div>
+                <div class="case-card-updated"><i class="fas fa-sync text-xs mr-1 text-purple-400"></i>{{ $case->updated_at->format('M d, Y g:i A') }}</div>
             </div>
 
             {{-- Action buttons --}}
@@ -2766,7 +2773,7 @@
                     data-ajax-url="{{ route('desk-officer.cases.show', ['hash' => encrypt($case->id)]) }}"
                     data-case-number="{{ $case->case_number }}"
                     data-case-id="{{ $case->id }}"
-                    data-case-status="{{ $case->status }}" title="View Case" aria-label="View Case">
+                    data-case-status="{{ $case->status }}" style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" title="View Case" aria-label="View Case">
                     <i class="fas fa-eye text-xs" aria-hidden="true"></i><span class="case-card-action-label">View</span>
                 </button>
                 @endif
@@ -2776,7 +2783,7 @@
                 @endphp
                 @if($usesTabletCaseEdit)
                 <button type="button" class="desk-tablet-case-edit case-card-icon-action {{ $editDisabled ? '' : 'edit-case' }} inline-flex items-center justify-center rounded-lg border transition-colors"
-                    @disabled($editDisabled) aria-disabled="{{ $editDisabled ? 'true' : 'false' }}"
+                    @unless($editDisabled) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endunless @disabled($editDisabled) aria-disabled="{{ $editDisabled ? 'true' : 'false' }}"
                     data-ajax-url="{{ route('desk-officer.cases.edit', ['hash' => encrypt($case->id)]) }}"
                     data-case-number="{{ $case->case_number }}"
                     title="{{ $editDisabled ? 'Editing is unavailable for this case status' : 'Edit Case' }}" aria-label="Edit Case">
@@ -2791,7 +2798,7 @@
                 <a href="{{ route('desk-officer.cases.edit', ['hash' => encrypt($case->id)]) }}"
                    class="{{ $usesTabletCaseEdit ? 'desk-original-case-edit' : '' }} case-card-icon-action edit-case flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-400 text-gray-700 hover:bg-gray-50 rounded-lg text-sm font-medium transition"
                    data-ajax-url="{{ route('desk-officer.cases.edit', ['hash' => encrypt($case->id)]) }}"
-                   data-case-number="{{ $case->case_number }}" title="Edit Case" aria-label="Edit Case">
+                   data-case-number="{{ $case->case_number }}" style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" title="Edit Case" aria-label="Edit Case">
                     <i class="fas fa-edit text-xs"></i><span class="case-card-action-label">Edit</span>
                 </a>
                 @endif
