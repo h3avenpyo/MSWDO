@@ -480,14 +480,14 @@ case referrals'])
                         <td class="px-6 py-4">{{ $referral->date_of_referral?->format('M d, Y') }}</td>
                         <td class="px-6 py-4">{{ $referral->deleted_at?->format('M d, Y') }}</td>@if($isBcpcDeskOfficer
                         || $isVawcDeskOfficer || auth()->user()->isMultiCaseDepartment())<td class="px-6 py-4">
-                            <div class="flex items-center justify-center gap-2"><button type="button"
+                            <div class="flex items-center justify-center gap-2"><button @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif type="button"
                                     data-icon-action="labelled" data-referral-id="{{ $referral->id }}"
                                     title="View Referral"
                                     class="archived-view-referral-btn inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#C41E3A] text-white hover:bg-[#A01830]"><i
                                         class="fas fa-eye"></i><span class="sr-only">View</span></button>
                                 <form method="POST" class="restore-archived-referral-form"
                                     action="{{ route('desk-officer.referrals.restore', $referral->id) }}">@csrf<button
-                                        type="submit" title="Restore Referral"
+ @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @endif                                        type="submit" title="Restore Referral"
                                         class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#C41E3A] text-white hover:bg-[#A01830]"><i
                                             class="fas fa-undo"></i><span class="sr-only">Restore</span></button></form>
                                 @unless($isVawcDeskOfficer || $isBcpcDeskOfficer ||
@@ -538,12 +538,12 @@ case referrals'])
                         <dd class="font-medium text-gray-800 break-words">{{ $referral->recipient_name }}</dd>
                     </div>
                 </dl>@if($isBcpcDeskOfficer || $isVawcDeskOfficer || auth()->user()->isMultiCaseDepartment())<div
-                    class="archived-referral-actions border-t border-gray-100 pt-3"><button type="button"
+                    class="archived-referral-actions border-t border-gray-100 pt-3"><button @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif type="button"
                         data-referral-id="{{ $referral->id }}"
                         class="archived-view-referral-btn rounded-lg bg-[#C41E3A] text-white"><i
                             class="fas fa-eye"></i><span class="sr-only">View</span></button>
                     <form method="POST" class="restore-archived-referral-form"
-                        action="{{ route('desk-officer.referrals.restore', $referral->id) }}">@csrf<button type="submit"
+                        action="{{ route('desk-officer.referrals.restore', $referral->id) }}">@csrf<button @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @endif type="submit"
                             class="rounded-lg bg-[#C41E3A] text-white"><i class="fas fa-undo"></i><span
                                 class="sr-only">Restore</span></button></form>@unless($isVawcDeskOfficer ||
                     $isBcpcDeskOfficer || auth()->user()->isMultiCaseDepartment())<form method="POST"

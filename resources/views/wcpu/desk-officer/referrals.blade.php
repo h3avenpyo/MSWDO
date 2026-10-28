@@ -486,7 +486,7 @@
                         </td>
                         <td class="px-6 py-4 actions-column">
                             <div class="flex items-center justify-center gap-2">
-                                <button type="button" data-icon-action="labelled" class="view-referral-btn inline-flex items-center justify-center gap-1.5 bg-blue-600 {{ $isBcpcDeskOfficer ? 'hover:bg-[#A01830]' : 'hover:bg-blue-700' }} text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm"
+                                <button type="button" data-icon-action="labelled" @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="view-referral-btn inline-flex items-center justify-center gap-1.5 bg-blue-600 {{ $isBcpcDeskOfficer ? 'hover:bg-[#A01830]' : 'hover:bg-blue-700' }} text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm"
                                     title="View Details" data-id="{{ $referral->id }}">
                                     <i class="fas fa-eye"></i>
                                 </button>
@@ -495,14 +495,14 @@
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 @else
-                                <button type="button" class="edit-referral-btn inline-flex items-center justify-center gap-1.5 bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition"
+                                <button type="button" @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif class="edit-referral-btn inline-flex items-center justify-center gap-1.5 bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition"
                                     title="Edit" data-id="{{ $referral->id }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 @endif
 
                                 <a href="{{ route('desk-officer.referrals.print', $referral->id) }}"
-                                    class="print-referral-btn inline-flex items-center justify-center {{ auth()->user()?->defaultCaseDepartment() === 'VAWC' ? 'bg-[#C41E3A] hover:bg-[#A01830]' : 'bg-green-600 hover:bg-green-700' }} text-white px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Print">
+                                    @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #0F766E !important; border-color: #0F766E !important; color: #fff !important;" @endif class="print-referral-btn inline-flex items-center justify-center {{ auth()->user()?->defaultCaseDepartment() === 'VAWC' ? 'bg-[#C41E3A] hover:bg-[#A01830]' : 'bg-green-600 hover:bg-green-700' }} text-white px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Print">
                                     <i class="fas fa-print"></i>
                                 </a>
                                 <button type="button" data-icon-action="labelled" class="archive-referral-btn inline-flex items-center gap-1.5 {{ ($isBcpcDeskOfficer || auth()->user()->isMultiCaseDepartment()) ? 'bg-[#C41E3A] hover:bg-[#A01830] border-[#C41E3A] text-white' : 'bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border-red-200' }} border px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Archive" data-url="{{ route('desk-officer.referrals.archive', $referral->id) }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
@@ -549,13 +549,13 @@
                     <div class="col-span-2"><dt class="text-xs text-gray-500">Feedback</dt><dd class="font-medium text-gray-800 break-words">{{ $referral->feedback ?: 'No feedback yet' }}</dd></div>
                 </dl>
                 <div class="referral-card-actions grid grid-cols-4 gap-2 border-t border-gray-100 pt-3">
-                    <button type="button" class="view-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-blue-600 text-white" title="View Details" data-id="{{ $referral->id }}"><i class="fas fa-eye"></i><span class="sr-only">View</span></button>
+                    <button type="button" @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="view-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-blue-600 text-white" title="View Details" data-id="{{ $referral->id }}"><i class="fas fa-eye"></i><span class="sr-only">View</span></button>
                     @if($editDisabled)
                     <button type="button" disabled class="inline-flex min-h-12 items-center justify-center rounded-lg bg-red-100 text-red-800 cursor-not-allowed" style="background-color: #FEE2E2 !important; color: #991B1B !important; border-color: #FCA5A5 !important;" title="{{ $editDisabledTitle }}"><i class="fas fa-edit"></i><span class="sr-only">Edit</span></button>
                     @else
-                    <button type="button" class="edit-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-purple-700 text-white" title="Edit" data-id="{{ $referral->id }}"><i class="fas fa-edit"></i><span class="sr-only">Edit</span></button>
+                    <button type="button" @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif class="edit-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-purple-700 text-white" title="Edit" data-id="{{ $referral->id }}"><i class="fas fa-edit"></i><span class="sr-only">Edit</span></button>
                     @endif
-                    <a href="{{ route('desk-officer.referrals.print', $referral->id) }}" class="print-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-[#C41E3A] text-white" title="Print"><i class="fas fa-print"></i><span class="sr-only">Print</span></a>
+                    <a href="{{ route('desk-officer.referrals.print', $referral->id) }}" @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #0F766E !important; border-color: #0F766E !important; color: #fff !important;" @endif class="print-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-[#C41E3A] text-white" title="Print"><i class="fas fa-print"></i><span class="sr-only">Print</span></a>
                     <button type="button" class="archive-referral-btn inline-flex min-h-12 items-center justify-center rounded-lg bg-[#C41E3A] text-white" title="Archive" data-url="{{ route('desk-officer.referrals.archive', $referral->id) }}"><i class="fas fa-archive"></i><span class="sr-only">Archive</span></button>
                 </div>
             </article>

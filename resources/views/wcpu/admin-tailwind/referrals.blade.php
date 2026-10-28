@@ -649,16 +649,16 @@
                         </td>
                         <td class="{{ $matchReportTable ? 'px-6' : 'px-4' }} py-4 align-middle">
                             <div class="flex w-full items-center {{ auth()->user()?->isVawcAdmin() ? 'justify-start flex-wrap' : 'justify-center' }} gap-2">
-                                <button type="button" class="{{ $matchReportTable ? 'view-referral-btn inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm' : 'view-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 rounded-lg text-xs font-medium transition-colors' }}"
+                                <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="{{ $matchReportTable ? 'view-referral-btn inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm' : 'view-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 rounded-lg text-xs font-medium transition-colors' }}"
                                     title="View Details" data-id="{{ $referral->id }}">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button type="button" @disabled($editDisabled) class="{{ $editDisabled ? 'disabled-referral-edit inline-flex items-center justify-center border border-red-200 bg-red-50 text-red-800 px-3 py-1.5 rounded-lg text-xs font-medium cursor-not-allowed' : ($matchReportTable ? 'edit-referral-btn inline-flex items-center justify-center bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'edit-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 rounded-lg text-xs font-medium transition-colors') }}"
+                                <button type="button" @disabled($editDisabled) @if(auth()->user()?->isDepartmentAdmin() && !$editDisabled) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif class="{{ $editDisabled ? 'disabled-referral-edit inline-flex items-center justify-center border border-red-200 bg-red-50 text-red-800 px-3 py-1.5 rounded-lg text-xs font-medium cursor-not-allowed' : ($matchReportTable ? 'edit-referral-btn inline-flex items-center justify-center bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'edit-referral-btn inline-flex items-center justify-center px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 rounded-lg text-xs font-medium transition-colors') }}"
                                     title="{{ $editDisabledTitle }}" data-id="{{ $referral->id }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <a href="{{ route('admin.referrals.print', $referral->id) }}"
-                                    class="print-referral-btn {{ $matchReportTable ? 'inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'inline-flex items-center justify-center px-3 py-1.5 bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-medium transition-colors' }}" title="Print">
+                                    @if(auth()->user()?->isDepartmentAdmin()) style="background: #0F766E !important; border-color: #0F766E !important; color: #fff !important;" @endif class="print-referral-btn {{ $matchReportTable ? 'inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'inline-flex items-center justify-center px-3 py-1.5 bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-medium transition-colors' }}" title="Print">
                                     <i class="fas fa-print"></i>
                                 </a>
                                 @if(auth()->user()->isDepartmentAdmin())
@@ -686,6 +686,9 @@
         
         <!-- Pagination -->
         <div id="referrals-table-pagination" class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+            @if(auth()->user()?->isDepartmentAdmin())
+            <div class="referrals-profile-pagination">@include('components.archived-pagination', ['paginator' => $referrals, 'label' => 'referrals', 'pageLinkLimit' => 4])</div>
+            @endif
             <div class="text-sm text-gray-600">
                 Showing <span class="font-medium">{{ $referrals->firstItem() ?? 0 }}</span> to <span class="font-medium">{{ $referrals->lastItem() ?? 0 }}</span> of <span class="font-medium">{{ $referrals->total() }}</span> referrals
             </div>
@@ -814,18 +817,18 @@
                 </div>
                 
                 <div class="referral-card-actions flex gap-2 pt-3 border-t border-gray-100">
-                    <button type="button" class="view-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+                    <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="view-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
                         data-id="{{ $referral->id }}">
                         <i class="fas fa-eye"></i>
                         View Details
                     </button>
-                    <button type="button" @disabled($editDisabled) class="{{ $editDisabled ? 'disabled-referral-edit flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-red-800 border border-red-200 bg-red-50 rounded-lg cursor-not-allowed' : 'edit-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors' }}"
+                    <button type="button" @disabled($editDisabled) @if(auth()->user()?->isDepartmentAdmin() && !$editDisabled) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif class="{{ $editDisabled ? 'disabled-referral-edit flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-red-800 border border-red-200 bg-red-50 rounded-lg cursor-not-allowed' : 'edit-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors' }}"
                         title="{{ $editDisabledTitle }}" data-id="{{ $referral->id }}">
                         <i class="fas fa-edit"></i>
                         Edit
                     </button>
                                 <a href="{{ route('admin.referrals.print', $referral->id) }}"
-                        class="print-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                        @if(auth()->user()?->isDepartmentAdmin()) style="background: #0F766E !important; border-color: #0F766E !important; color: #fff !important;" @endif class="print-referral-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
                         <i class="fas fa-print"></i>
                         Print
                     </a>
@@ -1377,3 +1380,5 @@ if (referralsSearchInput) {
 </script>
 @endpush
 @endif
+
+@include('admin-tailwind.components.profile-pagination', ['paginationRegions' => ['#referrals-table-panel', '#referrals-mobile-cards'], 'paginationLinks' => '#referrals-table-pagination a[href], #referrals-card-pagination a[href]'])

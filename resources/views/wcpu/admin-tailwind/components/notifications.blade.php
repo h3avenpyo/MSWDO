@@ -28,6 +28,11 @@
     $currentTime = time();
     
     $activities = [];
+    // Dedicated referral notifications carry the officer-based recipient list.
+    $routedReferralCaseIds = \Spatie\Activitylog\Models\Activity::where('log_name', 'multirole_workflow')
+        ->where('subject_type', (new \App\Models\Wcpu\CaseModel())->getMorphClass())
+        ->whereNotNull('properties->referral_number')
+        ->pluck('subject_id')->map(fn ($id) => (int) $id)->all();
     $isSwdDeskOfficer = Auth::check()
         && Auth::user()->position === 'Desk Officer'
         && Auth::user()->defaultCaseDepartment() === 'VAWC';
@@ -132,7 +137,8 @@
             $updateTimestamp = $case->updated_at->getTimestamp();
             $createdTimestamp = $case->created_at->getTimestamp();
             
-            if ($updateTimestamp > $createdTimestamp + 60) {
+            if ($updateTimestamp > $createdTimestamp + 60
+                && !(preg_match('/referred/i', $case->status) && in_array((int) $case->id, $routedReferralCaseIds, true))) {
                 $statusNotificationId = 'status_updated_' . $case->id;
                 $isStatusRead = in_array($statusNotificationId, $readNotificationIds);
                 $isUpdateUnread = !$isStatusRead && ($updateTimestamp > $lastViewedTime) && ($updateTimestamp <= $currentTime);
@@ -256,6 +262,10 @@
     }
 
     foreach ($recentActions as $action) {
+        if ($action->causer?->position === 'Desk Officer'
+            && preg_match('/referred/i', $action->description ?? '')
+            && $action->subject_type === (new \App\Models\Wcpu\CaseModel())->getMorphClass()
+            && in_array((int) $action->subject_id, $routedReferralCaseIds, true)) continue;
         $actionTimestamp = $action->created_at ? $action->created_at->getTimestamp() : $currentTime;
         $notificationId = 'action_' . $action->id;
         $isRead = in_array($notificationId, $readNotificationIds);

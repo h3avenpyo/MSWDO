@@ -286,6 +286,7 @@
                         </td>
                         <td class="px-6 py-4 text-center">
                             <button type="button" class="view-details-btn inline-flex w-11 h-11 items-center justify-center bg-[#C41E3A] text-white rounded-lg hover:bg-[#A01830] transition-colors text-xs font-medium"
+                                @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important;" @endif
                                 data-details='@json(data_get($log, "full_details", []), JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_TAG)'
                                 aria-haspopup="dialog" aria-controls="activityModal">
                                 <i class="fas fa-eye"></i>
@@ -620,3 +621,5 @@ document.addEventListener('DOMContentLoaded', function() {
 @endpush
 
 @endsection
+
+@include('admin-tailwind.components.profile-pagination', ['paginationRegions' => ['#logs-results'], 'paginationLinks' => '.user-logs-tablet-pagination a[href], .user-logs-legacy-pagination a[href]'])

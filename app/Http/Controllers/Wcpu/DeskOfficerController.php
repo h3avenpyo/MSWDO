@@ -1115,6 +1115,7 @@ public function create()
          $case->priority = $validated['priority'];
          $case->status = $validated['status'];
          
+         $case->updated_at = Carbon::now('Asia/Manila');
          $case->save();
 
          // If status just changed to "Case Referred", log into case_referrals table
@@ -1411,7 +1412,9 @@ public function create()
         }
 
         // Update case status to Referred
-        $case->update(['status' => 'Case Referred']);
+        $case->status = 'Case Referred';
+        $case->updated_at = Carbon::now('Asia/Manila');
+        $case->save();
         session()->flash('referral_success', true);
 
         if (class_exists(\App\Services\Wcpu\MultiroleActionNotifications::class)) {

@@ -8,6 +8,27 @@ use Spatie\Activitylog\Models\Activity;
 
 class MultiroleActionNotifications
 {
+    public static function recordCaseReferred(CaseModel $case, User $actor, string $referralNumber): void
+    {
+        if ($actor->position !== 'Desk Officer') return;
+
+        $departments = $actor->caseDepartments();
+        $recipients = User::where('is_active', true)->get()
+            ->filter(fn (User $user) => strtolower(trim($user->position)) === 'administrator'
+                && count(array_intersect($departments, $user->caseDepartments())) > 0)
+            ->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        activity('multirole_workflow')->performedOn($case)->causedBy($actor)
+            ->withProperties([
+                'recipient_ids' => $recipients,
+                'department' => $case->type,
+                'barangay_id' => $case->case_designation,
+                'kind' => 'case',
+                'referral_number' => $referralNumber,
+            ])
+            ->log('Case '.$case->case_number.' was referred ('.$referralNumber.').');
+    }
+
     public static function record(string $action, Model $record): void
     {
         $actor = auth()->user() ?? auth('wcpu')->user();

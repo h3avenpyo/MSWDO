@@ -423,20 +423,20 @@
                                 <div class="bcpc-monitoring-actions flex items-center justify-center gap-2">
                                     <a href="{{ route('desk-officer.bcpc-case-monitoring.edit', ['quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id]) }}"
                                        class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
-                                       title="View Record">
+                                       style="background: #2563EB !important; border-color: #2563EB !important;" title="View Record">
                                         <i class="fas fa-eye"></i>
                                         <span>View</span>
                                     </a>
                                     <a href="{{ route('desk-officer.bcpc-case-monitoring.edit', ['quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'edit' => $monitoring->id]) }}"
                                        class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
-                                       title="Edit Record">
+                                       style="background: #D97706 !important; border-color: #D97706 !important;" title="Edit Record">
                                         <i class="fas fa-edit"></i>
                                         <span>Edit</span>
                                     </a>
                                     <button type="button"
                                             onclick="sendToAdmin({{ $monitoring->id }}, '{{ addslashes($monitoring->barangay->name ?? 'Barangay') }}', 'Q{{ $monitoring->quarter }} {{ $monitoring->year }}')"
                                             class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
-                                            title="Send to Admin">
+                                            style="background: #079B70 !important; border-color: #079B70 !important;" title="Send to Admin">
                                         <i class="fas fa-paper-plane"></i>
                                         <span>Send to Admin</span>
                                     </button>
@@ -493,20 +493,20 @@
                     <div class="bcpc-monitoring-actions border-t border-gray-100">
                         <a href="{{ route('desk-officer.bcpc-case-monitoring.edit', ['quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id]) }}"
                            class="inline-flex items-center justify-center gap-1 px-2 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
-                           title="View Record">
+                           style="background: #2563EB !important; border-color: #2563EB !important;" title="View Record">
                             <i class="fas fa-eye text-xs"></i>
                             <span>View</span>
                         </a>
                         <a href="{{ route('desk-officer.bcpc-case-monitoring.edit', ['quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'edit' => $monitoring->id]) }}"
                            class="inline-flex items-center justify-center gap-1 px-2 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
-                           title="Edit Record">
+                           style="background: #D97706 !important; border-color: #D97706 !important;" title="Edit Record">
                             <i class="fas fa-edit text-xs"></i>
                             <span>Edit</span>
                         </a>
                         <button type="button"
                                 onclick="sendToAdmin({{ $monitoring->id }}, '{{ addslashes($monitoring->barangay->name ?? 'Barangay') }}', 'Q{{ $monitoring->quarter }} {{ $monitoring->year }}')"
                                 class="inline-flex items-center justify-center gap-1 px-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
-                                title="Send to Admin">
+                                style="background: #079B70 !important; border-color: #079B70 !important;" title="Send to Admin">
                             <i class="fas fa-paper-plane text-xs"></i>
                             <span class="leading-tight">Send to Admin</span>
                         </button>

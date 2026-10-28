@@ -450,6 +450,29 @@
     }
 </style>
 @endif
+
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    html body.portal-ui #mainContent .tablet-profile-pagination {
+        background: #fff !important; padding: 1rem 1.5rem !important;
+        flex-direction: row !important; flex-wrap: wrap !important;
+        justify-content: space-between !important; gap: 1rem !important;
+    }
+    html body.portal-ui #mainContent .tablet-profile-pagination #page-numbers { display: contents !important; }
+    html body.portal-ui #mainContent .tablet-profile-pagination #mobile-page-info { display: none !important; }
+    html body.portal-ui #mainContent .tablet-profile-pagination button {
+        width: 2.25rem !important; min-width: 2.25rem !important; height: 2.25rem !important;
+        min-height: 0 !important; padding: 0 !important; margin: 0 !important; border-radius: .5rem !important;
+    }
+    html body.portal-ui #mainContent .tablet-profile-pagination > div:last-child { gap: .5rem !important; }
+    html body.portal-ui #mainContent .tablet-profile-pagination button:disabled { opacity: .5 !important; background: #fff !important; border-color: #d1d5db !important; }
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent .tablet-profile-pagination { gap: .75rem !important; padding: .75rem !important; text-align: left; }
+        html body.portal-ui #mainContent .tablet-profile-pagination button { width: 2rem !important; min-width: 2rem !important; height: 2rem !important; font-size: .6875rem !important; }
+        html body.portal-ui #mainContent .tablet-profile-pagination > div:last-child { gap: .25rem !important; }
+    }
+</style>
+@endif
 @endpush
 
 @section('content')
@@ -1249,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (totalPages <= 1) return;
 
-        if (@json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches) {
+        if (@json(auth()->user()?->isDepartmentAdmin())) {
             const first = Math.max(1, Math.min(currentPage - 1, totalPages - 3));
             for (let page = first; page <= Math.min(totalPages, first + 3); page++) pageNumbersContainer.appendChild(createPageButton(page));
             return;

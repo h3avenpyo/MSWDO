@@ -445,19 +445,19 @@
                             </td>
                             <td class="px-4 py-3.5 sm:px-5 sm:py-4 text-center whitespace-nowrap">
                                 <div class="bcpc-monitoring-actions flex items-center justify-center gap-2">
-                                    <a href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id]) }}"
+                                    <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important;" @endif href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id]) }}"
                                        class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
                                        title="View Record">
                                         <i class="fas fa-eye"></i>
                                         <span>View</span>
                                     </a>
-                                    <a href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'edit' => $monitoring->id]) }}"
+                                    <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #D97706 !important; border-color: #D97706 !important;" @endif href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'edit' => $monitoring->id]) }}"
                                        class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
                                        title="Edit Record">
                                         <i class="fas fa-edit"></i>
                                         <span>Edit</span>
                                     </a>
-                                    <a href="{{ route('admin.bcpc-case-monitoring.print', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year]) }}"
+                                    <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #0F766E !important; border-color: #0F766E !important;" @endif href="{{ route('admin.bcpc-case-monitoring.print', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year]) }}"
                                        target="_blank"
                                        class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
                                        title="Print Record" data-monitoring-print>
@@ -515,19 +515,19 @@
                     </div>
 
                     <div class="bcpc-monitoring-actions bcpc-monitoring-card-actions border-t border-gray-100">
-                        <a href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id]) }}"
+                        <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important;" @endif href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'view' => $monitoring->id]) }}"
                            class="inline-flex items-center justify-center gap-1 px-2 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
                            title="View Record">
                             <i class="fas fa-eye text-xs"></i>
                             <span>View</span>
                         </a>
-                        <a href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'edit' => $monitoring->id]) }}"
+                        <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #D97706 !important; border-color: #D97706 !important;" @endif href="{{ route('admin.bcpc-case-monitoring.edit', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year, 'edit' => $monitoring->id]) }}"
                            class="inline-flex items-center justify-center gap-1 px-2 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
                            title="Edit Record">
                             <i class="fas fa-edit text-xs"></i>
                             <span>Edit</span>
                         </a>
-                        <a href="{{ route('admin.bcpc-case-monitoring.print', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year]) }}"
+                        <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #0F766E !important; border-color: #0F766E !important;" @endif href="{{ route('admin.bcpc-case-monitoring.print', ['barangay_id' => $monitoring->barangay_id, 'quarter' => $monitoring->quarter, 'year' => $monitoring->year]) }}"
                            target="_blank"
                            class="inline-flex items-center justify-center gap-1 px-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-sm"
                            title="Print Record" data-monitoring-print>
@@ -1012,3 +1012,5 @@ updateAddMonitoringAvailability();
 </script>
 @endpush
 @endsection
+
+@include('admin-tailwind.components.profile-pagination', ['paginationRegions' => ['#bcpc-monitoring-results'], 'paginationLinks' => '#bcpc-monitoring-pagination a[href]'])

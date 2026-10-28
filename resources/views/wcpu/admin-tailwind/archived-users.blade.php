@@ -352,11 +352,11 @@
                         <td class="px-6 py-4 text-sm text-gray-600">{{ $user->deleted_at ? $user->deleted_at->format('M d, Y') : 'N/A' }}</td>
                         <td class="px-6 py-4 {{ auth()->user()->isBcpcAdmin() ? 'align-middle' : '' }}">
                             <div class="flex {{ auth()->user()->isBcpcAdmin() ? 'w-full' : '' }} items-center justify-center gap-2">
-                                <button type="button" class="view-btn inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-[#C41E3A] text-white border border-[#C41E3A] hover:bg-[#A01830] rounded-lg text-xs font-medium transition-colors"
+                                <button @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif type="button" class="view-btn inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-[#C41E3A] text-white border border-[#C41E3A] hover:bg-[#A01830] rounded-lg text-xs font-medium transition-colors"
                                     title="View Details" data-user-id="{{ $user->id }}">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button type="button" class="restore-btn table-action-control inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 rounded-lg text-xs font-medium transition-colors"
+                                <button @if(auth()->user()?->isDepartmentAdmin()) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @endif type="button" class="restore-btn table-action-control inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 rounded-lg text-xs font-medium transition-colors"
                                     title="Restore User" data-user-id="{{ $user->id }}" data-user-name="{{ $user->first_name }} {{ $user->last_name }}">
                                     <i class="fas fa-undo"></i>
                                 </button>
@@ -447,12 +447,12 @@
                 </div>
             </div>
             <div class="archived-user-card-actions flex gap-2 mt-3 pt-3 border-t border-gray-100">
-                <button type="button" class="view-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-white bg-[#C41E3A] rounded-lg hover:bg-[#A01830] transition-colors"
+                <button @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif type="button" class="view-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-white bg-[#C41E3A] rounded-lg hover:bg-[#A01830] transition-colors"
                     data-user-id="{{ $user->id }}">
                     <i class="fas fa-eye"></i>
                     View
                 </button>
-                <button type="button" class="restore-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                <button @if(auth()->user()?->isDepartmentAdmin()) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @endif type="button" class="restore-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
                     data-user-id="{{ $user->id }}" data-user-name="{{ $user->first_name }} {{ $user->last_name }}">
                     <i class="fas fa-undo"></i>
                     Restore

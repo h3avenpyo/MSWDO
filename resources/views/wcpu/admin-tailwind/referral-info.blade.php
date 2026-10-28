@@ -621,25 +621,34 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Pagination variables
     const itemsPerPage = {{ auth()->user()->isDepartmentAdmin() ? (request()->boolean('portrait_cards') ? 4 : 5) : 10 }};
-    let currentPage = 1;
+    let currentPage = @json(auth()->user()?->isDepartmentAdmin()) ? Math.max(1, Number(new URLSearchParams(location.search).get('page')) || 1) : 1;
     let allRecipients = [];
     let filteredRecipients = [];
     @if(auth()->user()?->isDepartmentAdmin())
     matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').addEventListener('change', () => updatePagination(Math.ceil(filteredRecipients.length / itemsPerPage)));
     @endif
 
-    function changeRecipientPage(page) {
-        const keepPosition = @json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches;
+    function changeRecipientPage(page, pushHistory = true) {
+        const keepPosition = @json(auth()->user()?->isDepartmentAdmin());
         const top = mobileContainer.getBoundingClientRect().top;
         const scrollTop = mobileContainer.scrollTop;
         currentPage = page;
         renderRecipients();
+        if (@json(auth()->user()?->isDepartmentAdmin()) && pushHistory) {
+            const url = new URL(location.href);
+            url.searchParams.set('page', currentPage);
+            if (url.href !== location.href) history.pushState({}, '', url);
+        }
         if (keepPosition) {
             mobileContainer.scrollTop = scrollTop;
             window.scrollBy({ top: mobileContainer.getBoundingClientRect().top - top, behavior: 'instant' });
         }
     }
     
+    @if(auth()->user()?->isDepartmentAdmin())
+    window.addEventListener('popstate', () => changeRecipientPage(Math.max(1, Number(new URLSearchParams(location.search).get('page')) || 1), false));
+    @endif
+
     // Load recipients from Blade
     const rawRecipients = @json($recipients);
     const bcpcStatusControl = @json(auth()->user()->isBcpcAdmin());
@@ -660,6 +669,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Render recipients
     function renderRecipients() {
+        if (@json(auth()->user()?->isDepartmentAdmin())) currentPage = Math.max(1, Math.min(currentPage, Math.ceil(filteredRecipients.length / itemsPerPage) || 1));
         const totalPages = Math.ceil(filteredRecipients.length / itemsPerPage);
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
@@ -694,14 +704,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td class="px-6 py-4 text-sm text-gray-600">${r.created_at}</td>
                     <td class="recipient-actions-cell px-4 py-4 text-center align-middle">
                         <div class="recipient-actions">
-                            <button type="button" class="{{ $matchReportTable ? 'view-btn inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm' : 'view-btn p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors' }}"
+                            <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="{{ $matchReportTable ? 'view-btn inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm' : 'view-btn p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors' }}"
                                 title="View Details" data-id="${r.id}" data-name="${escapeHtml(r.name)}" 
                                 data-email="${escapeHtml(r.email)}" data-contact="${escapeHtml(r.contact_number || '')}" 
                                 data-role="${escapeHtml(r.role || '')}" data-active="${r.active ? '1' : '0'}"
                                 data-created="${escapeHtml(r.created_at || '')}">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button type="button" class="{{ $matchReportTable ? 'edit-btn inline-flex items-center justify-center gap-1.5 bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'edit-btn p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors' }}"
+                            <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif class="{{ $matchReportTable ? 'edit-btn inline-flex items-center justify-center gap-1.5 bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition' : 'edit-btn p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors' }}"
                                 title="Edit" data-id="${r.id}" data-name="${escapeHtml(r.name)}" 
                                 data-email="${escapeHtml(r.email)}" data-contact="${r.contact_number || ''}" 
                                 data-role="${r.role || ''}">
@@ -751,7 +761,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     
                     <div class="recipient-card-actions flex gap-2 pt-3 border-t border-gray-100">
-                        <button type="button" class="view-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                        <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="view-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
                             data-id="${r.id}" data-name="${escapeHtml(r.name)}" 
                             data-email="${escapeHtml(r.email)}" data-contact="${escapeHtml(r.contact_number || '')}" 
                             data-role="${escapeHtml(r.role || '')}" data-active="${r.active ? '1' : '0'}"
@@ -759,7 +769,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-eye"></i>
                             View
                         </button>
-                        <button type="button" class="edit-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+                        <button type="button" @if(auth()->user()?->isDepartmentAdmin()) style="background: #D97706 !important; border-color: #D97706 !important; color: #fff !important;" @endif class="edit-btn flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
                             data-id="${r.id}" data-name="${escapeHtml(r.name)}" 
                             data-email="${escapeHtml(r.email)}" data-contact="${r.contact_number || ''}" 
                             data-role="${r.role || ''}">
@@ -799,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const end = Math.min(currentPage * itemsPerPage, total);
         
         if (paginationInfo) paginationInfo.textContent = `Showing ${start} - ${end} of ${total} recipients`;
-        const tabletPagination = @json(auth()->user()?->isDepartmentAdmin()) && matchMedia('(max-width: 85.375rem)').matches;
+        const tabletPagination = @json(auth()->user()?->isDepartmentAdmin());
         if (mobilePaginationInfo) mobilePaginationInfo.textContent = tabletPagination ? `Showing ${start} - ${end} of ${total} recipients` : `Page ${currentPage} of ${Math.max(1, totalPages)}`;
         
         // Enable/disable buttons
@@ -1164,3 +1174,5 @@ document.addEventListener('DOMContentLoaded', function() {
 @endpush
 
 @endsection
+
+@include('admin-tailwind.components.profile-pagination')
