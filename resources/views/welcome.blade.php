@@ -82,7 +82,7 @@
                     <a href="#about" class="hover:text-[#FBC02D] transition font-medium">About</a>
                     <a href="#programs" class="hover:text-[#FBC02D] transition font-medium">Programs</a>
                     <a href="#contact" class="hover:text-[#FBC02D] transition font-medium">Contact</a>
-                    {{-- <a href="/admin" class="navbar-login-btn">Login</a> --}}
+                    <a href="/admin" class="navbar-login-btn">Login</a>
                 </nav>
             </div>
         </div>
@@ -117,6 +117,12 @@
                     <a href="#contact">
                         <i data-lucide="phone" style="width:20px;height:20px"></i>
                         <span>Contact</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin" class="navbar-login-btn">
+                        <i data-lucide="log-in" style="width:20px;height:20px" aria-hidden="true"></i>
+                        <span>Login</span>
                     </a>
                 </li>
             </ul>
@@ -204,7 +210,7 @@
 
             <div
                 class="relative bg-white rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] shadow-[0_20px_50px_rgba(177,17,22,0.06)] p-6 sm:p-8 lg:p-12 border border-slate-100 -mt-16 sm:-mt-20 lg:-mt-16 xl:-mt-24 mb-16">
-                <div class="text-center mb-8 sm:mb-12">
+                <div data-reveal="fade" class="text-center mb-8 sm:mb-12">
 
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-[#b11116] mt-2">Get Started with Our
                         Services</h2>
@@ -216,15 +222,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-8 max-w-6xl mx-auto">
                     <!-- Service 1: Financial Assistance -->
                     <div
-                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
-                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 9h10.5M5.25 10.5h13.5m-12 3h10.5" />
-                                </svg>
+                                class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                <i data-lucide="hand-coins" class="w-6 h-6" aria-hidden="true"></i>
                             </div>
                             <h3 class="font-bold text-lg sm:text-xl text-[#b11116]">Financial Assistance</h3>
                             <p class="text-slate-600 text-xs sm:text-sm mt-3 leading-relaxed">
@@ -235,10 +237,10 @@
                     </div>
                     <!-- Service 2: Social Case Study -->
                     <div
-                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
-                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                class="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                     stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -254,10 +256,10 @@
                     </div>
                     <!-- Service 3: Women & Children Protection (WCPU) -->
                     <div
-                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
-                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                class="w-12 h-12 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                     stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -273,10 +275,10 @@
                     </div>
                     <!-- Service 4: Senior Citizens -->
                     <div
-                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
-                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                     stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -292,10 +294,10 @@
                     </div>
                     <!-- Service 5: Persons with Disability -->
                     <div
-                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
-                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                class="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                     stroke="currentColor" class="w-6 h-6">
                                     <circle cx="12" cy="4" r="2" />
@@ -312,10 +314,10 @@
                     </div>
                     <!-- Service 6: Solo Parents -->
                     <div
-                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
-                                class="w-12 h-12 rounded-xl bg-warm-gold/10 text-warm-gold flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+                                class="w-12 h-12 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                     stroke="currentColor" class="w-6 h-6">
                                     <circle cx="9" cy="6" r="3" />
@@ -333,7 +335,7 @@
                     </div>
                 </div>
 
-                <div class="mt-8 sm:mt-12 rounded-2xl p-6 sm:p-10 text-center"
+                <div data-reveal="up" class="mt-8 sm:mt-12 rounded-2xl p-6 sm:p-10 text-center"
                     style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
                     <h2 class="text-2xl sm:text-3xl font-bold text-white">Need Social Assistance?</h2>
                     <p class="text-white/90 mt-3 sm:mt-4 text-sm sm:text-base max-w-2xl mx-auto">
@@ -343,14 +345,14 @@
                     </p>
                     <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
                         <a href="/financial-assistance"
-                            class="w-full sm:w-auto bg-warm-gold text-slate-900 px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
-                            <i data-lucide="hand-coins" class="w-5 h-5"></i>
-                            <span>Financial Assistance</span>
+                            class="w-full sm:w-auto bg-warm-gold text-slate-900 px-3 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-sm sm:text-lg gap-2 sm:gap-2.5">
+                            <i data-lucide="hand-coins" class="w-5 h-5 shrink-0"></i>
+                            <span class="whitespace-nowrap">Financial Assistance</span>
                         </a>
                         <a href="/service-request"
-                            class="w-full sm:w-auto bg-warm-gold text-slate-900 px-8 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-base sm:text-lg gap-2.5">
-                            <i data-lucide="file-text" class="w-5 h-5"></i>
-                            <span>Social Case Study</span>
+                            class="w-full sm:w-auto bg-warm-gold text-slate-900 px-3 sm:px-10 py-4 rounded-xl font-bold hover:scale-105 hover:bg-[#F9A825] transition shadow-lg inline-flex items-center justify-center text-sm sm:text-lg gap-2 sm:gap-2.5">
+                            <i data-lucide="file-text" class="w-5 h-5 shrink-0"></i>
+                            <span class="whitespace-nowrap">Social Case Study</span>
                         </a>
                     </div>
                 </div>
@@ -363,7 +365,7 @@
     <section id="about" class="py-16 sm:py-20 lg:py-24 bg-offwhite">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-                <div>
+                <div data-reveal="up">
                     <span class="text-[#b11116] font-semibold uppercase tracking-widest">
                         About Us
                     </span>
@@ -385,7 +387,7 @@
                 </div>
                 <div>
                     <div class="grid grid-cols-2 gap-4 sm:gap-6">
-                        <div class="bg-card-white rounded-2xl shadow-lg p-5 sm:p-8">
+                        <div data-reveal="zoom" class="bg-card-white rounded-2xl shadow-lg p-5 sm:p-8">
                             <div class="text-5xl mb-4">
                             </div>
                             <h3 class="font-bold text-lg sm:text-xl">
@@ -395,7 +397,7 @@
                                 Delivering services with empathy and dignity.
                             </p>
                         </div>
-                        <div class="bg-card-white rounded-2xl shadow-lg p-5 sm:p-8">
+                        <div data-reveal="zoom" class="bg-card-white rounded-2xl shadow-lg p-5 sm:p-8">
                             <div class="text-5xl mb-4">
                             </div>
                             <h3 class="font-bold text-lg sm:text-xl">
@@ -405,7 +407,7 @@
                                 Transparent and accountable public service.
                             </p>
                         </div>
-                        <div class="bg-card-white rounded-2xl shadow-lg p-5 sm:p-8">
+                        <div data-reveal="zoom" class="bg-card-white rounded-2xl shadow-lg p-5 sm:p-8">
                             <div class="text-5xl mb-4">
                             </div>
                             <h3 class="font-bold text-lg sm:text-xl">
@@ -415,7 +417,7 @@
                                 Empowering individuals to become self-sufficient.
                             </p>
                         </div>
-                        <div class="bg-card-white rounded-2xl shadow-lg p-5 sm:p-8">
+                        <div data-reveal="zoom" class="bg-card-white rounded-2xl shadow-lg p-5 sm:p-8">
                             <div class="text-5xl mb-4">
                             </div>
                             <h3 class="font-bold text-lg sm:text-xl">
@@ -436,7 +438,7 @@
     <section class="py-16 sm:py-20 lg:py-24 bg-offwhite">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="grid lg:grid-cols-2 gap-6 lg:gap-10">
-                <div class="text-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-xl"
+                <div data-reveal="up" class="text-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-xl"
                     style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
                     <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8 text-white">
                         Mission
@@ -448,7 +450,7 @@
                         development.
                     </p>
                 </div>
-                <div class="bg-warm-gold rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-xl">
+                <div data-reveal="up" class="bg-warm-gold rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-xl">
                     <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-6 sm:mb-8">
                         Vision
                     </h2>
@@ -466,7 +468,7 @@
     <!-- ===================================== -->
     <section class="py-16 sm:py-20 lg:py-24 bg-offwhite">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="text-center">
+            <div data-reveal="fade" class="text-center">
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold">
                     How to Apply
                 </h2>
@@ -475,7 +477,7 @@
                 </p>
             </div>
             <div class="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8 mt-8 sm:mt-12 lg:mt-16">
-                <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         1
@@ -490,7 +492,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-                <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         2
@@ -505,7 +507,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-                <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         3
@@ -520,7 +522,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-                <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         4
@@ -535,7 +537,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-                <div class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-warm-gold text-slate-900 flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold shadow-md">
                         5
@@ -553,7 +555,7 @@
     <section id="programs" class="py-10 sm:py-14 md:py-18 bg-white border-t border-gray-100">
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="text-center mb-6 sm:mb-8">
+            <div data-reveal="fade" class="text-center mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
                     Programs &amp; Activities in Action
                 </h2>
@@ -564,7 +566,7 @@
             </div>
 
             <!-- Automatic Carousel Container -->
-            <div id="simpleCarousel" class="programs-carousel">
+            <div data-reveal="zoom" id="simpleCarousel" class="programs-carousel">
                 <!-- Slides -->
                 @php
                 $carouselImages = [
@@ -610,7 +612,7 @@
     <!-- ===================================== -->
     <section id="contact" class="contact-section">
         <div class="contact-container">
-            <div class="contact-header">
+            <div data-reveal="fade" class="contact-header">
                 <span class="contact-subtitle">Get In Touch</span>
                 <h2 class="contact-title">Contact Us</h2>
                 <p class="contact-description">
@@ -619,7 +621,7 @@
             </div>
             <div class="contact-grid">
                 <!-- Local Services Map -->
-                <div class="service-map-card" aria-labelledby="service-map-heading">
+                <div data-reveal="up" class="service-map-card" aria-labelledby="service-map-heading">
                     <div class="service-map-header">
                         <h3 id="service-map-heading" class="card-title">Find Local Services</h3>
                         <label for="serviceSelect" class="service-map-label">Select a service</label>
@@ -638,7 +640,7 @@
                     <div id="mapContainer" class="service-map" role="region" aria-label="Map of local services in Silang"></div>
                 </div>
                 <!-- Emergency Hotlines -->
-                <div class="emergency-card">
+                <div data-reveal="up" class="emergency-card">
                     <div class="emergency-header">
                         <div class="emergency-title-wrapper">
                             <h3 class="emergency-title">Emergency Hotlines</h3>

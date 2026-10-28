@@ -710,6 +710,59 @@
            BREAKPOINTS
            ══════════════════════════════════════════════ */
 
+        @media (max-width: 767px) {
+            body {
+                padding: 1rem .875rem;
+                align-items: flex-start;
+            }
+
+            .page-wrapper {
+                min-height: 0;
+            }
+
+            .auth-card {
+                border-radius: 20px;
+            }
+
+            .brand-hero {
+                text-align: center;
+            }
+
+            .brand-title {
+                margin-bottom: .625rem;
+                font-size: clamp(1.5rem, 6vw, 1.75rem);
+                line-height: 1.25;
+                text-wrap: balance;
+            }
+
+            .brand-accent {
+                display: block;
+                max-width: 32ch;
+                margin: 0 auto;
+                font-size: .8125rem;
+                line-height: 1.6;
+                text-wrap: balance;
+            }
+
+            .brand-desc,
+            .module-list {
+                display: none;
+            }
+
+            .login-panel {
+                padding: 1.5rem 1.25rem;
+            }
+
+            .login-subtitle {
+                font-size: .875rem;
+                line-height: 1.6;
+            }
+
+            .form-input {
+                font-size: 1rem;
+            }
+        }
+
         /* Tablet: 45% / 55% split */
         @media (min-width: 768px) {
             .auth-card {

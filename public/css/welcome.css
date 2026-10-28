@@ -3,6 +3,17 @@
    Brand Red Theme (#b11116) with Yellow Accent (#FBC02D)
    ========================================================================== */
 
+/* Content stays visible unless scroll reveals are successfully initialized. */
+.reveal-pending {
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce), print {
+    .reveal-pending {
+        opacity: 1;
+    }
+}
+
 :root {
     --primary-red: #b11116;
     --primary-red-hover: #8A0D11;
@@ -742,6 +753,37 @@ a.hotline-value:hover {
 #mobileMenu .mobile-menu-list a:active {
     background: rgba(255, 255, 255, .1);
     color: #FBC02D;
+}
+
+#mobileMenu .mobile-menu-list a.navbar-login-btn {
+    margin: .5rem .75rem .25rem;
+    padding: .75rem;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: .625rem;
+    justify-content: flex-start;
+    background: rgba(255, 255, 255, .08);
+    box-shadow: none;
+    transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+
+#mobileMenu .mobile-menu-list a.navbar-login-btn:hover,
+#mobileMenu .mobile-menu-list a.navbar-login-btn:focus-visible,
+#mobileMenu .mobile-menu-list a.navbar-login-btn:active {
+    background: #FBC02D;
+    color: #1F2937 !important;
+    border-color: #FBC02D;
+    box-shadow: none;
+}
+
+#mobileMenu .mobile-menu-list a.navbar-login-btn:focus-visible {
+    outline: 2px solid #FBC02D;
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #mobileMenu .mobile-menu-list a.navbar-login-btn {
+        transition: none;
+    }
 }
 
 #mobileMenu .mobile-menu-list a.active {

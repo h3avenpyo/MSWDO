@@ -579,6 +579,75 @@ function formatFileSize(bytes) {
 // =====================================
 // WELCOME PAGE MAIN INITIALIZATION
 // =====================================
+function initScrollReveals() {
+    const targets = [...document.querySelectorAll('[data-reveal]')];
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (motionPreference.matches || !('IntersectionObserver' in window) ||
+        typeof Element.prototype.animate !== 'function') return;
+
+    const pending = new Set();
+    const animations = new Map();
+    const observer = new IntersectionObserver(entries => {
+        // Only stagger elements entering together; never delay an entire long section.
+        entries.filter(entry => entry.isIntersecting).forEach((entry, index) => {
+            const element = entry.target;
+            observer.unobserve(element);
+            const effect = element.dataset.reveal;
+            const animation = element.animate([
+                {
+                    opacity: 0,
+                    translate: effect === 'up' ? '0 20px' : '0 0',
+                    scale: effect === 'zoom' ? '0.97' : '1',
+                },
+                { opacity: 1, translate: '0 0', scale: '1' },
+            ], {
+                duration: 600,
+                delay: Math.min(index, 3) * 60,
+                easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                fill: 'backwards',
+            });
+            animations.set(element, animation);
+            element.classList.remove('reveal-pending');
+            pending.delete(element);
+            animation.onfinish = () => {
+                animation.cancel();
+                animations.delete(element);
+            };
+        });
+    }, { threshold: 0, rootMargin: '0px 0px -24px 0px' });
+
+    targets.forEach(element => {
+        // Keep the initial viewport and restored scroll position immediately readable.
+        if (element.getBoundingClientRect().top < window.innerHeight) return;
+        pending.add(element);
+        observer.observe(element);
+        element.classList.add('reveal-pending');
+    });
+
+    const showAll = () => {
+        observer.disconnect();
+        pending.forEach(element => element.classList.remove('reveal-pending'));
+        pending.clear();
+        animations.forEach(animation => animation.cancel());
+        animations.clear();
+    };
+
+    motionPreference.addEventListener('change', event => {
+        if (event.matches) showAll();
+    });
+    window.addEventListener('beforeprint', showAll);
+    // Keyboard and anchor navigation must never land on invisible content.
+    document.addEventListener('focusin', event => {
+        const element = event.target.closest('[data-reveal]');
+        if (!element) return;
+        observer.unobserve(element);
+        element.classList.remove('reveal-pending');
+        pending.delete(element);
+        animations.get(element)?.cancel();
+        animations.delete(element);
+    });
+}
+
 function initWelcomePage() {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
@@ -586,6 +655,8 @@ function initWelcomePage() {
 
     // Initialize Programs Carousel
     initProgramsCarousel();
+
+    initScrollReveals();
 
     // Mobile Menu Toggle
     const menuButton = document.getElementById('menuButton');
