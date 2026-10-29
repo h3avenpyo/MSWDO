@@ -681,6 +681,20 @@ function initFinancialIntakeForm() {
                 return;
             }
 
+            const invalidUpload = Array.from(form.querySelectorAll('input[type="file"]')).find(input =>
+                Array.from(input.files).some(file => file.size > 2 * 1024 * 1024 || !/\.(pdf|jpe?g|png)$/i.test(file.name))
+            );
+            if (invalidUpload) {
+                Swal.fire({
+                    title: 'Suriin ang dokumento',
+                    text: 'PDF, JPG, o PNG lamang ang maaaring i-upload, hanggang 2 MB bawat file.',
+                    icon: 'warning',
+                    confirmButtonColor: '#b11116'
+                });
+                invalidUpload.focus();
+                return;
+            }
+
             const hasRep = document.getElementById('has_representative')?.checked;
             if (hasRep) {
                 const repContact = (document.getElementById('rep_contact_number')?.value || '').trim();

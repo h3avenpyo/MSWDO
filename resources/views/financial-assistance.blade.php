@@ -183,7 +183,7 @@
         <!-- INTAKE DOCUMENT FORM SHEET -->
         <!-- ===================================== -->
         <div class="intake-document">
-            <form id="financialIntakeForm" method="POST" action="{{ route('financial-assistance.store') }}" novalidate>
+            <form id="financialIntakeForm" method="POST" action="{{ route('financial-assistance.store') }}" enctype="multipart/form-data" novalidate>
                 @csrf
                 <input type="hidden" name="beneficiary_city" value="SILANG">
                 <input type="hidden" name="beneficiary_province" value="CAVITE">
@@ -876,6 +876,25 @@
                         <input type="text" id="beneficiary_category_other_input" name="beneficiary_category_other"
                             placeholder="Pakitukoy ang ibang kategorya..." class="form-input-custom mt-2 hidden">
                     </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-heading">V. Pag-upload ng mga Dokumento <span class="text-sm font-normal text-slate-500">(Opsyonal / Optional)</span></h2>
+                    <p class="section-subtext">Mag-upload ng malinaw na kopya. PDF, JPG, o PNG lamang, hanggang 2 MB bawat file. Opsyonal ang pag-upload; dalhin ang mga orihinal sa inyong pagpunta.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        @foreach (\App\Models\Financial\OnlineFinancialIntake::DOCUMENT_LABELS as $key => $label)
+                        <div class="form-field-group">
+                            <label for="document_{{ $key }}" class="form-label-custom block mb-2">{{ $label }} <span class="font-normal text-slate-500">(Opsyonal)</span></label>
+                            <input type="file" id="document_{{ $key }}" name="documents[{{ $key }}]"
+                                accept=".pdf,.jpg,.jpeg,.png" class="form-input-custom" aria-describedby="document_{{ $key }}_help">
+                            <p id="document_{{ $key }}_help" class="text-xs text-slate-500 mt-2">Isang file bawat dokumento. Para sa Patient at Claimant, pagsamahin ang mga kopya sa isang PDF.</p>
+                            @error('documents.'.$key)
+                            <p class="text-xs text-red-600 mt-2" role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        @endforeach
+                    </div>
+                    <p class="text-xs text-slate-500 mt-4">Kung hindi maisumite ang form, piliing muli ang mga file bago magpadala.</p>
                 </div>
 
                 <!-- Submit Action Row -->

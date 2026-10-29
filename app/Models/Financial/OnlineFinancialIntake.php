@@ -9,7 +9,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OnlineFinancialIntake extends Model
 {
+    public const DOCUMENT_LABELS = [
+        'request_letter' => 'Liham para kay Hon. Mayor Edward E. Carranza (Ret.)',
+        'medical_certificate' => 'Medical Certificate o Medical Abstract',
+        'indigency_certificate' => 'Barangay Certificate of Indigency na may dry seal (Patient at Claimant)',
+        'medical_bill' => 'Reseta, Laboratory Request, Treatment Protocol, Final o Running Hospital Bill',
+        'valid_id' => 'Valid ID na may pirma o thumbmark (Patient at Claimant)',
+    ];
+
     protected $fillable = [
+        'documents',
         'status',
         'date_submitted',
         'control_number',
@@ -84,6 +93,7 @@ class OnlineFinancialIntake extends Model
     ];
 
     protected $casts = [
+        'documents' => 'array',
         'date_submitted' => 'datetime',
         'beneficiary_birthday' => 'date',
         'rep_birthday' => 'date',

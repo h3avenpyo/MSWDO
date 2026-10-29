@@ -1,0 +1,17 @@
+# Hostinger layout: the entire Laravel project is inside public_html.
+# Keep public/.htaccess in place; it handles Laravel routes.
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block hidden files and directories, allowing certificate verification.
+    RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,L]
+
+    # Stop rewriting once the request is inside Laravel's public directory.
+    RewriteRule ^public(?:/|$) - [L]
+
+    # Route every other request through public, including existing root files.
+    # Do not add !-f / !-d exceptions: project files must not be served directly.
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

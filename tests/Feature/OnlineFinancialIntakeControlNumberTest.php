@@ -12,6 +12,39 @@ class OnlineFinancialIntakeControlNumberTest extends TestCase
 {
     use DatabaseTransactions;
 
+    public function test_uploaded_documents_are_private_and_available_to_step_one_review(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $payload = $this->getSampleOnlinePayload();
+        $payload['documents'] = ['valid_id' => \Illuminate\Http\UploadedFile::fake()->createWithContent('identity.pdf', "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF")];
+        $response = $this->post('/financial-assistance', $payload, ['Accept' => 'application/json']);
+        $response->assertOk();
+        $id = $response->json('data.id');
+        $application = OnlineFinancialIntake::findOrFail($id);
+        \Illuminate\Support\Facades\Storage::disk('local')->assertExists($application->documents['valid_id']['path']);
+        $url = route('admin.financial.online-intakes.documents.download', ['id' => $id, 'document' => 'valid_id']);
+        $this->get($url)->assertRedirect();
+        $user = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($user)->withSession(['admin_user_id' => $user->id])
+            ->getJson(route('admin.financial.online-intakes.show', $id))
+            ->assertOk()->assertJsonPath('data.documents.0.name', 'identity.pdf');
+        $this->get($url)->assertDownload('identity.pdf');
+        $this->get(route('admin.financial.online-intakes.documents.download', ['id' => $id, 'document' => 'missing']))->assertNotFound();
+    }
+
+    public function test_invalid_or_oversized_documents_are_rejected(): void
+    {
+        foreach ([
+            \Illuminate\Http\UploadedFile::fake()->create('script.txt', 1, 'text/plain'),
+            \Illuminate\Http\UploadedFile::fake()->create('large.pdf', 2049, 'application/pdf'),
+        ] as $file) {
+            $payload = $this->getSampleOnlinePayload();
+            $payload['documents'] = ['valid_id' => $file];
+            $this->post('/financial-assistance', $payload, ['Accept' => 'application/json'])
+                ->assertUnprocessable()->assertJsonValidationErrors('documents.valid_id');
+        }
+    }
+
     protected function getSampleOnlinePayload(): array
     {
         return [
@@ -19,7 +52,7 @@ class OnlineFinancialIntakeControlNumberTest extends TestCase
             'is_client_beneficiary' => '1',
             'beneficiary_first_name' => 'Juan',
             'beneficiary_middle_name' => 'Dela',
-            'beneficiary_last_name' => 'TestCruz' . time(),
+            'beneficiary_last_name' => 'TestCruz' . preg_replace('/[^a-zA-Z]/', '', \Illuminate\Support\Str::random(32)),
             'beneficiary_birthday' => '1990-01-01',
             'beneficiary_age' => '36',
             'beneficiary_sex' => 'Male',
@@ -59,7 +92,7 @@ class OnlineFinancialIntakeControlNumberTest extends TestCase
 
         $this->assertDatabaseHas('online_financial_intakes', [
             'beneficiary_first_name' => 'Juan',
-            'beneficiary_last_name' => $payload['beneficiary_last_name'],
+            'beneficiary_last_name' => mb_strtoupper($payload['beneficiary_last_name']),
             'status' => 'For Review',
             'control_number' => null,
         ]);

@@ -568,6 +568,10 @@
 
                 <!-- Content Sheet -->
                 <div id="modalContentDetails" class="d-none">
+                    <section class="border rounded-3 p-3 mb-4" aria-labelledby="uploadedDocumentsHeading">
+                        <h6 id="uploadedDocumentsHeading" class="fw-bold mb-3">Mga Isinumiteng Dokumento</h6>
+                        <ul id="uploadedDocumentsList" class="list-unstyled mb-0"></ul>
+                    </section>
 
                     <!-- Notification Banner for Accepted / Rejected -->
                     <div id="modalAuditNotice" class="alert d-none rounded-3 mb-4 p-3 shadow-xs"></div>
@@ -788,6 +792,21 @@ function openReviewModal(appId) {
             }
 
             const data = res.data;
+            const documentsList = document.getElementById('uploadedDocumentsList');
+            documentsList.replaceChildren();
+            (data.documents || []).forEach(document => {
+                const item = window.document.createElement('li');
+                item.className = 'mb-2';
+                const link = window.document.createElement('a');
+                link.href = document.url;
+                link.textContent = `${document.label} — ${document.name}`;
+                link.style.overflowWrap = 'anywhere';
+                item.appendChild(link);
+                documentsList.appendChild(item);
+            });
+            if (!data.documents || data.documents.length === 0) {
+                documentsList.textContent = 'Walang na-upload na dokumento.';
+            }
             currentAppDetails = data;
 
             // Populate header info

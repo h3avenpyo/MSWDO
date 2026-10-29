@@ -335,6 +335,8 @@
                     </div>
                 </div>
 
+
+
                 <div data-reveal="up" class="mt-8 sm:mt-12 rounded-2xl p-6 sm:p-10 text-center"
                     style="background: linear-gradient(135deg, #b11116 0%, #8A0D11 100%);">
                     <h2 class="text-2xl sm:text-3xl font-bold text-white">Need Social Assistance?</h2>
@@ -355,6 +357,37 @@
                             <span class="whitespace-nowrap">Social Case Study</span>
                         </a>
                     </div>
+
+                    <section class="service-requirements" aria-labelledby="service-requirements-heading">
+                       
+                        <p class="service-requirements-intro">Select a service to view its requirements.</p>
+                        <details class="service-requirements-panel">
+                            <summary>Medical Assistance Requirements</summary>
+                            <div class="service-requirements-content">
+                                <p>Please prepare the following documents before applying for medical assistance.</p>
+                                <ol>
+                                    <li>Letter addressed to Hon. Mayor Edward E. Carranza (Ret.)</li>
+                                    <li>Medical Certificate or Medical Abstract</li>
+                                    <li>Barangay Certificate of Indigency with dry seal (Patient and Claimant)</li>
+                                    <li>Prescription, Laboratory Request, Treatment Protocol, Final Hospital Bill, or Running Hospital Bill</li>
+                                    <li>Photocopy of Valid ID with signature or thumbmark (Patient and Claimant)</li>
+                                </ol>
+                            </div>
+                        </details>
+                        <details class="service-requirements-panel">
+                            <summary>Social Case Study Report Requirements</summary>
+                            <div class="service-requirements-content">
+                                <p>Please prepare the following documents when requesting a Social Case Study Report.</p>
+                                <ol>
+                                    <li>Medical Abstract or Medical Certificate</li>
+                                    <li>Statement of Account, Hospital Bill, Prescription, Laboratory Request, Chemotherapy or Dialysis Protocol, or Price Quotation</li>
+                                    <li>Promissory Note (if the patient has already been discharged)</li>
+                                    <li>Barangay Certificate of Indigency (Patient and Claimant)</li>
+                                    <li>Photocopy of Valid ID (Patient and Claimant)</li>
+                                </ol>
+                            </div>
+                        </details>
+                    </section>
                 </div>
             </div>
         </div>

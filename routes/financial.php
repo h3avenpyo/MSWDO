@@ -16,6 +16,7 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::prefix('admin/financial/online-intakes')->name('admin.financial.online-intakes.')->group(function () {
         Route::get('/', [OnlineFinancialIntakeController::class, 'index'])->name('index');
         Route::get('/{id}', [OnlineFinancialIntakeController::class, 'show'])->name('show');
+        Route::get('/{id}/documents/{document}', [OnlineFinancialIntakeController::class, 'downloadDocument'])->name('documents.download');
         Route::post('/{id}/accept', [OnlineFinancialIntakeController::class, 'accept'])->name('accept');
         Route::post('/{id}/reject', [OnlineFinancialIntakeController::class, 'reject'])->name('reject');
         Route::post('/{id}/resend-sms', [OnlineFinancialIntakeController::class, 'resendSms'])->name('resend-sms');

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SocialCase\StoreBeneficiaryIntakeRequest;
+use App\Http\Requests\StoreOnlineFinancialIntakeRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Financial\OnlineFinancialIntake;
 use App\Models\SocialCase\BeneficiaryIntake;
 use App\Services\Financial\FinancialDuplicateChecker;
@@ -91,7 +93,7 @@ class FinancialAssistanceController extends Controller
      * Store a client-submitted Financial Assistance intake application.
      * Online applications are held in "For Review" status under OnlineFinancialIntake.
      */
-    public function store(StoreBeneficiaryIntakeRequest $request, FinancialDuplicateChecker $duplicateChecker)
+    public function store(StoreOnlineFinancialIntakeRequest $request, FinancialDuplicateChecker $duplicateChecker)
     {
         $data = $request->validated();
         $data['date_processed'] = Carbon::today()->toDateString();
@@ -255,7 +257,29 @@ class FinancialAssistanceController extends Controller
         $data['date_submitted'] = now();
 
         // Save as Online Application in "For Review" status with NO Control Number
-        $onlineIntake = OnlineFinancialIntake::create($data);
+        unset($data['documents']);
+        $documents = [];
+        try {
+            $onlineIntake = DB::transaction(function () use ($request, $data, &$documents) {
+                foreach (OnlineFinancialIntake::DOCUMENT_LABELS as $key => $label) {
+                    if ($request->hasFile('documents.'.$key)) {
+                        $file = $request->file('documents.'.$key);
+                        $path = $file->store('financial-intake-documents', 'local');
+                        if (!$path) {
+                            throw new \RuntimeException('Unable to store the uploaded document.');
+                        }
+                        $documents[$key] = ['path' => $path, 'name' => $file->getClientOriginalName()];
+                    }
+                }
+
+                return OnlineFinancialIntake::create(array_merge($data, ['documents' => $documents]));
+            });
+        } catch (\Throwable $exception) {
+            foreach ($documents as $document) {
+                Storage::disk('local')->delete($document['path']);
+            }
+            throw $exception;
+        }
 
         $refNumber = 'ONLINE-' . str_pad($onlineIntake->id, 5, '0', STR_PAD_LEFT);
 

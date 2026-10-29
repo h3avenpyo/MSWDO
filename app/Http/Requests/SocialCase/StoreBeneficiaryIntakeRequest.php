@@ -246,15 +246,9 @@ class StoreBeneficiaryIntakeRequest extends FormRequest
             'rep_city' => ['nullable', 'string', 'max:100'],
             'rep_province' => ['nullable', 'string', 'max:100'],
             'rep_region' => ['nullable', 'string', 'max:100'],
-<<<<<<< Updated upstream
-            'rep_contact_number' => ['nullable', 'required_if:has_representative,1,true', 'string', 'regex:/^(09\d{9}|\+639\d{9}|639\d{9})$/'],
+            'rep_contact_number' => ['nullable', 'required_if:has_representative,1,true', 'string', 'regex:/^[0-9]{11}$/', new \App\Rules\ContactNumber(11)],
             'rep_birthday' => ['nullable', 'required_if:has_representative,1,true', 'date', 'before_or_equal:today'],
             'rep_age' => ['nullable', 'required_if:has_representative,1,true', 'integer', 'min:18', 'max:125'],
-=======
-            'rep_contact_number' => ['nullable', 'required_if:has_representative,1,true', 'string', 'regex:/^[0-9]{11}$/', new \App\Rules\ContactNumber(11)],
-            'rep_birthday' => ['nullable', 'required_if:has_representative,1,true', 'date'],
-            'rep_age' => ['nullable', 'required_if:has_representative,1,true', 'integer', 'min:0', 'max:150'],
->>>>>>> Stashed changes
             'rep_sex' => ['nullable', 'required_if:has_representative,1,true', 'in:Male,Female'],
             'rep_civil_status' => ['nullable', 'required_if:has_representative,1,true', 'string', 'max:50'],
             'rep_occupation' => [

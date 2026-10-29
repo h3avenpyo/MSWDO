@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class OnlineFinancialIntakeController extends Controller
 {
@@ -111,6 +112,15 @@ class OnlineFinancialIntakeController extends Controller
     /**
      * Show detailed JSON information of an online intake application for the review modal.
      */
+    public function downloadDocument($id, string $document)
+    {
+        $application = OnlineFinancialIntake::findOrFail($id);
+        $file = ($application->documents ?? [])[$document] ?? null;
+        abort_unless($file && Storage::disk('local')->exists($file['path']), 404);
+
+        return Storage::disk('local')->download($file['path'], $file['name'], ['X-Content-Type-Options' => 'nosniff']);
+    }
+
     public function show($id)
     {
         $application = OnlineFinancialIntake::with(['reviewer', 'beneficiaryIntake'])->findOrFail($id);
@@ -120,6 +130,13 @@ class OnlineFinancialIntakeController extends Controller
             'data' => [
                 'id' => $application->id,
                 'reference_number' => $application->reference_number,
+                'documents' => collect($application->documents ?? [])->map(function ($file, $key) use ($application) {
+                    return [
+                        'label' => OnlineFinancialIntake::DOCUMENT_LABELS[$key] ?? $key,
+                        'name' => $file['name'],
+                        'url' => route('admin.financial.online-intakes.documents.download', ['id' => $application->id, 'document' => $key]),
+                    ];
+                })->values(),
                 'status' => $application->status,
                 'status_badge' => $application->status_badge_class,
                 'control_number' => $application->control_number,

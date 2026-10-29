@@ -805,6 +805,57 @@ a.hotline-value:hover {
     margin: 6px 0;
 }
 
+.service-requirements {
+    max-width: 760px;
+    margin: 20px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, .2);
+    text-align: left;
+}
+.service-requirements > h3 { color: #fff; font-size: 16px; font-weight: 600; }
+.service-requirements-intro { margin: 6px 0 16px; color: rgba(255, 255, 255, .8); font-size: 13px; }
+.service-requirements-panel { margin-top: 10px; border: 1px solid rgba(255, 255, 255, .25); border-radius: 12px; background: rgba(255, 255, 255, .06); }
+.service-requirements-panel summary {
+    position: relative;
+    padding: 20px 52px 20px 22px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+    cursor: pointer;
+    list-style: none;
+}
+.service-requirements-panel summary::-webkit-details-marker { display: none; }
+.service-requirements-panel summary::after {
+    content: '';
+    position: absolute;
+    right: 24px;
+    top: 25px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+}
+.service-requirements-panel[open] summary::after { top: 29px; transform: rotate(225deg); }
+.service-requirements-panel summary::after { color: #FBC02D; }
+.service-requirements-panel summary:hover { background: rgba(255, 255, 255, .08); }
+.service-requirements-panel summary:focus-visible { outline: 2px solid #FBC02D; outline-offset: 3px; }
+.service-requirements-panel[open] { background: #fff; border-color: #fff; }
+.service-requirements-panel[open] summary { color: #8A0D11; border-radius: 12px 12px 0 0; }
+.service-requirements-panel[open] summary::after { color: #8A0D11; }
+.service-requirements-panel[open] summary:hover { background: #f8fafc; }
+.service-requirements-content { padding: 0 22px 22px; color: #475569; font-size: 14px; line-height: 1.8; }
+.service-requirements-content > p { padding-top: 16px; border-top: 1px solid #f1f5f9; color: #64748b; }
+.service-requirements-content ol { list-style: decimal; padding-left: 22px; margin-top: 14px; }
+.service-requirements-content li { padding-left: 4px; margin-top: 10px; }
+.service-requirements-content li::marker { color: #b11116; font-weight: 600; }
+@media (max-width: 639px) {
+    .service-requirements-panel summary { padding-left: 16px; }
+    .service-requirements-content { padding-right: 16px; padding-left: 16px; }
+}
+
 body.mobile-menu-open {
     overflow: hidden;
 }
