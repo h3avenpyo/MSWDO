@@ -257,22 +257,22 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Date of Incident <span class="text-red-500">*</span>
                         </label>
-                        <input type="date" id="incident_date" name="incident_date" value="{{ $case->incident_date ? \Carbon\Carbon::parse($case->incident_date)->format('Y-m-d') : '' }}"
-                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+                        <div class="case-edit-date-time-field" style="display: contents;"><input type="date" id="incident_date" name="incident_date" value="{{ $case->incident_date ? \Carbon\Carbon::parse($case->incident_date)->format('Y-m-d') : '' }}"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required><svg class="case-edit-date-time-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Time of Incident <span class="text-red-500">*</span>
                         </label>
-                        <input type="time" id="incident_time" name="incident_time" value="{{ $case->incident_time ? \Carbon\Carbon::parse($case->incident_time)->format('H:i') : '' }}"
-                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+                        <div class="case-edit-date-time-field" style="display: contents;"><input type="time" id="incident_time" name="incident_time" value="{{ $case->incident_time ? \Carbon\Carbon::parse($case->incident_time)->format('H:i') : '' }}"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required><svg class="case-edit-date-time-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Date Reported <span class="text-red-500">*</span>
                         </label>
-                        <input type="date" id="date_reported" name="date_reported" value="{{ $case->date_reported ? \Carbon\Carbon::parse($case->date_reported)->format('Y-m-d') : '' }}"
-                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+                        <div class="case-edit-date-time-field" style="display: contents;"><input type="date" id="date_reported" name="date_reported" value="{{ $case->date_reported ? \Carbon\Carbon::parse($case->date_reported)->format('Y-m-d') : '' }}"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required><svg class="case-edit-date-time-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                     </div>
                 </div>
                 

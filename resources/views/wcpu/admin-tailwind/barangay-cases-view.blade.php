@@ -2050,6 +2050,376 @@
     @endif
 @endpush
 
+
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())))
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent .mobile-date-field {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        html body.portal-ui #mainContent .mobile-date-field > input[type=date] {
+            display: block;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            min-height: 2.75rem;
+            padding-right: 2.75rem !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        html body.portal-ui #mainContent .mobile-date-field > .mobile-date-icon {
+            display: block !important;
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 1;
+        }
+        html body.portal-ui #mainContent .mobile-date-field > input[type=date]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+        }
+        html body.portal-ui #mainContent .mobile-date-field > input[type=date]::-webkit-date-and-time-value {
+            text-align: left;
+            min-width: 0;
+        }
+    }
+</style>
+@endif
+@endpush
+
+
+
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-desktop { display: none !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; gap: .75rem !important; padding: .75rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card {
+        display: block !important; position: relative !important; width: 100% !important; min-width: 0 !important;
+        min-height: 10.75rem !important; margin: 0 !important; padding: .75rem .75rem 4.5rem !important;
+        overflow: hidden !important; border: 1px solid #e5e7eb !important; border-radius: .75rem !important;
+        background: #fff !important; box-shadow: 0 1px 3px rgba(15,23,42,.08) !important;
+    }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > div:first-child { display: flex !important; align-items: flex-start !important; justify-content: space-between !important; flex-wrap: nowrap !important; gap: .5rem !important; margin: 0 0 .5rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > div:first-child > div { min-width: 0 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > div:first-child p:first-child { color: #C41E3A !important; font-size: .75rem !important; font-weight: 700 !important; line-height: 1.25 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > div:first-child p:last-child { margin-top: .125rem !important; color: #64748b !important; font-size: .6875rem !important; line-height: 1.2 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > p:first-of-type { margin: 0 0 .375rem !important; color: #1f2937 !important; font-size: .8125rem !important; font-weight: 500 !important; line-height: 1.3 !important; overflow-wrap: anywhere; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > p:nth-of-type(2) { margin: 0 !important; color: #64748b !important; font-size: .6875rem !important; line-height: 1.25 !important; overflow-wrap: anywhere; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > p:nth-of-type(2) i { color: #C41E3A !important; font-size: .625rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > span { position: absolute !important; left: .75rem !important; bottom: .875rem !important; max-width: calc(100% - 12rem) !important; min-width: 0 !important; min-height: 1.25rem !important; padding: .125rem .5rem !important; border-radius: 9999px !important; background: #f1f3f5 !important; color: #6b7280 !important; font-size: .6875rem !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card-actions { position: absolute !important; right: .75rem !important; bottom: .625rem !important; display: flex !important; align-items: center !important; justify-content: flex-end !important; flex-wrap: nowrap !important; width: auto !important; gap: .75rem !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card-actions > :is(button, a, form),
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card-actions > form > button { display: inline-flex !important; align-items: center !important; justify-content: center !important; flex: 0 0 3rem !important; width: 3rem !important; min-width: 3rem !important; height: 3rem !important; min-height: 3rem !important; margin: 0 !important; padding: 0 !important; box-sizing: border-box !important; border-radius: .5rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card-actions i { margin: 0 !important; font-size: 1rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-pagination { padding: 0 .75rem .75rem !important; background: #fff !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-pagination .barangay-tablet-pagination [data-pagination-label] { display: flex !important; flex-direction: column !important; align-items: center !important; width: 100% !important; min-width: 0 !important; padding: .75rem .25rem !important; gap: .5rem !important; text-align: center !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-pagination .barangay-tablet-pagination [data-pagination-label] > div { width: 100% !important; min-width: 0 !important; display: flex !important; justify-content: center !important; text-align: center !important; flex-wrap: wrap !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-pagination .barangay-tablet-pagination [data-pagination-label] > div:last-child { gap: .25rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-pagination .barangay-tablet-pagination [data-pagination-label] a { width: 2.25rem !important; height: 2.25rem !important; font-size: .875rem !important; }
+}
+</style>
+@endif
+@endpush
+
+
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed {
+        padding: .75rem !important;
+        align-items: center !important;
+        background-color: rgba(0, 0, 0, .5) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+        backdrop-filter: blur(4px) !important;
+    }
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed > .bg-white {
+        position: relative !important; width: 100% !important; max-width: calc(100vw - 1.5rem) !important;
+        max-height: 85vh !important; max-height: 85dvh !important; margin: 0 !important;
+        border-radius: 16px !important; overflow: hidden !important;
+    }
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed > .bg-white > .border-b {
+        padding: .75rem 1rem !important; padding-right: 2.5rem !important; flex-shrink: 0;
+    }
+    html body.portal-ui #caseModal .case-modal-top-header { display: flex !important; flex-wrap: wrap !important; gap: .5rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:first-child { flex: 1 1 100% !important; min-width: 0 !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:last-child { width: 100% !important; margin-left: 0 !important; display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; gap: .5rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:last-child > button { position: absolute !important; top: .75rem !important; right: .75rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-header a { padding: .5rem .75rem !important; font-size: .875rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-header a > span { display: inline !important; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) [x-html="content"] { padding: .75rem !important; min-height: 0 !important; overflow-y: auto !important; overscroll-behavior: contain; }
+    html body.portal-ui #caseModal .info-row { flex-direction: column !important; gap: .25rem !important; }
+    html body.portal-ui #caseModal .info-label { min-width: 0 !important; font-size: .8rem !important; }
+    html body.portal-ui #caseModal .info-value { font-size: .9rem !important; }
+    html body.portal-ui #caseModal .case-details dl { margin: 0 !important; }
+    html body.portal-ui #caseModal .case-details dt { font-size: .8rem !important; margin-top: .5rem !important; }
+    html body.portal-ui #caseModal .case-details dd { font-size: .9rem !important; margin-bottom: .5rem !important; }
+    html body.portal-ui #caseModal .row > .col-md-6 { width: 100% !important; }
+    html body.portal-ui #caseModal .card { margin-bottom: .75rem !important; }
+    html body.portal-ui #caseModal .card-header { padding: .5rem .75rem !important; }
+    html body.portal-ui #caseModal .card-header h5 { font-size: .9rem !important; }
+    html body.portal-ui #caseModal .card-body { padding: .75rem !important; }
+    html body.portal-ui #editCaseModal .case-form-container { max-width: 100% !important; }
+    html body.portal-ui #editCaseModal .form-card { box-shadow: none !important; border: none !important; }
+}
+@media (max-width: 375px) {
+    html body.portal-ui :is(#caseModal, #editCaseModal) .text-lg.font-semibold { font-size: .95rem !important; }
+}
+</style>
+@endif
+@endpush
+
+
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed { padding: 1rem 2rem !important; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed > .bg-white {
+        width: 100% !important; max-width: calc(100vw - 4rem) !important;
+        max-height: calc(100vh - 2rem) !important; max-height: calc(100dvh - 2rem) !important;
+        margin: 0 !important; border: 1px solid #e5e7eb !important; border-radius: 16px !important;
+        background: #F5F7FB !important; display: flex !important; flex-direction: column !important;
+    }
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed > .bg-white > .border-b {
+        padding: 1rem !important; background: #B11116 !important; color: #fff !important;
+        border-bottom: 1px solid #8A0D11 !important;
+    }
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed > .bg-white > .border-b h5 {
+        font-size: 1rem !important; line-height: 1.4 !important; color: #fff !important; overflow-wrap: anywhere;
+    }
+    html body.portal-ui #caseModal .case-modal-top-header { gap: 1.25rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-summary p { color: #fff !important; font-size: .8125rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-summary .case-modal-summary-labels { display: flex !important; flex-wrap: wrap !important; gap: .5rem !important; margin-top: .5rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:last-child { justify-content: flex-start !important; gap: .5rem !important; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) [x-html="content"] {
+        flex: 1 1 auto !important; min-height: 0 !important; padding: 1.875rem 1rem 1rem !important;
+        background: #F5F7FB !important; overflow-x: hidden !important; overflow-y: auto !important;
+    }
+    html body.portal-ui #caseModal [x-html="content"] .grid { grid-template-columns: minmax(0, 1fr) !important; gap: .75rem !important; }
+    html body.portal-ui #caseModal [x-html="content"] .case-modal-details .grid > .bg-white { min-width: 0 !important; border: 1px solid #e5e7eb !important; border-radius: .5rem !important; overflow: hidden !important; }
+    html body.portal-ui #caseModal [x-html="content"] .case-modal-details .grid > .bg-white > .border-b { padding: .625rem 1rem !important; background: #f8fafc !important; }
+    html body.portal-ui #caseModal [x-html="content"] .case-modal-details .grid > .bg-white > .border-b h4 { color: #111827 !important; font-size: .875rem !important; font-weight: 500 !important; }
+    html body.portal-ui #caseModal [x-html="content"] .case-modal-details .divide-y > div { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: .375rem !important; padding: .625rem 1rem !important; }
+    html body.portal-ui #caseModal [x-html="content"] .case-modal-details .divide-y > div > :is(span, p) { width: 100% !important; min-width: 0 !important; text-align: left !important; white-space: normal !important; overflow-wrap: anywhere; font-size: .875rem !important; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed > .bg-white > .portal-modal-dismiss-footer {
+        flex: 0 0 auto !important; margin: 0 !important; padding: .625rem 1.25rem !important;
+        background: #fff !important; border-top: 1px solid #e5e7eb !important; display: flex !important; justify-content: flex-end !important;
+    }
+    html body.portal-ui :is(#caseModal, #editCaseModal) .portal-modal-dismiss-footer .portal-modal-close { min-height: 2.5rem !important; padding: .5rem 1.25rem !important; border-radius: .5rem !important; background: #B11116 !important; color: #fff !important; }
+}
+</style>
+@endif
+@endpush
+
+
+@push('styles')
+@if($isBarangayDeskOfficer)
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui #caseModal .case-modal-top-header { display: flex !important; flex-wrap: wrap !important; gap: 1.25rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:first-child { flex: 1 1 100% !important; min-width: 0 !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:last-child { display: flex !important; width: 100% !important; flex-wrap: wrap !important; justify-content: flex-start !important; align-items: center !important; margin-left: 0 !important; gap: .5rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:last-child > a { display: inline-flex !important; align-items: center !important; gap: .5rem !important; min-height: 2.25rem !important; padding: .5rem .75rem !important; border-radius: .5rem !important; font-size: .875rem !important; font-weight: 600 !important; line-height: 1.25 !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:last-child > a:not([aria-disabled="true"]) { background: #C41E3A !important; color: #fff !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:last-child > a > span { display: inline !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:last-child > a > i { margin: 0 !important; font-size: .875rem !important; }
+}
+</style>
+@endif
+@endpush
+
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin() || $isBarangayDeskOfficer)
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #editCaseModal #edit-case-form-modal :is(.form-actions, div:has(> button[type="submit"])) {
+            display: flex !important; flex-direction: column !important; width: 100% !important; gap: .5rem !important;
+        }
+        html body.portal-ui #editCaseModal #edit-case-form-modal :is(.form-actions, div:has(> button[type="submit"])) > button {
+            display: flex !important; align-items: center !important; justify-content: center !important;
+            width: 100% !important; max-width: 100% !important; margin: 0 !important;
+        }
+
+        html body.portal-ui #editCaseModal .case-edit-date-time-field {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        html body.portal-ui #editCaseModal .case-edit-date-time-field > :is(input[type=date], input[type=time]) {
+            display: block;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            min-height: 2.75rem;
+            padding-right: 2.75rem !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        html body.portal-ui #editCaseModal .case-edit-date-time-field > .case-edit-date-time-icon {
+            display: block !important;
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 1;
+        }
+        html body.portal-ui #editCaseModal .case-edit-date-time-field > :is(input[type=date], input[type=time])::-webkit-calendar-picker-indicator {
+            opacity: 0;
+        }
+        html body.portal-ui #editCaseModal .case-edit-date-time-field > :is(input[type=date], input[type=time])::-webkit-date-and-time-value {
+            text-align: left;
+            min-width: 0;
+        }
+    }
+</style>
+@endif
+@endpush
+
+@push('styles')
+@if($isBarangayDeskOfficer)
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui #barangay-cases-view-header #dashboardMenuToggle {
+        flex: 0 0 2.25rem !important;
+        width: 2.25rem !important; min-width: 2.25rem !important; max-width: 2.25rem !important;
+        height: 2.25rem !important; min-height: 2.25rem !important; max-height: 2.25rem !important;
+        padding: 0 !important; border-radius: .375rem !important; font-size: 1.125rem !important;
+    }
+    html body.portal-ui #barangay-cases-view-header #dashboardMenuToggle > i {
+        font-size: 1.125rem !important; line-height: 1 !important;
+    }
+}
+</style>
+@endif
+@endpush
+
+
+@push('styles')
+@if($isBarangayDeskOfficer)
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-desktop { display: none !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards { display: grid !important; grid-template-columns: minmax(0,1fr) !important; gap: .75rem !important; padding: .75rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card { display: block !important; position: relative !important; width: 100% !important; min-width: 0 !important; min-height: 11rem !important; margin: 0 !important; padding: .75rem .75rem 4.5rem !important; border: 1px solid #e5e7eb !important; border-radius: .75rem !important; background: #fff !important; box-shadow: 0 1px 3px rgba(15,23,42,.08) !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > div:first-child { display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: .5rem !important; margin: 0 0 .75rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > div:first-child > div { min-width: 0 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > div:first-child p:first-child { color: #ed0038 !important; -webkit-text-fill-color: #ed0038 !important; font-size: .75rem !important; font-weight: 700 !important; line-height: 1.25 !important; overflow-wrap: anywhere; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .desk-card-number-prefix { display: inline !important; color: #ed0038 !important; -webkit-text-fill-color: #ed0038 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .desk-reference-card-updated > svg { display: block !important; width: .75rem !important; height: .75rem !important; flex: 0 0 .75rem; color: #C41E3A; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .desk-reference-card-updated > span { color: inherit !important; white-space: normal !important; overflow-wrap: anywhere; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > div:first-child p:last-child { color: #64748b !important; -webkit-text-fill-color: #64748b !important; font-size: .6875rem !important; line-height: 1.2 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > div:first-child > span { padding: .125rem .5rem !important; font-size: .625rem !important; line-height: 1.2 !important; border-radius: 9999px !important; align-self: center !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > p:first-of-type { margin: 0 0 .375rem !important; color: #16324f !important; -webkit-text-fill-color: #16324f !important; font-size: .8125rem !important; line-height: 1.3 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > p.desk-reference-card-updated { display: flex !important; align-items: center !important; gap: .5rem !important; margin: 0 0 .375rem !important; color: #64748b !important; font-size: .6875rem !important; line-height: 1.2 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > p:has(> i.fa-user-circle) { margin: 0 !important; color: #ed0038 !important; font-size: .75rem !important; line-height: 1.2 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > p > i { color: #C41E3A !important; font-size: .625rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card > span { position: absolute !important; left: .75rem !important; bottom: .875rem !important; max-width: calc(100% - 12rem) !important; padding: .125rem .5rem !important; border-radius: 9999px !important; background: #f1f3f5 !important; color: #6b7280 !important; font-size: .625rem !important; overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card-actions { position: absolute !important; right: .75rem !important; bottom: .625rem !important; display: flex !important; align-items: center !important; justify-content: flex-end !important; width: auto !important; gap: .75rem !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card-actions > :is(button,a,form),
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card-actions > form > button { display: inline-flex !important; align-items: center !important; justify-content: center !important; flex: 0 0 3rem !important; width: 3rem !important; min-width: 3rem !important; height: 3rem !important; min-height: 3rem !important; padding: 0 !important; border-radius: .5rem !important; }
+    html body.portal-ui #mainContent #barangay-cases-view-main .view-cases-table-cards .case-card-actions i { font-size: 1rem !important; margin: 0 !important; }
+}
+</style>
+@endif
+@endpush
+
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui > #caseModal > .fixed { padding: 1rem !important; }
+    html body.portal-ui > #editCaseModal > .fixed { padding: 1rem .5rem !important; }
+    html body.portal-ui > :is(#caseModal, #editCaseModal) > .fixed > .bg-white {
+        box-sizing: border-box !important; width: 100% !important; margin: 0 !important;
+        max-height: calc(100vh - 2rem) !important; max-height: calc(100dvh - 2rem) !important;
+        border: 1px solid #e5e7eb !important; border-radius: 16px !important;
+        display: flex !important; flex-direction: column !important; overflow: hidden !important;
+        background: #F5F7FB !important;
+    }
+    html body.portal-ui #caseModal > .fixed > .bg-white { max-width: calc(100vw - 2rem) !important; }
+    html body.portal-ui > #editCaseModal > .fixed > .bg-white { max-width: calc(100vw - 1rem) !important; }
+    html body.portal-ui #caseModal > .fixed > .bg-white > .case-modal-top-header,
+    html body.portal-ui > #editCaseModal > .fixed > .bg-white > .border-b {
+        padding: .875rem 1rem !important; flex: 0 0 auto !important;
+        background: #B11116 !important; color: #fff !important; border-bottom: 1px solid #8A0D11 !important;
+    }
+    html body.portal-ui :is(#caseModal, #editCaseModal) .border-b > h5,
+    html body.portal-ui #caseModal .case-modal-top-header h5 { font-size: 1rem !important; line-height: 1.4 !important; color: #fff !important; margin: 0 !important; overflow-wrap: anywhere; }
+    html body.portal-ui #caseModal > .fixed > .bg-white > .case-modal-top-header { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 1.25rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:first-child { flex: 0 0 auto !important; min-width: 0 !important; margin: 0 !important; }
+    html body.portal-ui #caseModal .case-modal-top-summary > div { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: .5rem !important; margin-top: .5rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-summary .case-modal-summary-labels { display: flex !important; flex-wrap: wrap !important; gap: .5rem !important; margin: 0 !important; width: auto !important; }
+    html body.portal-ui #caseModal .case-modal-top-summary p { color: #fff !important; font-size: .8125rem !important; }
+    html body.portal-ui #caseModal > .fixed > .bg-white [data-case-header-actions] { display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; align-items: center !important; gap: .5rem !important; width: 100% !important; margin: 0 !important; }
+    html body.portal-ui #caseModal [data-case-header-actions] a { display: inline-flex !important; align-items: center !important; gap: .5rem !important; min-height: 2.25rem !important; padding: .5rem .75rem !important; border-radius: .5rem !important; font-size: .875rem !important; line-height: 1.25 !important; }
+    html body.portal-ui #caseModal [data-case-header-actions] a:not([aria-disabled="true"]) { background: #C41E3A !important; color: #fff !important; }
+    html body.portal-ui #caseModal [data-case-header-actions] a:has(.fa-print) { order: 0; }
+    html body.portal-ui #caseModal [data-case-header-actions] a:has(.fa-share-square) { order: 1; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) [x-html="content"] { flex: 1 1 auto !important; min-height: 0 !important; overflow-x: hidden !important; overflow-y: auto !important; background: #F5F7FB !important; }
+    html body.portal-ui #caseModal [x-html="content"] { padding: 1.875rem 1rem 1rem !important; }
+    html body.portal-ui #caseModal .case-modal-details > .grid,
+    html body.portal-ui #caseModal .case-modal-details.case-details { display: grid !important; grid-template-columns: minmax(0,1fr) !important; gap: .75rem !important; }
+    html body.portal-ui #caseModal .case-modal-details.case-details :is(.case-modal-victim, .case-modal-guardian, .case-modal-perpetrator) { grid-column: auto !important; grid-row: auto !important; }
+    html body.portal-ui #caseModal .case-modal-details .divide-y > div { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: .375rem !important; padding: .625rem .75rem !important; }
+    html body.portal-ui #caseModal .case-modal-details .divide-y > div > span { flex: 0 0 auto !important; width: 100% !important; min-width: 0 !important; white-space: normal !important; overflow-wrap: anywhere; text-align: left !important; font-size: .875rem !important; }
+    html body.portal-ui #caseModal .case-modal-details dl { grid-template-columns: minmax(0,1fr) !important; }
+    html body.portal-ui #caseModal .case-modal-details dl > dt { padding: .625rem .75rem .25rem !important; border-bottom: 0 !important; }
+    html body.portal-ui #caseModal .case-modal-details dl > dd { padding: 0 .75rem .625rem !important; }
+    html body.portal-ui #editCaseModal [x-html="content"] { padding: 2.375rem 2.5rem 1rem !important; }
+    html body.portal-ui #editCaseModal [x-html="content"] > .p-6,
+    html body.portal-ui #editCaseModal .form-content { padding: 0 !important; }
+    html body.portal-ui #editCaseModal :is(.form-row, .grid) { display: grid !important; grid-template-columns: minmax(0,1fr) !important; gap: .75rem !important; }
+    html body.portal-ui #editCaseModal :is(.form-col, fieldset) { min-width: 0 !important; width: 100% !important; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed > .bg-white > .portal-modal-dismiss-footer { flex: 0 0 auto !important; margin: 0 !important; padding: .625rem 1.25rem !important; background: #fff !important; border-top: 1px solid #e5e7eb !important; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) .portal-modal-dismiss-footer .portal-modal-close { min-height: 2.5rem !important; padding: .5rem 1.25rem !important; border-radius: .5rem !important; background: #B11116 !important; color: #fff !important; }
+}
+</style>
+@endif
+@endpush
+
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header button[aria-label="Notifications"] > i {
+        font-size: 1rem !important; line-height: 1 !important;
+        color: #fff !important; -webkit-text-fill-color: #fff !important;
+    }
+    html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header button[aria-label="Notifications"] > i::before {
+        font-size: 1rem !important;
+    }
+    html body.portal-ui.view-cases-admin-mobile-nav #mainContent > header#barangay-cases-view-header #notifications-unread-count {
+        background-color: #eab308 !important; color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+    }
+}
+</style>
+@endif
+@endpush
+
 @section('content')
 
     <!-- View Case Modal -->
@@ -2076,7 +2446,7 @@
                             x-html="new DOMParser().parseFromString(content || '', 'text/html').querySelector('[data-case-modal-summary]')?.innerHTML || ''">
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div data-case-header-actions class="flex items-center gap-2">
                         <a :href="printUrl" target="_blank"
                             class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                             <i class="fas fa-print"></i>
@@ -2253,14 +2623,14 @@
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Date Range</label>
                                 <div class="space-y-2">
-                                    <input type="date" name="date_from" id="date-from"
+                                    <div class="mobile-date-field" style="display: contents;"><input type="date" name="date_from" id="date-from"
                                         value="{{ $currentFilters['dateFrom'] ?? '' }}"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
-                                        placeholder="From">
-                                    <input type="date" name="date_to" id="date-to"
+                                        placeholder="From"><svg class="mobile-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
+                                    <div class="mobile-date-field" style="display: contents;"><input type="date" name="date_to" id="date-to"
                                         value="{{ $currentFilters['dateTo'] ?? '' }}"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
-                                        placeholder="To">
+                                        placeholder="To"><svg class="mobile-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                                 </div>
                             </div>
 
@@ -2592,7 +2962,7 @@
                         data-case-id="{{ $case->id }}">
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div>
-                                <p class="text-sm font-semibold text-purple-700">
+                                <p class="text-sm font-semibold text-purple-700">@if($isBarangayDeskOfficer)<span class="desk-card-number-prefix hidden">#</span>@endif
                                     {{ $isSwdDeskOfficer
                                         ? preg_replace('/^VAWC-/', 'SWD-', $case->case_number ?? 'N/A')
                                         : $case->case_number ?? 'N/A' }}
@@ -2613,6 +2983,9 @@
                             </span>
                         </div>
                         <p class="text-sm text-gray-800 mb-2">{{ censorLastName($case->victim_name) }}</p>
+                        @if($isBarangayDeskOfficer)
+                        <p class="desk-reference-card-updated hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 7a7 7 0 0 1 11.6-1L20 9M4 15l2.3 3a7 7 0 0 0 11.6-1"/></svg><span>{{ $case->updated_at?->format('M d, Y g:i A') ?? 'N/A' }}</span></p>
+                        @endif
                         <p class="text-xs text-gray-500 mb-2"><i class="fas fa-user-circle text-purple-700"
                                 aria-hidden="true"></i> Generated by: {{ auth()->user()->isDepartmentAdmin() && (int) $case->created_by !== (int) auth()->id() ? (trim(($case->createdBy?->first_name ?? '') . ' ' . ($case->createdBy?->last_name ?? '')) ?: ($case->createdBy?->username ?? 'N/A')) : 'You' }}</p>
                         <div class="case-card-actions flex items-center justify-end gap-2 mb-3">
@@ -3441,3 +3814,42 @@
     @endpush
 
 @endsection
+
+
+@if(auth()->user()?->isDepartmentAdmin() || $isBarangayDeskOfficer)
+@push('styles')
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui > :is(#caseModal, #editCaseModal) { background: transparent !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+    html body.portal-ui > :is(#caseModal, #editCaseModal) > .fixed {
+        position: fixed !important; inset: 0 !important; width: 100% !important;
+        height: 100vh !important; height: 100dvh !important; max-width: none !important;
+        max-height: none !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important;
+        box-sizing: border-box !important; background: rgba(0, 0, 0, .5) !important;
+        -webkit-backdrop-filter: blur(4px) !important; backdrop-filter: blur(4px) !important;
+    }
+}
+</style>
+@endpush
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const phone = matchMedia('(max-width: 47.9375rem)');
+    const modals = ['caseModal', 'editCaseModal'].map(id => {
+        const modal = document.getElementById(id);
+        if (!modal) return null;
+        const home = document.createComment(id + ' original position');
+        modal.before(home);
+        return { modal, home };
+    }).filter(Boolean);
+    const syncModalPosition = () => modals.forEach(({ modal, home }) => {
+        if (phone.matches) {
+            if (modal.parentElement !== document.body) document.body.appendChild(modal);
+        } else if (modal.parentNode !== home.parentNode) home.after(modal);
+    });
+    syncModalPosition();
+    phone.addEventListener('change', syncModalPosition);
+});
+</script>
+@endpush
+@endif

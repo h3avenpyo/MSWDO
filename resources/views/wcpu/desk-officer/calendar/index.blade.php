@@ -14,6 +14,51 @@ $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer'
 @endphp
 
 @push('styles')
+@if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui .calendar-mobile-date-field {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        html body.portal-ui .calendar-mobile-date-field > input[type=datetime-local] {
+            display: block;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            min-height: 2.75rem;
+            padding-right: 2.75rem !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        html body.portal-ui .calendar-mobile-date-field > .calendar-mobile-date-icon {
+            display: block !important;
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 1;
+        }
+        html body.portal-ui .calendar-mobile-date-field > input[type=datetime-local]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+        }
+        html body.portal-ui .calendar-mobile-date-field > input[type=datetime-local]::-webkit-date-and-time-value {
+            text-align: left;
+            min-width: 0;
+        }
+    }
+</style>
+@endif
+@endpush
+@push('styles')
 <style>
     /* Dashboard-style red navbar for mobile/tablet, matching /admin-dashboard */
     @media (max-width: 80rem) {
@@ -719,16 +764,16 @@ auth()->user()?->isMultiCaseDepartment()))
                     <div class="mb-4">
                         <label for="event_date_input" class="block text-sm font-medium text-gray-700 mb-2">Date <span
                                 class="text-red-500">*</span></label>
-                        <input type="datetime-local" id="event_date_input" name="event_date_input" required
+                        <div class="calendar-mobile-date-field" style="display: contents;"><input type="datetime-local" id="event_date_input" name="event_date_input" required
                             oninput="validateEventEndTime()" min="{{ date('Y-m-d\TH:i') }}"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"><svg class="calendar-mobile-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                     </div>
 
                     <div class="mb-4">
                         <label for="end_time" class="block text-sm font-medium text-gray-700 mb-2">End Time</label>
-                        <input type="datetime-local" id="end_time" name="end_time" oninput="validateEventEndTime()"
+                        <div class="calendar-mobile-date-field" style="display: contents;"><input type="datetime-local" id="end_time" name="end_time" oninput="validateEventEndTime()"
                             aria-describedby="eventEndTimeHint"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"><svg class="calendar-mobile-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
                         <p id="eventEndTimeHint" class="mt-1 text-xs text-gray-500">Optional. Choose a date and time
                             after the event starts.</p>
                     </div>

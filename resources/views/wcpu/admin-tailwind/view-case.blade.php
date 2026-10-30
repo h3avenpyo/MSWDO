@@ -338,6 +338,25 @@
 @endif
 @endpush
 
+
+@push('styles')
+@if(auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !auth()->user()?->isMultiCaseDepartment())
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui #mainContent > header#case-details-page-header #dashboardMenuToggle {
+        flex: 0 0 2.25rem !important;
+        width: 2.25rem !important; min-width: 2.25rem !important; max-width: 2.25rem !important;
+        height: 2.25rem !important; min-height: 2.25rem !important; max-height: 2.25rem !important;
+        padding: 0 !important; border-radius: .375rem !important; font-size: 1.125rem !important;
+    }
+    html body.portal-ui #mainContent > header#case-details-page-header #dashboardMenuToggle > i {
+        font-size: 1.125rem !important; line-height: 1 !important;
+    }
+}
+</style>
+@endif
+@endpush
+
 @section('content')
 
 @php

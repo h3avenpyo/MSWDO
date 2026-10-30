@@ -144,8 +144,8 @@
                                 </div>
                             </td>
                             <td class="px-5 py-4 text-gray-600 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-700">{{ $monitoring->archived_at?->format('M d, Y') ?? 'N/A' }}</div>
-                                <div class="text-xs text-gray-400">{{ $monitoring->archived_at?->format('g:i A') ?? '' }}</div>
+                                <div class="text-sm font-medium text-gray-700">{{ $monitoring->archived_at?->copy()->timezone('Asia/Manila')->format('M d, Y') ?? 'N/A' }}</div>
+                                <div class="text-xs text-gray-400">{{ $monitoring->archived_at?->copy()->timezone('Asia/Manila')->format('g:i A') ?? '' }}</div>
                             </td>
                             <td class="px-5 py-4 text-center whitespace-nowrap">
                                 <div class="bcpc-monitoring-actions flex items-center justify-center gap-2 [&>a]:inline-flex [&>a]:items-center [&>a]:justify-center [&>button]:inline-flex [&>button]:items-center [&>button]:justify-center">
@@ -204,7 +204,7 @@
 
                     <div class="flex items-center justify-between text-xs text-gray-500 mb-3 bg-gray-50 rounded-lg px-3 py-2">
                         <span>Archived At:</span>
-                        <span class="font-medium text-gray-700">{{ $monitoring->archived_at?->format('M d, Y g:i A') ?? 'N/A' }}</span>
+                        <span class="font-medium text-gray-700">{{ $monitoring->archived_at?->copy()->timezone('Asia/Manila')->format('M d, Y g:i A') ?? 'N/A' }}</span>
                     </div>
 
                     <div class="bcpc-monitoring-actions archived-monitoring-card-actions grid grid-cols-3 gap-2 pt-2 border-t border-gray-100 [&>a]:inline-flex [&>a]:items-center [&>a]:justify-center [&>button]:inline-flex [&>button]:items-center [&>button]:justify-center">

@@ -801,7 +801,7 @@
             }
         }
 
-        @if(request()->routeIs('admin-dashboard'))
+        @if(request()->routeIs('admin-dashboard') || (request()->routeIs('cases.refer.form') && auth()->user()?->isDepartmentAdmin()))
         /* Apply after portal-theme.css so the mobile dashboard alignment wins. */
         @media (max-width: 47.9375rem) {
             body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header > div {

@@ -8,8 +8,62 @@
     $isMultiroleDeskOfficer = auth()->user()?->position === 'Desk Officer' && auth()->user()?->isMultiCaseDepartment();
 @endphp
 @include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Referrals', 'subtitle' => 'View and manage case referrals'])
+@push('styles')
+@if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #referralEditForm .referral-edit-date-field {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        html body.portal-ui #referralEditForm .referral-edit-date-field > input[type=date] {
+            display: block;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            min-height: 2.75rem;
+            padding-right: 2.75rem !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        html body.portal-ui #referralEditForm .referral-edit-date-field > .referral-edit-date-icon {
+            display: block !important;
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 1;
+        }
+        html body.portal-ui #referralEditForm .referral-edit-date-field > input[type=date]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+        }
+        html body.portal-ui #referralEditForm .referral-edit-date-field > input[type=date]::-webkit-date-and-time-value {
+            text-align: left;
+            min-width: 0;
+        }
+    }
+</style>
+@endif
+@endpush
 @if($isBcpcDeskOfficer)
 @push('styles')
+@if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
+<style>
+    @media (max-width: 47.9375rem) {
+        body.portal-ui #referralEditForm :is(input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea) {
+            font-size: 16px !important;
+        }
+    }
+</style>
+@endif
 <style>
     .view-referral-btn:hover,
     .view-referral-btn:focus,

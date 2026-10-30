@@ -3,6 +3,51 @@
 @section('title', 'Referrals - iSERVE SILANG Admin')
 
 @push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #adminReferralEditForm .admin-referral-edit-date-field {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        html body.portal-ui #adminReferralEditForm .admin-referral-edit-date-field > input[type=date] {
+            display: block;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            min-height: 2.75rem;
+            padding-right: 2.75rem !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        html body.portal-ui #adminReferralEditForm .admin-referral-edit-date-field > .admin-referral-edit-date-icon {
+            display: block !important;
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 1;
+        }
+        html body.portal-ui #adminReferralEditForm .admin-referral-edit-date-field > input[type=date]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+        }
+        html body.portal-ui #adminReferralEditForm .admin-referral-edit-date-field > input[type=date]::-webkit-date-and-time-value {
+            text-align: left;
+            min-width: 0;
+        }
+    }
+</style>
+@endif
+@endpush
+@push('styles')
 <style>
     @if(auth()->user()?->isDepartmentAdmin())
     @media (max-width: 85.375rem) {
@@ -1251,7 +1296,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div>
                                 <label class="text-xs text-gray-500">{{ auth()->user()->isDepartmentAdmin() ? 'Date of Feedback' : 'Date feedback received' }}@if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) <span class="text-red-500">*</span>@endif</label>
-                                <input type="date" name="received_at" class="w-full border rounded p-2" value="${data.feedback_received_at ? (new Date(data.feedback_received_at)).toISOString().slice(0,10) : ''}" @if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) required @endif>
+                                <div class="admin-referral-edit-date-field" style="display: contents;"><input type="date" name="received_at" class="w-full border rounded p-2" value="${data.feedback_received_at ? (new Date(data.feedback_received_at)).toISOString().slice(0,10) : ''}" @if(auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) required @endif><svg class="admin-referral-edit-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                             </div>
                             <div>
                                 <label class="text-xs text-gray-500">Remarks</label>

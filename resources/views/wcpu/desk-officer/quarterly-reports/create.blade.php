@@ -9,6 +9,48 @@
 
 @push('styles')
 <style>
+    body.portal-ui #quarterly-create-actions > button[type="submit"] > .fa-file-pdf {
+        color: #ffffff !important;
+    }
+    @media (max-width: 47.9375rem) {
+        body.portal-ui #quarterly-create-actions {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: .75rem !important;
+            padding-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+        }
+        body.portal-ui #quarterly-create-actions > :is(a, button) {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            min-height: 3rem !important;
+            margin: 0 !important;
+            padding: .75rem 1rem !important;
+            border-radius: .5rem !important;
+            font-size: .8125rem !important;
+            text-align: center !important;
+        }
+        body.portal-ui #quarterly-create-actions > button[type="submit"] {
+            order: 0;
+            background: #C41E3A !important;
+            color: #fff !important;
+            gap: .5rem !important;
+        }
+        body.portal-ui #cancel-generate-report {
+            order: 1;
+            background: #fff !important;
+            color: #16324f !important;
+            border: 1px solid #cbd5e1 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+    }
+</style>
+<style>
     @media (max-width: 80rem) {
         #mainContent > .quarterly-create-content {
             padding-top: .75rem !important;
@@ -95,6 +137,26 @@
         }
     }
 </style>
+@endpush
+
+
+@push('styles')
+@if(auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true))
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle {
+        flex: 0 0 2.25rem !important;
+        width: 2.25rem !important; min-width: 2.25rem !important; max-width: 2.25rem !important;
+        height: 2.25rem !important; min-height: 2.25rem !important; max-height: 2.25rem !important;
+        padding: 0 !important; border-radius: .375rem !important; font-size: 1.125rem !important;
+    }
+    html body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle > i {
+        display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 18px !important; height: 18px !important; font-size: 18px !important; line-height: 1 !important;
+    }
+    html body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle > i::before { font-size: 18px !important; }
+}
+</style>
+@endif
 @endpush
 
 @section('content')
@@ -226,7 +288,7 @@
             @endif
             
             <!-- Submit Button -->
-            <div class="flex justify-end gap-3">
+            <div id="quarterly-create-actions" class="flex justify-end gap-3">
                 <a href="{{ route('desk-officer.quarterly-reports.index') }}" 
                    id="cancel-generate-report"
                    class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition font-medium">

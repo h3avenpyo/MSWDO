@@ -1019,7 +1019,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             }
         }
 
-        @if(request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard') || request()->is('desk-officer/dashboard*', 'desk-officer/bcpc-dashboard*'))
+        @if(request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'cases.refer.form') || request()->is('desk-officer/dashboard*', 'desk-officer/bcpc-dashboard*'))
 
         /* Apply after portal-theme.css so the mobile dashboard alignment wins (matches admin/dashboard). */
         @media (max-width: 47.9375rem) {
@@ -1249,7 +1249,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             }
         }
 
-        @if(request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'case-profiles.index', 'desk-officer.cases.*', 'admin.barangay-cases.show', 'desk-officer.referrals*', 'desk-officer.calendar*', 'desk-officer.quarterly-reports*', 'desk-officer.archived-barangay-cases*', 'desk-officer.bcpc-case-monitoring*') || request()->is('desk-officer/cases*', 'admin-barangay-cases*', 'desk-officer/bcpc-case-monitoring*'))
+        @if(request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'cases.refer.form', 'case-profiles.index', 'desk-officer.cases.*', 'admin.barangay-cases.show', 'desk-officer.referrals*', 'desk-officer.calendar*', 'desk-officer.quarterly-reports*', 'desk-officer.archived-barangay-cases*', 'desk-officer.bcpc-case-monitoring*') || request()->is('desk-officer/cases*', 'admin-barangay-cases*', 'desk-officer/bcpc-case-monitoring*'))
 
         /* Apply after portal-theme.css so the mobile dashboard alignment wins. */
         @media (max-width: 47.9375rem) {

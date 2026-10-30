@@ -214,6 +214,107 @@
 @endpush
 
 @push('styles')
+@if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #editCaseModal #edit-case-form-modal :is(.form-actions, div:has(> button[type="submit"])) {
+            display: flex !important; flex-direction: column !important; width: 100% !important; gap: .5rem !important;
+        }
+        html body.portal-ui #editCaseModal #edit-case-form-modal :is(.form-actions, div:has(> button[type="submit"])) > button {
+            display: flex !important; align-items: center !important; justify-content: center !important;
+            width: 100% !important; max-width: 100% !important; margin: 0 !important;
+        }
+
+        html body.portal-ui #editCaseModal .case-edit-date-time-field {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        html body.portal-ui #editCaseModal .case-edit-date-time-field > :is(input[type=date], input[type=time]) {
+            display: block;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            min-height: 2.75rem;
+            padding-right: 2.75rem !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        html body.portal-ui #editCaseModal .case-edit-date-time-field > .case-edit-date-time-icon {
+            display: block !important;
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 1;
+        }
+        html body.portal-ui #editCaseModal .case-edit-date-time-field > :is(input[type=date], input[type=time])::-webkit-calendar-picker-indicator {
+            opacity: 0;
+        }
+        html body.portal-ui #editCaseModal .case-edit-date-time-field > :is(input[type=date], input[type=time])::-webkit-date-and-time-value {
+            text-align: left;
+            min-width: 0;
+        }
+    }
+</style>
+@endif
+@endpush
+@push('styles')
+@if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent .case-filter-date-field:has(#date-from) { margin-bottom: .5rem; }
+        html body.portal-ui #mainContent .case-filter-date-field > #date-from { margin-bottom: 0 !important; }
+
+        html body.portal-ui #mainContent .case-filter-date-field {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        html body.portal-ui #mainContent .case-filter-date-field > input[type=date] {
+            display: block;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            min-height: 2.75rem;
+            padding-right: 2.75rem !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        html body.portal-ui #mainContent .case-filter-date-field > .case-filter-date-icon {
+            display: block !important;
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 1;
+        }
+        html body.portal-ui #mainContent .case-filter-date-field > input[type=date]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+        }
+        html body.portal-ui #mainContent .case-filter-date-field > input[type=date]::-webkit-date-and-time-value {
+            text-align: left;
+            min-width: 0;
+        }
+    }
+</style>
+@endif
+@endpush
+@push('styles')
     <link rel="stylesheet" href="{{ asset('css/desk-officer.css') }}">
     <style>
         /* Print-specific content will be controlled later via JS; keep original print CSS embedded for generated print window */
@@ -2418,6 +2519,149 @@
     </style>
 @endpush
 
+
+@push('styles')
+@if($isDeskOfficer && in_array(Auth::user()->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !$isMultiroleDeskOfficer)
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle {
+        flex: 0 0 2.25rem !important;
+        width: 2.25rem !important; min-width: 2.25rem !important; max-width: 2.25rem !important;
+        height: 2.25rem !important; min-height: 2.25rem !important; max-height: 2.25rem !important;
+        padding: 0 !important; border-radius: .375rem !important; font-size: 1.125rem !important;
+    }
+    html body.portal-ui #mainContent > header#desk-officer-dashboard-header #pageMobileMenuToggle > i {
+        font-size: 1.125rem !important; line-height: 1 !important;
+    }
+}
+</style>
+@endif
+@endpush
+
+
+@push('styles')
+<style>
+@media (max-width: 85.375rem) {
+    html body.portal-ui #desk-officer-cases-content .cases-list-heading {
+        padding: 1.5rem !important; text-align: left !important;
+    }
+    html body.portal-ui #desk-officer-cases-content .cases-list-heading > h3 {
+        display: flex !important; justify-content: flex-start !important;
+        align-items: center !important; gap: .5rem !important;
+        margin: 0 !important; padding: 0 !important; text-align: left !important;
+        font-size: .875rem !important; line-height: 1.25rem !important;
+    }
+}
+</style>
+@endpush
+
+
+@push('styles')
+<style>
+@media (min-width: 48rem) and (max-width: 85.375rem) {
+    html body.portal-ui > #caseModal > .fixed { z-index: 100 !important; }
+    html body.portal-ui > #editCaseModal > .fixed { z-index: 110 !important; }
+}
+</style>
+@endpush
+
+
+@push('styles')
+<style>
+@media (min-width: 48rem) and (max-width: 85.375rem) {
+    html body.portal-ui > #caseModal > .fixed {
+        padding: 1rem 1.5rem !important;
+        align-items: center !important;
+    }
+    html body.portal-ui #caseModal #caseModalInner {
+        width: 100% !important; max-width: 56rem !important;
+        max-height: calc(100vh - 2rem) !important; max-height: calc(100dvh - 2rem) !important;
+        margin: 0 !important; border: 1px solid #e5e7eb !important; border-radius: 14px !important;
+        display: flex !important; flex-direction: column !important; overflow: hidden !important;
+        background: #F5F7FB !important;
+    }
+    html body.portal-ui #caseModal #caseModalInner > .case-modal-top-header {
+        display: flex !important; flex-wrap: nowrap !important; align-items: center !important;
+        justify-content: space-between !important; gap: 1rem !important; padding: 1rem 1.25rem !important;
+        background: #B11116 !important; color: #fff !important; flex: 0 0 auto !important;
+    }
+    html body.portal-ui #caseModal #caseModalInner > .case-modal-top-header > div:first-child { flex: 1 1 0 !important; min-width: 0 !important; margin: 0 !important; }
+    html body.portal-ui #caseModal .case-modal-top-header h5 { color: #fff !important; font-size: 1rem !important; line-height: 1.4 !important; overflow-wrap: anywhere; }
+    html body.portal-ui #caseModal .case-modal-top-summary { margin-top: .375rem; }
+    html body.portal-ui #caseModal .case-modal-top-summary > div,
+    html body.portal-ui #caseModal .case-modal-top-summary .case-modal-summary-labels { display: flex !important; align-items: center !important; flex-wrap: wrap !important; gap: .5rem !important; }
+    html body.portal-ui #caseModal #caseModalInner .case-modal-header-actions {
+        display: flex !important; flex: 0 0 auto !important; width: auto !important; margin: 0 0 0 auto !important;
+        justify-content: flex-end !important; align-items: center !important; flex-wrap: nowrap !important; gap: .5rem !important;
+    }
+    html body.portal-ui #caseModal .case-modal-header-actions a { display: inline-flex !important; align-items: center !important; gap: .5rem !important; padding: .5rem .75rem !important; font-size: .875rem !important; border-radius: .5rem !important; }
+    html body.portal-ui #caseModal #caseModalInner > [x-html="content"] {
+        padding: 1.5rem 1.25rem 1.25rem !important; min-height: 0 !important; flex: 1 1 auto !important;
+        overflow-y: auto !important; overflow-x: hidden !important; background: #F5F7FB !important;
+    }
+    html body.portal-ui #caseModal .case-modal-details > .grid,
+    html body.portal-ui #caseModal .case-modal-details.case-details { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: .75rem !important; }
+    html body.portal-ui #caseModal .case-modal-details .divide-y > div { display: flex !important; flex-direction: row !important; align-items: flex-start !important; gap: .75rem !important; padding: .625rem 1rem !important; }
+    html body.portal-ui #caseModal .case-modal-details .divide-y > div > span:first-child { flex: 0 0 7.5rem !important; width: 7.5rem !important; color: #6b7280 !important; font-size: .875rem !important; }
+    html body.portal-ui #caseModal .case-modal-details .divide-y > div > span + span { flex: 1 1 0 !important; min-width: 0 !important; text-align: left !important; font-size: .875rem !important; overflow-wrap: anywhere; }
+    html body.portal-ui #caseModal #caseModalInner > .portal-modal-dismiss-footer { flex: 0 0 auto !important; margin: 0 !important; padding: .625rem 1.25rem !important; background: #fff !important; border-top: 1px solid #e5e7eb !important; }
+}
+</style>
+@endpush
+
+
+@push('styles')
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui > #caseModal > .fixed { padding: 1rem !important; }
+    html body.portal-ui > #editCaseModal > .fixed { padding: 1rem .5rem !important; }
+    html body.portal-ui > :is(#caseModal, #editCaseModal) > .fixed > .bg-white {
+        box-sizing: border-box !important; width: 100% !important; margin: 0 !important;
+        max-height: calc(100vh - 2rem) !important; max-height: calc(100dvh - 2rem) !important;
+        border: 1px solid #e5e7eb !important; border-radius: 16px !important;
+        display: flex !important; flex-direction: column !important; overflow: hidden !important;
+        background: #F5F7FB !important;
+    }
+    html body.portal-ui #caseModal #caseModalInner { max-width: calc(100vw - 2rem) !important; }
+    html body.portal-ui > #editCaseModal > .fixed > .bg-white { max-width: calc(100vw - 1rem) !important; }
+    html body.portal-ui #caseModal #caseModalInner > .case-modal-top-header,
+    html body.portal-ui > #editCaseModal > .fixed > .bg-white > .border-b {
+        padding: .875rem 1rem !important; flex: 0 0 auto !important;
+        background: #B11116 !important; color: #fff !important; border-bottom: 1px solid #8A0D11 !important;
+    }
+    html body.portal-ui :is(#caseModal, #editCaseModal) .border-b > h5,
+    html body.portal-ui #caseModal .case-modal-top-header h5 { font-size: 1rem !important; line-height: 1.4 !important; color: #fff !important; margin: 0 !important; overflow-wrap: anywhere; }
+    html body.portal-ui #caseModal #caseModalInner > .case-modal-top-header { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 1.25rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-header > div:first-child { flex: 0 0 auto !important; min-width: 0 !important; margin: 0 !important; }
+    html body.portal-ui #caseModal .case-modal-top-summary > div { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: .5rem !important; margin-top: .5rem !important; }
+    html body.portal-ui #caseModal .case-modal-top-summary .case-modal-summary-labels { display: flex !important; flex-wrap: wrap !important; gap: .5rem !important; margin: 0 !important; width: auto !important; }
+    html body.portal-ui #caseModal .case-modal-top-summary p { color: #fff !important; font-size: .8125rem !important; }
+    html body.portal-ui #caseModal #caseModalInner .case-modal-header-actions { display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; align-items: center !important; gap: .5rem !important; width: 100% !important; margin: 0 !important; }
+    html body.portal-ui #caseModal .case-modal-header-actions a { display: inline-flex !important; align-items: center !important; gap: .5rem !important; min-height: 2.25rem !important; padding: .5rem .75rem !important; border-radius: .5rem !important; font-size: .875rem !important; line-height: 1.25 !important; }
+    html body.portal-ui #caseModal .case-modal-header-actions a:not([aria-disabled="true"]) { background: #C41E3A !important; color: #fff !important; }
+    html body.portal-ui #caseModal .case-modal-header-actions a:has(.fa-print) { order: 0; }
+    html body.portal-ui #caseModal .case-modal-header-actions a:has(.fa-share-square) { order: 1; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) [x-html="content"] { flex: 1 1 auto !important; min-height: 0 !important; overflow-x: hidden !important; overflow-y: auto !important; background: #F5F7FB !important; }
+    html body.portal-ui #caseModal [x-html="content"] { padding: 1.875rem 1rem 1rem !important; }
+    html body.portal-ui #caseModal .case-modal-details > .grid,
+    html body.portal-ui #caseModal .case-modal-details.case-details { display: grid !important; grid-template-columns: minmax(0,1fr) !important; gap: .75rem !important; }
+    html body.portal-ui #caseModal .case-modal-details.case-details :is(.case-modal-victim, .case-modal-guardian, .case-modal-perpetrator) { grid-column: auto !important; grid-row: auto !important; }
+    html body.portal-ui #caseModal .case-modal-details .divide-y > div { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: .375rem !important; padding: .625rem .75rem !important; }
+    html body.portal-ui #caseModal .case-modal-details .divide-y > div > span { flex: 0 0 auto !important; width: 100% !important; min-width: 0 !important; white-space: normal !important; overflow-wrap: anywhere; text-align: left !important; font-size: .875rem !important; }
+    html body.portal-ui #caseModal .case-modal-details dl { grid-template-columns: minmax(0,1fr) !important; }
+    html body.portal-ui #caseModal .case-modal-details dl > dt { padding: .625rem .75rem .25rem !important; border-bottom: 0 !important; }
+    html body.portal-ui #caseModal .case-modal-details dl > dd { padding: 0 .75rem .625rem !important; }
+    html body.portal-ui #editCaseModal [x-html="content"] { padding: 2.375rem 2.5rem 1rem !important; }
+    html body.portal-ui #editCaseModal [x-html="content"] > .p-6,
+    html body.portal-ui #editCaseModal .form-content { padding: 0 !important; }
+    html body.portal-ui #editCaseModal :is(.form-row, .grid) { display: grid !important; grid-template-columns: minmax(0,1fr) !important; gap: .75rem !important; }
+    html body.portal-ui #editCaseModal :is(.form-col, fieldset) { min-width: 0 !important; width: 100% !important; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) > .fixed > .bg-white > .portal-modal-dismiss-footer { flex: 0 0 auto !important; margin: 0 !important; padding: .625rem 1.25rem !important; background: #fff !important; border-top: 1px solid #e5e7eb !important; }
+    html body.portal-ui :is(#caseModal, #editCaseModal) .portal-modal-dismiss-footer .portal-modal-close { min-height: 2.5rem !important; padding: .5rem 1.25rem !important; border-radius: .5rem !important; background: #B11116 !important; color: #fff !important; }
+}
+</style>
+@endpush
+
 @section('content')
 @if($isDeskOfficer)
 @include('components.desk-officer.bcpc-dashboard-header', [
@@ -2577,8 +2821,8 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Date Range</label>
-                            <input id="date-from" type="date" value="{{ $activeFilters['dateFrom'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2">
-                            <input id="date-to" type="date" value="{{ $activeFilters['dateTo'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <div class="case-filter-date-field" style="display: contents;"><input id="date-from" type="date" value="{{ $activeFilters['dateFrom'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2"><svg class="case-filter-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
+                            <div class="case-filter-date-field" style="display: contents;"><input id="date-to" type="date" value="{{ $activeFilters['dateTo'] ?? '' }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"><svg class="case-filter-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                         </div>
                         <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
                             <button type="button" id="reset-filters" class="px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition">Clear</button>

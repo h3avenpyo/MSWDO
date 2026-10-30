@@ -172,6 +172,22 @@
     }
 </style>
 @endpush
+
+@push('styles')
+<style>
+@media (max-width: 85.375rem) {
+    html body.portal-ui .swal2-popup.quarterly-print-all-popup .swal2-actions {
+        display: flex !important; flex-wrap: nowrap !important; gap: .625rem !important;
+        width: calc(100% - 3rem) !important; margin: 1rem auto 0 !important; padding: 0 !important;
+    }
+    html body.portal-ui .swal2-popup.quarterly-print-all-popup .swal2-actions > button {
+        flex: 1 1 0 !important; min-width: 0 !important; margin: 0 !important;
+        padding: .625rem .75rem !important;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 
 @include('components.desk-officer.bcpc-dashboard-header', ['title' => 'Quarterly Reports', 'subtitle' => 'View and manage quarterly reports'])
@@ -254,7 +270,7 @@
 @if(auth()->user()->isMultiCaseDepartment())
 <script>
 async function printAllQuarterlyReports() {
-    const result = await Swal.fire({ title: 'Print All Reports', input: 'select', inputOptions: { BCPC: 'BCPC Case Reports', VAWC: 'SWD Case Reports' }, inputPlaceholder: 'Select department', showCancelButton: true, confirmButtonText: 'Print', inputValidator: value => !value ? 'Select a department.' : undefined });
+    const result = await Swal.fire({ title: 'Print All Reports', customClass: { popup: 'quarterly-print-all-popup' }, input: 'select', inputOptions: { BCPC: 'BCPC Case Reports', VAWC: 'SWD Case Reports' }, inputPlaceholder: 'Select department', showCancelButton: true, confirmButtonText: 'Print', inputValidator: value => !value ? 'Select a department.' : undefined });
     if (!result.isConfirmed) return;
     const counts = @json(collect($reportGroups)->map(fn ($group) => $group->total()));
     if (!counts[result.value]) {

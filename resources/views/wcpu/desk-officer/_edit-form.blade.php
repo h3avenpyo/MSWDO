@@ -173,19 +173,19 @@
                     <div class="form-col">
                         <div class="form-group">
                             <label for="date-reported" class="form-label">Date of Incident <span class="required-field">*</span></label>
-                            <input type="date" id="incident_date" name="incident_date" class="form-control" value="{{ $case->incident_date ? \Carbon\Carbon::parse($case->incident_date)->format('Y-m-d') : '' }}" required>
+                            <div class="case-edit-date-time-field" style="display: contents;"><input type="date" id="incident_date" name="incident_date" class="form-control" value="{{ $case->incident_date ? \Carbon\Carbon::parse($case->incident_date)->format('Y-m-d') : '' }}" required><svg class="case-edit-date-time-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group">
                             <label for="time-reported" class="form-label">Time of Incident <span class="required-field">*</span></label>
-                            <input type="time" id="incident_time" name="incident_time" class="form-control" value="{{ $case->incident_time ? \Carbon\Carbon::parse($case->incident_time)->format('H:i') : '' }}" required>
+                            <div class="case-edit-date-time-field" style="display: contents;"><input type="time" id="incident_time" name="incident_time" class="form-control" value="{{ $case->incident_time ? \Carbon\Carbon::parse($case->incident_time)->format('H:i') : '' }}" required><svg class="case-edit-date-time-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group">
                             <label for="dateReported" class="form-label">Date Reported <span class="required-field">*</span></label>
-                            <input type="date" id="date_reported" name="date_reported" class="form-control" value="{{ $case->date_reported ? \Carbon\Carbon::parse($case->date_reported)->format('Y-m-d') : '' }}" required>
+                            <div class="case-edit-date-time-field" style="display: contents;"><input type="date" id="date_reported" name="date_reported" class="form-control" value="{{ $case->date_reported ? \Carbon\Carbon::parse($case->date_reported)->format('Y-m-d') : '' }}" required><svg class="case-edit-date-time-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                         </div>
                     </div>
                 </div>

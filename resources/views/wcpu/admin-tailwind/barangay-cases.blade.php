@@ -475,6 +475,97 @@
 @endif
 @endpush
 
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui .admin-mobile-picker-field {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        html body.portal-ui .admin-mobile-picker-field > :is(input[type=date], input[type=time]) {
+            display: block;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            min-height: 2.75rem;
+            padding-right: 2.75rem !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        html body.portal-ui .admin-mobile-picker-field > .admin-mobile-picker-icon {
+            display: block !important;
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 1;
+        }
+        html body.portal-ui .admin-mobile-picker-field > :is(input[type=date], input[type=time])::-webkit-calendar-picker-indicator {
+            opacity: 0;
+        }
+        html body.portal-ui .admin-mobile-picker-field > :is(input[type=date], input[type=time])::-webkit-date-and-time-value {
+            text-align: left;
+            min-width: 0;
+        }
+    }
+</style>
+@endif
+@endpush
+
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+@media (max-width: 47.9375rem) {
+    html body.portal-ui #mainContent .tablet-profile-pagination {
+        display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;
+        align-items: center !important; justify-content: space-between !important;
+        width: 100% !important; min-width: 0 !important; box-sizing: border-box !important;
+        padding: .75rem .625rem !important; gap: .5rem !important;
+        background: #fff !important; border-top: 1px solid #f1f5f9 !important;
+        border-radius: 0 0 .75rem .75rem !important;
+    }
+    html body.portal-ui #mainContent .tablet-profile-pagination > div:first-child {
+        flex: 1 1 auto !important; min-width: 0 !important; font-size: .625rem !important;
+        line-height: 1.25 !important; color: #64748b !important; white-space: nowrap !important; text-align: left !important;
+    }
+    html body.portal-ui #mainContent .tablet-profile-pagination > div:last-child {
+        display: flex !important; flex: 0 0 auto !important; flex-wrap: nowrap !important;
+        align-items: center !important; justify-content: flex-end !important; gap: .25rem !important;
+        width: auto !important; margin: 0 !important;
+    }
+    html body.portal-ui #mainContent .tablet-profile-pagination #page-numbers { display: contents !important; }
+    html body.portal-ui #mainContent .tablet-profile-pagination #mobile-page-info { display: none !important; }
+    html body.portal-ui #mainContent .tablet-profile-pagination button {
+        flex: 0 0 1.875rem !important; width: 1.875rem !important; min-width: 1.875rem !important;
+        height: 1.875rem !important; min-height: 1.875rem !important;
+        padding: 0 !important; margin: 0 !important; border: 1px solid #e5e7eb !important;
+        border-radius: .5rem !important; background: #fff !important; color: #C41E3A !important;
+        font-size: .6875rem !important; box-shadow: 0 1px 3px rgba(15,23,42,.04) !important;
+    }
+    html body.portal-ui #mainContent .tablet-profile-pagination button[class~="bg-[#C41E3A]"] {
+        background: #C41E3A !important; border-color: #C41E3A !important; color: #fff !important;
+    }
+    html body.portal-ui #mainContent .tablet-profile-pagination button > i { color: inherit !important; font-size: .6875rem !important; }
+    html body.portal-ui #mainContent .tablet-profile-pagination button:disabled { opacity: .4 !important; }
+}
+@media (max-width: 359px) {
+    html body.portal-ui #mainContent .tablet-profile-pagination button {
+        flex-basis: 1.625rem !important; width: 1.625rem !important; min-width: 1.625rem !important;
+    }
+}
+</style>
+@endif
+@endpush
+
 @section('content')
 
 @php
@@ -587,8 +678,8 @@
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Date Range</label>
                         <div class="space-y-2">
-                            <input type="date" id="date-from" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" placeholder="From">
-                            <input type="date" id="date-to" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" placeholder="To">
+                            <div class="admin-mobile-picker-field" style="display: contents;"><input type="date" id="date-from" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" placeholder="From"><svg class="admin-mobile-picker-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
+                            <div class="admin-mobile-picker-field" style="display: contents;"><input type="date" id="date-to" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" placeholder="To"><svg class="admin-mobile-picker-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                         </div>
                     </div>
                     

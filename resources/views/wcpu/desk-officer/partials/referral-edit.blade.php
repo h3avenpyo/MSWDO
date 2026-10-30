@@ -46,11 +46,11 @@
     <div class="row">
         <div class="col-md-4 mb-3">
             <label class="form-label">Date referred</label>
-            <input type="date" name="date_of_referral" class="form-control" value="{{ $referral->date_of_referral ? \Carbon\Carbon::parse($referral->date_of_referral)->format('Y-m-d') : '' }}" readonly>
+            <div class="referral-edit-date-field" style="display: contents;"><input type="date" name="date_of_referral" class="form-control" value="{{ $referral->date_of_referral ? \Carbon\Carbon::parse($referral->date_of_referral)->format('Y-m-d') : '' }}" readonly><svg class="referral-edit-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
         </div>
         <div class="col-md-4 mb-3">
             <label class="form-label">Date feedback received <span class="text-danger">*</span></label>
-            <input type="date" name="received_at" class="form-control" value="{{ optional($referral->feedback_received_at)->format('Y-m-d') }}" required>
+            <div class="referral-edit-date-field" style="display: contents;"><input type="date" name="received_at" class="form-control" value="{{ optional($referral->feedback_received_at)->format('Y-m-d') }}" required><svg class="referral-edit-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
         </div>
         <div class="col-md-4 mb-3">
             <label class="form-label">Status</label>

@@ -2,6 +2,53 @@
 
 @section('title', auth()->user()?->position === 'Desk Officer' ? 'Refer Case - iSERVE SILANG Desk Officer' : 'Refer Case - iSERVE SILANG Admin')
 
+
+@push('styles')
+@if(auth()->user()?->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())))
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent .mobile-date-field {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        html body.portal-ui #mainContent .mobile-date-field > input[type=date] {
+            display: block;
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            min-height: 2.75rem;
+            padding-right: 2.75rem !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        html body.portal-ui #mainContent .mobile-date-field > .mobile-date-icon {
+            display: block !important;
+            position: absolute;
+            right: .75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #64748b;
+            pointer-events: none;
+            z-index: 1;
+        }
+        html body.portal-ui #mainContent .mobile-date-field > input[type=date]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+        }
+        html body.portal-ui #mainContent .mobile-date-field > input[type=date]::-webkit-date-and-time-value {
+            text-align: left;
+            min-width: 0;
+        }
+    }
+</style>
+@endif
+@endpush
+
 @section('content')
 @php
     $isMultiroleReferral = auth()->check() && auth()->user()->position === 'Desk Officer' && auth()->user()->isMultiCaseDepartment();
@@ -25,11 +72,68 @@
 @include('components.multirole-referral-fields')
 
 <!-- Top Header -->
-<header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+@if($isDepartmentAdminReferral)
+<style>
+    @media (max-width: 47.9375rem) {
+        body.portal-ui.admin-reference-mobile-nav #mobileTopBar,
+        body.portal-ui.admin-reference-mobile-nav #mobileMenuToggle,
+        body.portal-ui.admin-reference-mobile-nav #sidebarToggleBtn { display: none !important; }
+        html body.portal-ui #admin-dashboard-header #markAllReadBtn {
+            background: #fff !important;
+            color: #C41E3A !important;
+        }
+        html body.portal-ui #admin-dashboard-header #dashboardMenuToggle > i {
+            font-size: 1.25rem !important;
+            line-height: 1 !important;
+        }
+    }
+</style>
+<script>
+(() => {
+    const phone = matchMedia('(max-width: 47.9375rem)');
+    const syncHeader = () => {
+        document.body.classList.toggle('admin-dashboard-mobile-nav', phone.matches);
+        document.body.classList.toggle('admin-reference-mobile-nav', phone.matches);
+    };
+    syncHeader();
+    phone.addEventListener('change', syncHeader);
+})();
+</script>
+@endif
+@if(auth()->user()?->position === 'Desk Officer')
+<style>
+    @media (max-width: 47.9375rem) {
+        body.portal-ui.desk-officer-dashboard-mobile-nav #mobileTopBar,
+        body.portal-ui.desk-officer-dashboard-mobile-nav #mobileMenuToggle,
+        body.portal-ui.desk-officer-dashboard-mobile-nav #pageMobileMenuToggle,
+        body.portal-ui.desk-officer-dashboard-mobile-nav #sidebarToggleBtn {
+            display: none !important;
+        }
+        body.portal-ui #desk-officer-dashboard-header #deskMarkAllReadBtn {
+            background: #ffffff !important;
+            color: #C41E3A !important;
+        }
+    }
+</style>
+<script>
+(() => {
+    const phone = matchMedia('(max-width: 47.9375rem)');
+    const syncHeader = () => document.body.classList.toggle('desk-officer-dashboard-mobile-nav', phone.matches);
+    syncHeader();
+    phone.addEventListener('change', syncHeader);
+})();
+</script>
+@endif
+<header @if(auth()->user()?->position === 'Desk Officer') id="desk-officer-dashboard-header" @elseif($isDepartmentAdminReferral) id="admin-dashboard-header" @endif class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm {{ $isDepartmentAdminReferral ? 'admin-reference-mobile-header' : '' }}">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">
-        <div>
+        <div @if(auth()->user()?->position === 'Desk Officer' || $isDepartmentAdminReferral) class="flex min-w-0 items-center gap-3 {{ $isDepartmentAdminReferral ? 'admin-reference-mobile-leading' : '' }}" @endif>
+            @if(auth()->user()?->position === 'Desk Officer' || $isDepartmentAdminReferral)
+            <button id="dashboardMenuToggle" type="button" class="hidden" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false"><i class="fas fa-bars" aria-hidden="true"></i></button>
+            @endif
+            <div>
             <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Case Referral Form</h2>
-            <p class="text-sm text-gray-500 hidden sm:block">{{ $isBcpcReferralCase ? 'BCPC Form 2 - Referral for Service' : 'SWD Form 2 - Referral for Service' }}</p>
+            <p class="text-sm text-gray-500 hidden sm:block {{ $isDepartmentAdminReferral ? 'admin-reference-mobile-subtitle' : '' }}">{{ $isBcpcReferralCase ? 'BCPC Form 2 - Referral for Service' : 'SWD Form 2 - Referral for Service' }}</p>
+            </div>
         </div>
         <div class="flex items-center gap-4">
             @if(auth()->user()?->position === 'Desk Officer')
@@ -109,14 +213,14 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Name of Recipient <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" name="recipient_name" value="{{ old('recipient_name') }}"
+                        <input type="text" name="recipient_name" value="{{ old('recipient_name') }}" placeholder="Enter recipient name"
                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Contact Number <span class="text-red-500">*</span>
                         </label>
-                        <input type="tel" name="recipient_contact" value="{{ old('recipient_contact') }}"
+                        <input type="tel" name="recipient_contact" value="{{ old('recipient_contact') }}" placeholder="Enter contact number"
                                maxlength="11" minlength="11" pattern="[0-9]{11}" inputmode="numeric" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11)"
                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
                     </div>
@@ -124,14 +228,14 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Office Address <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" name="recipient_address" value="{{ old('recipient_address') }}"
+                        <input type="text" name="recipient_address" value="{{ old('recipient_address') }}" placeholder="Enter office address"
                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Email Address <span class="text-red-500">*</span>
                         </label>
-                        <input type="email" name="recipient_email" value="{{ old('recipient_email') }}"
+                        <input type="email" name="recipient_email" value="{{ old('recipient_email') }}" placeholder="Enter email address"
                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
                     </div>
                 </div>
@@ -141,8 +245,8 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Date of Referral <span class="text-red-500">*</span>
                         </label>
-                        <input type="date" name="date_of_referral" value="{{ old('date_of_referral', now()->format('Y-m-d')) }}"
-                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
+                        <div class="mobile-date-field" style="display: contents;"><input type="date" name="date_of_referral" value="{{ old('date_of_referral', now()->format('Y-m-d')) }}"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required><svg class="mobile-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -295,8 +399,8 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Date of Referral <span class="text-red-500">*</span>
                     </label>
-                    <input type="date" name="date_of_referral" value="{{ old('date_of_referral', now()->format('Y-m-d')) }}"
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
+                    <div class="mobile-date-field" style="display: contents;"><input type="date" name="date_of_referral" value="{{ old('date_of_referral', now()->format('Y-m-d')) }}"
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required><svg class="mobile-date-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
                 </div>
                 @endif
                 <div>

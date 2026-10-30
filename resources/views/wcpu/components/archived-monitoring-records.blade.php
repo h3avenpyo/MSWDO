@@ -63,7 +63,7 @@
                     <td class="px-6 py-4">{{ $monitoring->barangay?->name }}</td>
                     <td class="px-6 py-4">Q{{ $monitoring->quarter }} {{ $monitoring->year }}</td>
                     <td class="px-6 py-4">{{ $monitoring->creator?->first_name }} {{ $monitoring->creator?->last_name }}</td>
-                    <td class="px-6 py-4">{{ $monitoring->archived_at?->format('M d, Y g:i A') }}</td>
+                    <td class="px-6 py-4">{{ $monitoring->archived_at?->copy()->timezone('Asia/Manila')->format('M d, Y g:i A') }}</td>
                     <td class="px-6 py-4"><div class="flex items-center justify-center gap-2">
                         <a @if(auth()->user()?->isDepartmentAdmin() && $isAdminMonitoringArchive) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif href="{{ $monitoringViewUrl }}" @if(auth()->user()?->position === 'Desk Officer' && !$isAdminMonitoringArchive && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif title="View Record" @if($isAdminMonitoringArchive) data-admin-archive-view="monitoring" data-modal-title="Monitoring Report" @endif class="inline-flex w-10 h-10 items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition"><i class="fas fa-eye text-sm"></i><span class="sr-only">View</span></a>
                         @if($isAdminMonitoringArchive)
@@ -114,7 +114,7 @@
 
                     <div class="flex items-center justify-between text-xs text-gray-500 mb-3 bg-gray-50 rounded-lg px-3 py-2">
                         <span>Archived At:</span>
-                        <span class="font-medium text-gray-700">{{ $monitoring->archived_at?->format('M d, Y g:i A') ?? 'N/A' }}</span>
+                        <span class="font-medium text-gray-700">{{ $monitoring->archived_at?->copy()->timezone('Asia/Manila')->format('M d, Y g:i A') ?? 'N/A' }}</span>
                     </div>
                 </div>
 
