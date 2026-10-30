@@ -249,6 +249,12 @@ Route::middleware(['web', 'wcpu.guard', 'inactivity.timeout'])->group(function (
                 return response()->json(['success' => false, 'error' => 'Not authenticated'], 401);
             })->name('notifications.mark-read');
             
+            Route::get('/admin/notifications/live', function () {
+                abort_unless(auth()->user()?->isDepartmentAdmin(), 403);
+                return response()->view('admin-tailwind.components.notifications')
+                    ->header('Cache-Control', 'no-store, private');
+            })->name('admin.notifications.live');
+
             Route::get('/admin-barangay-cases', [AdminController::class, 'casesIndexNew'])->name('admin-barangay-cases');
             
             // Case Management

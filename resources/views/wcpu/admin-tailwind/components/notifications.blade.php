@@ -184,6 +184,7 @@
         try {
             $quarterlyReports = \App\Models\Wcpu\QuarterlyReport::with(['user', 'barangay'])
                 ->when(Auth::user()->isVawcAdmin(), fn ($query) => $query->where('type', 'VAWC'))
+                ->when(Auth::user()->isBcpcAdmin(), fn ($query) => $query->where('type', 'BCPC'))
                 ->orderBy('created_at', 'desc')
                 ->limit(10)
                 ->get();
@@ -193,7 +194,13 @@
     }
     
     // Add quarterly report activities
+    $generatedReportIds = \Spatie\Activitylog\Models\Activity::where('log_name', 'multirole_workflow')
+        ->where('subject_type', (new \App\Models\Wcpu\QuarterlyReport())->getMorphClass())
+        ->whereJsonContains('properties->recipient_ids', (int) Auth::id())
+        ->where('properties->quarterly_report_generated', true)
+        ->pluck('subject_id')->map(fn ($id) => (int) $id)->all();
     foreach($quarterlyReports as $report) {
+        if (in_array((int) $report->id, $generatedReportIds, true)) continue;
         $reportTimestamp = $report->created_at ? $report->created_at->getTimestamp() : $currentTime;
         $notificationId = 'quarterly_report_' . $report->id;
         $isRead = in_array($notificationId, $readNotificationIds);
@@ -483,15 +490,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Handle notification clicks
-    document.querySelectorAll('.notification-item').forEach(item => {
-        item.addEventListener('click', function(e) {
+    document.getElementById('recent-activity-list')?.addEventListener('click', function(e) {
+            const item = e.target.closest('.notification-item');
+            if (!item || !this.contains(item)) return;
             if (e.ctrlKey || e.metaKey) return;
             
-            const isPasswordReset = this.getAttribute('data-is-password-reset') === 'true';
-            const url = this.getAttribute('href');
-            const notificationId = this.getAttribute('data-notification-id');
-            const requestId = this.getAttribute('data-request-id');
-            const actionDetails = this.getAttribute('data-action-details');
+            const isPasswordReset = item.getAttribute('data-is-password-reset') === 'true';
+            const url = item.getAttribute('href');
+            const notificationId = item.getAttribute('data-notification-id');
+            const requestId = item.getAttribute('data-request-id');
+            const actionDetails = item.getAttribute('data-action-details');
             
             // Mark as read
             if (notificationId) {
@@ -532,28 +540,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 openNotificationDestination(url);
             }
-        });
     });
 
-    if (@json(auth()->user()->isVawcAdmin())) {
+    if (@json(auth()->user()->isDepartmentAdmin())) {
         let refreshing = false;
         const refreshRecentActivity = async () => {
             if (refreshing || document.hidden) return;
             refreshing = true;
             try {
-                const response = await fetch(window.location.href, {
-                    cache: 'no-store',
-                    @if(auth()->user()->isVawcAdmin() && request()->routeIs('cases.show'))
-                    headers: { 'Accept': 'text/html' },
-                    @else
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    @endif
-                });
-                if (!response.ok) return;
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 10000);
+                let response;
+                try {
+                    response = await fetch(@json(route('admin.notifications.live')), {
+                        cache: 'no-store', signal: controller.signal,
+                        headers: { 'Accept': 'text/html', 'X-Skip-Loading': '1' },
+                    });
+                } finally {
+                    clearTimeout(timeout);
+                }
+                if (!response.ok || response.redirected) return;
                 const page = new DOMParser().parseFromString(await response.text(), 'text/html');
-                @if(auth()->user()->isVawcAdmin() && request()->routeIs('cases.show'))
-                if (!page.querySelector('[aria-label="Notifications"]')) return;
-                @endif
                 const nextList = page.querySelector('#recent-activity-list');
                 const currentList = document.querySelector('#recent-activity-list');
                 if (nextList && currentList && nextList.innerHTML !== currentList.innerHTML) {
@@ -578,6 +585,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.setInterval(refreshRecentActivity, 3000);
         window.addEventListener('focus', refreshRecentActivity);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshRecentActivity(); });
+        document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', refreshRecentActivity);
     }
 });
 </script>

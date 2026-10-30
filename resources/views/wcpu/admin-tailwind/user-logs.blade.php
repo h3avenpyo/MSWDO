@@ -6,6 +6,33 @@
 <style>
     @if(auth()->user()?->isDepartmentAdmin())
     @media (max-width: 47.9375rem) {
+        html body.portal-ui.admin-user-logs-mobile-nav #mainContent #logs-results .user-logs-tablet-pagination > [data-pagination-label] {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: .375rem !important;
+            padding: .75rem .625rem !important;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        html body.portal-ui.admin-user-logs-mobile-nav #mainContent #logs-results .user-logs-tablet-pagination [data-pagination-label] > div:first-child {
+            min-width: 0;
+            font-size: clamp(.5rem, 2.5vw, .625rem) !important;
+            white-space: nowrap;
+            text-align: left;
+        }
+        html body.portal-ui.admin-user-logs-mobile-nav #mainContent #logs-results .user-logs-tablet-pagination [data-pagination-label] > div:last-child {
+            flex: 0 0 auto;
+            flex-wrap: nowrap !important;
+            gap: .25rem !important;
+        }
+        html body.portal-ui.admin-user-logs-mobile-nav #mainContent #logs-results .user-logs-tablet-pagination [data-pagination-label] a {
+            width: clamp(1.5rem, 7.8vw, 1.875rem) !important;
+            height: 1.875rem !important;
+            font-size: .6875rem !important;
+        }
         html body.portal-ui.admin-user-logs-mobile-nav .user-logs-legacy-pagination { display: none !important; }
         html body.portal-ui.admin-user-logs-mobile-nav .user-logs-tablet-pagination { display: block !important; background: #fff; }
         html body.portal-ui .user-logs-tablet-pagination > [data-pagination-label] {

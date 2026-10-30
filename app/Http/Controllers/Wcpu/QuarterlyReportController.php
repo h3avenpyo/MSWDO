@@ -416,7 +416,7 @@ class QuarterlyReportController extends Controller
             Storage::disk('local')->put($filename, $pdf->output());
             
             // Create report record
-            QuarterlyReport::create([
+            $generatedReport = QuarterlyReport::create([
                 'user_id' => $user->id,
                 'barangay_id' => $barangay->id,
                 'type' => $reportType,
@@ -425,6 +425,7 @@ class QuarterlyReportController extends Controller
                 'report_data' => $reportData,
                 'pdf_path' => $filename,
             ]);
+            \App\Services\Wcpu\MultiroleActionNotifications::recordQuarterlyReportGenerated($generatedReport, $user);
             
             $generatedCount++;
         }
@@ -791,6 +792,8 @@ class QuarterlyReportController extends Controller
         $report->pdf_path = $filename;
         $report->archived_at = null;
         $report->save();
+
+        \App\Services\Wcpu\MultiroleActionNotifications::recordQuarterlyReportGenerated($report, $user);
 
         if (request()->expectsJson() && $user->position === 'Desk Officer' && ($user->defaultCaseDepartment() === 'BCPC' || $user->isMultiCaseDepartment())) {
             return response()->json(['success' => true, 'message' => 'Quarterly report regenerated successfully.', 'redirect_url' => route('desk-officer.quarterly-reports.index')]);

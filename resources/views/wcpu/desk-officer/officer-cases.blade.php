@@ -2892,8 +2892,8 @@
                     <span class="inline-block px-3 py-1 text-xs font-semibold rounded" style="background-color: {{ $priorityStyle[0] }}; color: {{ $priorityStyle[1] }};">{{ $case->priority ?? 'N/A' }}</span>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-600 text-center">
-                    <span class="block">{{ $case->updated_at->format('M d, Y') }}</span>
-                    <span class="block">{{ $case->updated_at->format('g:i A') }}</span>
+                    <span class="block">{{ $case->updated_at->copy()->timezone('Asia/Manila')->format('M d, Y') }}</span>
+                    <span class="block">{{ $case->updated_at->copy()->timezone('Asia/Manila')->format('g:i A') }}</span>
                 </td>
                 <td class="px-4 py-3 text-sm">
                     @if($case->created_by == ($currentUserId ?? Auth::id()))
@@ -3006,7 +3006,7 @@
                         {{ $case->createdBy ? $case->createdBy->first_name . ' ' . substr($case->createdBy->last_name ?? '', 0, 1) . '.' : 'Unknown' }}
                     @endif
                 </div>
-                <div class="case-card-updated"><i class="fas fa-sync text-xs mr-1 text-purple-400"></i>{{ $case->updated_at->format('M d, Y g:i A') }}</div>
+                <div class="case-card-updated"><i class="fas fa-sync text-xs mr-1 text-purple-400"></i>{{ $case->updated_at->copy()->timezone('Asia/Manila')->format('M d, Y g:i A') }}</div>
             </div>
 
             {{-- Action buttons --}}

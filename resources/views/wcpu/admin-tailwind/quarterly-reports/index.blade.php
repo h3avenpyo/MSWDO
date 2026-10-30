@@ -619,8 +619,8 @@
                             <div class="text-xs text-gray-400">{{ $report->user->email ?? '' }}</div>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm text-gray-600">{{ $report->created_at->format('M d, Y') }}</div>
-                            <div class="text-xs text-gray-400">{{ $report->created_at->format('h:i A') }}</div>
+                            <div class="text-sm text-gray-600">{{ $report->created_at->copy()->timezone('Asia/Manila')->format('M d, Y') }}</div>
+                            <div class="text-xs text-gray-400">{{ $report->created_at->copy()->timezone('Asia/Manila')->format('h:i A') }}</div>
                         </td>
                         <td class="px-6 py-4 text-center">
                             <div class="{{ auth()->user()->isBcpcAdmin() ? 'quarterly-report-actions ' : '' }}flex items-center justify-center gap-2">
@@ -678,7 +678,7 @@
                         </div>
                         <div class="min-w-0">
                             <p class="font-semibold text-gray-800 truncate">{{ $report->barangay->name ?? 'N/A' }}</p>
-                            <p class="text-xs text-gray-500">{{ $report->created_at->format('M d, Y h:i A') }}</p>
+                            <p class="text-xs text-gray-500">{{ $report->created_at->copy()->timezone('Asia/Manila')->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
                     <span class="shrink-0 inline-flex items-center justify-center bg-gray-100 text-gray-700 w-10 h-10 rounded-full font-bold text-sm">

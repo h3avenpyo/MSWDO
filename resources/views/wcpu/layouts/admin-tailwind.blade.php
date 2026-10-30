@@ -1057,6 +1057,22 @@
         @endif
     </style>
     
+    @if(auth()->user()?->isDepartmentAdmin())
+    <style>
+        @media (max-width: 47.9375rem) {
+            body.portal-ui {
+                overflow-x: clip !important;
+                overflow-y: visible !important;
+            }
+
+            body.portal-ui #mainContent > header {
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 30;
+            }
+        }
+    </style>
+    @endif
     <script>
         document.documentElement.classList.add('js');
     </script>
