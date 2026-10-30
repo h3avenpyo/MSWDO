@@ -112,11 +112,22 @@ class OnlineFinancialIntakeController extends Controller
     /**
      * Show detailed JSON information of an online intake application for the review modal.
      */
-    public function downloadDocument($id, string $document)
+    public function downloadDocument(Request $request, $id, string $document)
     {
         $application = OnlineFinancialIntake::findOrFail($id);
         $file = ($application->documents ?? [])[$document] ?? null;
         abort_unless($file && Storage::disk('local')->exists($file['path']), 404);
+
+        if ($request->boolean('preview')) {
+            $mime = Storage::disk('local')->mimeType($file['path']);
+            abort_unless(in_array($mime, ['application/pdf', 'image/jpeg', 'image/png'], true), 415);
+
+            return Storage::disk('local')->response($file['path'], $file['name'], [
+                'Content-Type' => $mime,
+                'X-Content-Type-Options' => 'nosniff',
+                'Cache-Control' => 'private, no-store',
+            ], 'inline');
+        }
 
         return Storage::disk('local')->download($file['path'], $file['name'], ['X-Content-Type-Options' => 'nosniff']);
     }
@@ -135,6 +146,7 @@ class OnlineFinancialIntakeController extends Controller
                         'label' => OnlineFinancialIntake::DOCUMENT_LABELS[$key] ?? $key,
                         'name' => $file['name'],
                         'url' => route('admin.financial.online-intakes.documents.download', ['id' => $application->id, 'document' => $key]),
+                        'preview_url' => route('admin.financial.online-intakes.documents.download', ['id' => $application->id, 'document' => $key, 'preview' => 1], false),
                     ];
                 })->values(),
                 'status' => $application->status,

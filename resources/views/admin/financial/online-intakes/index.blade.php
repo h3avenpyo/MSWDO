@@ -717,6 +717,21 @@
 </div>
 
 <!-- ==================================================== -->
+<div class="modal fade" id="documentPreviewModal" tabindex="-1" aria-labelledby="documentPreviewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header text-white" style="background: #b11116;">
+                <h5 class="modal-title text-white text-break" id="documentPreviewTitle">Dokumento</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Isara ang dokumento"></button>
+            </div>
+            <div class="modal-body p-2 bg-light" id="documentPreviewBody" style="height: 75vh; overflow: auto;" aria-live="polite"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Bumalik sa Aplikasyon</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- REJECT REASON MODAL -->
 <!-- ==================================================== -->
 <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-hidden="true">
@@ -768,13 +783,14 @@
 @endsection
 
 @section('page-scripts')
+<script src="{{ asset('js/financial-document-preview.js') }}?v={{ filemtime(public_path('js/financial-document-preview.js')) }}"></script>
 <script>
     let currentActiveAppId = null;
 let currentAppDetails = null;
 
 function openReviewModal(appId) {
     currentActiveAppId = appId;
-    const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('reviewModal'));
     modal.show();
 
     // Reset view
@@ -783,7 +799,11 @@ function openReviewModal(appId) {
     document.getElementById('modalActionButtons').innerHTML = '';
     document.getElementById('modalAuditNotice').classList.add('d-none');
 
-    fetch(`/admin/financial/online-intakes/${appId}`)
+    const detailsUrl = @json(route('admin.financial.online-intakes.show', ['id' => '__APPLICATION_ID__'], false));
+    fetch(detailsUrl.replace('__APPLICATION_ID__', encodeURIComponent(appId)), {
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin',
+    })
         .then(res => res.json())
         .then(res => {
             if (!res.success) {
@@ -797,11 +817,13 @@ function openReviewModal(appId) {
             (data.documents || []).forEach(document => {
                 const item = window.document.createElement('li');
                 item.className = 'mb-2';
-                const link = window.document.createElement('a');
-                link.href = document.url;
-                link.textContent = `${document.label} — ${document.name}`;
-                link.style.overflowWrap = 'anywhere';
-                item.appendChild(link);
+                const button = window.document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-link p-0 text-start';
+                button.textContent = document.label + ' - ' + document.name;
+                button.style.overflowWrap = 'anywhere';
+                button.addEventListener('click', () => openDocumentPreview(document, button));
+                item.appendChild(button);
                 documentsList.appendChild(item);
             });
             if (!data.documents || data.documents.length === 0) {

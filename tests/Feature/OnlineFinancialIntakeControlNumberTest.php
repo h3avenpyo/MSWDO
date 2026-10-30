@@ -24,11 +24,33 @@ class OnlineFinancialIntakeControlNumberTest extends TestCase
         \Illuminate\Support\Facades\Storage::disk('local')->assertExists($application->documents['valid_id']['path']);
         $url = route('admin.financial.online-intakes.documents.download', ['id' => $id, 'document' => 'valid_id']);
         $this->get($url)->assertRedirect();
+        $this->get($url . '?preview=1')->assertRedirect();
         $user = User::factory()->create(['role' => 'admin']);
         $this->actingAs($user)->withSession(['admin_user_id' => $user->id])
             ->getJson(route('admin.financial.online-intakes.show', $id))
             ->assertOk()->assertJsonPath('data.documents.0.name', 'identity.pdf');
+
+        $this->get(route('admin.financial.online-intakes.index'))->assertOk()
+            ->assertSee('documentPreviewModal')
+            ->assertSee('js/financial-document-preview.js');
         $this->get($url)->assertDownload('identity.pdf');
+        $this->getJson(route('admin.financial.online-intakes.show', $id))
+            ->assertJsonPath('data.documents.0.preview_url', route('admin.financial.online-intakes.documents.download', ['id' => $id, 'document' => 'valid_id', 'preview' => 1], false));
+        $preview = $this->get($url . '?preview=1')->assertOk()
+            ->assertHeader('Content-Type', 'application/pdf')
+            ->assertHeader('X-Content-Type-Options', 'nosniff');
+        $this->assertStringStartsWith('inline;', $preview->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('%PDF-1.4', $preview->streamedContent());
+        $this->get(route('admin.financial.online-intakes.documents.download', ['id' => $id, 'document' => 'missing', 'preview' => 1]))
+            ->assertNotFound();
+        \Illuminate\Support\Facades\Storage::disk('local')->put($application->documents['valid_id']['path'],
+            base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA9sAAAAASUVORK5CYII='));
+        $this->get($url . '?preview=1')->assertOk()->assertHeader('Content-Type', 'image/png');
+        \Illuminate\Support\Facades\Storage::disk('local')->put($application->documents['valid_id']['path'], '<html><script>alert(1)</script></html>');
+        $this->get($url . '?preview=1')->assertStatus(415);
+        \Illuminate\Support\Facades\Storage::disk('local')->delete($application->documents['valid_id']['path']);
+        $this->get($url . '?preview=1')->assertNotFound();
+
         $this->get(route('admin.financial.online-intakes.documents.download', ['id' => $id, 'document' => 'missing']))->assertNotFound();
     }
 

@@ -864,6 +864,16 @@ $initials = count($words) >= 2
         grid-column: 1 / -1 !important;
     }
 
+    /* Keep the final department card the same width as its desktop siblings. */
+    @media (min-width: 1200px) {
+        .services-grid > .service-card:last-child,
+        html.sidebar-collapsed .services-grid > .service-card:last-child,
+        body.sidebar-collapsed .services-grid > .service-card:last-child,
+        .sidebar-collapsed .services-grid > .service-card:last-child {
+            grid-column: span 1 !important;
+        }
+    }
+
     /* Prevent Print button and controls from overflowing when sidebar is collapsed */
     html.sidebar-collapsed .report-controls-bar,
     body.sidebar-collapsed .report-controls-bar,
