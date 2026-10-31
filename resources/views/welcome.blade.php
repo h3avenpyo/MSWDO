@@ -14,7 +14,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}?v={{ filemtime(public_path('css/welcome.css')) }}">
 </head>
 
 <body class="bg-[#F8FAFC] text-[#1F2937] antialiased">
@@ -26,17 +26,18 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="welcome-navbar flex items-center justify-between h-[60px] lg:h-20">
                 @php
-                $logo = 'IserveIcon.png';
-                if (!file_exists(public_path('images/IserveIcon.png'))) {
-                $logo = null;
-                if (file_exists(public_path('images/mswdo-logo.png'))) {
-                $logo = 'mswdo-logo.png';
-                } else {
-                $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
-                if (!empty($files))
-                $logo = basename($files[0]);
-                }
-                }
+                    $logo = 'IserveIcon.png';
+                    if (!file_exists(public_path('images/IserveIcon.png'))) {
+                        $logo = null;
+                        if (file_exists(public_path('images/mswdo-logo.png'))) {
+                            $logo = 'mswdo-logo.png';
+                        } else {
+                            $files = glob(public_path('images/*.{png,jpg,jpeg,svg}'), GLOB_BRACE);
+                            if (!empty($files)) {
+                                $logo = basename($files[0]);
+                            }
+                        }
+                    }
                 @endphp
                 <!-- Mobile: hamburger + text (left) ... logo (right) -->
                 <div class="flex items-center gap-3 lg:hidden min-w-0 flex-1">
@@ -57,17 +58,18 @@
                     </div>
                 </div>
                 <div class="lg:hidden shrink-0">
-                    @if($logo)
-                    <img src="{{ asset('images/' . $logo) }}"
-                        style="width:40px;height:40px;object-fit:contain;border-radius:50%;flex-shrink:0;" alt="Logo">
+                    @if ($logo)
+                        <img src="{{ asset('images/' . $logo) }}"
+                            style="width:40px;height:40px;object-fit:contain;border-radius:50%;flex-shrink:0;"
+                            alt="Logo">
                     @endif
                 </div>
 
                 <!-- Desktop: logo text (left) ... nav links (right) -->
                 <a href="#" class="hidden lg:flex items-center gap-3 shrink-0">
                     <div class="h-14 w-14 rounded-full p-1 shrink-0">
-                        @if($logo)
-                        <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover">
+                        @if ($logo)
+                            <img src="{{ asset('images/' . $logo) }}" class="rounded-full h-full w-full object-cover">
                         @endif
                     </div>
                     <div>
@@ -188,7 +190,7 @@
 
                 <!-- CTA Actions -->
                 <div
-                    class="mt-4 sm:mt-6 lg:mt-4 xl:mt-8 flex flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full sm:w-auto">
+                    class="welcome-hero-actions mt-4 sm:mt-6 lg:mt-4 xl:mt-8 flex flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full sm:w-auto">
                     <a href="#services"
                         class="flex-1 sm:flex-none sm:w-auto text-center bg-[#b11116] text-white px-6 sm:px-8 xl:px-9 py-2.5 sm:py-3.5 rounded-xl text-sm sm:text-base xl:text-lg font-bold hover:bg-[#8A0D11] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition duration-200">
                         Explore Services
@@ -221,8 +223,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-8 max-w-6xl mx-auto">
                     <!-- Service 1: Financial Assistance -->
-                    <div
-                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div data-reveal="up"
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
                                 class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
@@ -236,13 +238,13 @@
                         </div>
                     </div>
                     <!-- Service 2: Social Case Study -->
-                    <div
-                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div data-reveal="up"
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
                                 class="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-6 h-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                 </svg>
@@ -255,13 +257,13 @@
                         </div>
                     </div>
                     <!-- Service 3: Women & Children Protection (WCPU) -->
-                    <div
-                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div data-reveal="up"
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
                                 class="w-12 h-12 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-6 h-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
                                 </svg>
@@ -274,13 +276,13 @@
                         </div>
                     </div>
                     <!-- Service 4: Senior Citizens -->
-                    <div
-                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div data-reveal="up"
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
                                 class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-6 h-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
                                 </svg>
@@ -293,13 +295,13 @@
                         </div>
                     </div>
                     <!-- Service 5: Persons with Disability -->
-                    <div
-                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div data-reveal="up"
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
                                 class="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-6 h-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" class="w-6 h-6">
                                     <circle cx="12" cy="4" r="2" />
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m4 8 8 2 8-2m-8 2v5m0 0-4 6m4-6 4 6" />
@@ -313,13 +315,13 @@
                         </div>
                     </div>
                     <!-- Service 6: Solo Parents -->
-                    <div
-                        data-reveal="up" class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
+                    <div data-reveal="up"
+                        class="group bg-slate-50 hover:bg-white hover:border-warm-gold/50 rounded-2xl p-6 sm:p-8 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1.5 flex flex-col justify-between">
                         <div>
                             <div
                                 class="w-12 h-12 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-6 h-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor" class="w-6 h-6">
                                     <circle cx="9" cy="6" r="3" />
                                     <circle cx="18" cy="11" r="2" />
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -359,7 +361,7 @@
                     </div>
 
                     <section class="service-requirements" aria-labelledby="service-requirements-heading">
-                       
+
                         <p class="service-requirements-intro">Select a service to view its requirements.</p>
                         <details class="service-requirements-panel">
                             <summary>Medical Assistance Requirements</summary>
@@ -369,7 +371,8 @@
                                     <li>Letter addressed to Hon. Mayor Edward E. Carranza (Ret.)</li>
                                     <li>Medical Certificate or Medical Abstract</li>
                                     <li>Barangay Certificate of Indigency with dry seal (Patient and Claimant)</li>
-                                    <li>Prescription, Laboratory Request, Treatment Protocol, Final Hospital Bill, or Running Hospital Bill</li>
+                                    <li>Prescription, Laboratory Request, Treatment Protocol, Final Hospital Bill, or
+                                        Running Hospital Bill</li>
                                     <li>Photocopy of Valid ID with signature or thumbmark (Patient and Claimant)</li>
                                 </ol>
                             </div>
@@ -377,13 +380,23 @@
                         <details class="service-requirements-panel">
                             <summary>Social Case Study Report Requirements</summary>
                             <div class="service-requirements-content">
-                                <p>Please prepare the following documents when requesting a Social Case Study Report.</p>
+                                <p>Please prepare the following documents when requesting a Social Case Study Report.
+                                </p>
                                 <ol>
-                                    <li>Medical Abstract or Medical Certificate</li>
-                                    <li>Statement of Account, Hospital Bill, Prescription, Laboratory Request, Chemotherapy or Dialysis Protocol, or Price Quotation</li>
-                                    <li>Promissory Note (if the patient has already been discharged)</li>
-                                    <li>Barangay Certificate of Indigency (Patient and Claimant)</li>
-                                    <li>Photocopy of Valid ID (Patient and Claimant)</li>
+                                    <li>Letter addressed to Hon. Mayor Edward E. Carranza (Ret.)</li>
+                                    <li>Endorsement Letter/Checklist of Requirements (if applicable)</li>
+                                    <li>Medical/Clinical Abstract or Certificate, Statement of Account, Hospital Bill,
+                                        Prescription, Protocol, Charge Slip, or Price Quotation (Medical Assistance)
+                                    </li>
+                                    <li>Authorization Letter of the Informant (if the client is not an immediate family
+                                        member of the deceased), Funeral Contract, Promissory Note (if already buried),
+                                        and Death Certificate (Burial Assistance)</li>
+                                    <li>Photo of Damaged Property, Incident Report, or Endorsement from Barangay
+                                        Official (Emergency Shelter Assistance)</li>
+                                    <li>Endorsement from School/Foundation (Scholarship/Educational Assistance)</li>
+                                    <li>Barangay Certificate of Indigency of Claimant and Beneficiary indicating the
+                                        purpose</li>
+                                    <li>Valid ID of Claimant and Beneficiary</li>
                                 </ol>
                             </div>
                         </details>
@@ -510,7 +523,8 @@
                 </p>
             </div>
             <div class="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8 mt-8 sm:mt-12 lg:mt-16">
-                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up"
+                    class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         1
@@ -522,10 +536,12 @@
                 <div class="hidden lg:flex items-center justify-center text-[#b11116] -mt-8 sm:-mt-10 md:-mt-12">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up"
+                    class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         2
@@ -537,10 +553,12 @@
                 <div class="hidden lg:flex items-center justify-center text-[#b11116] -mt-8 sm:-mt-10 md:-mt-12">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up"
+                    class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         3
@@ -552,10 +570,12 @@
                 <div class="hidden lg:flex items-center justify-center text-[#b11116] -mt-8 sm:-mt-10 md:-mt-12">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up"
+                    class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-[#b11116] text-white flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold shadow-md">
                         4
@@ -567,10 +587,12 @@
                 <div class="hidden lg:flex items-center justify-center text-[#b11116] -mt-8 sm:-mt-10 md:-mt-12">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                 </div>
-                <div data-reveal="up" class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
+                <div data-reveal="up"
+                    class="text-center flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-auto flex flex-col items-center">
                     <div
                         class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full bg-warm-gold text-slate-900 flex items-center justify-center text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold shadow-md">
                         5
@@ -602,38 +624,47 @@
             <div data-reveal="zoom" id="simpleCarousel" class="programs-carousel">
                 <!-- Slides -->
                 @php
-                $carouselImages = [
-                ['file' => 'bcpccollages.jpg', 'title' => 'BCPC Training & Community Child Protection Activities'],
-                ['file' => 'facollage.jpg', 'title' => 'Financial Assistance Intake & Cash Distribution'],
-                ['file' => 'socialcaseCollage.jpg', 'title' => 'Social Case Study Interviews & Client Consultations'],
-                ['file' => '2024.png', 'title' => 'Child Protection Council Meetings & Cyber Safety Seminar'],
-                ];
+                    $carouselImages = [
+                        [
+                            'file' => 'bcpccollages.jpg',
+                            'title' => 'BCPC Training & Community Child Protection Activities',
+                        ],
+                        ['file' => 'facollage.jpg', 'title' => 'Financial Assistance Intake & Cash Distribution'],
+                        [
+                            'file' => 'socialcaseCollage.jpg',
+                            'title' => 'Social Case Study Interviews & Client Consultations',
+                        ],
+                        ['file' => '2024.png', 'title' => 'Child Protection Council Meetings & Cyber Safety Seminar'],
+                    ];
                 @endphp
 
                 @foreach ($carouselImages as $index => $item)
-                <div class="carousel-slide absolute inset-0 w-full h-full"
-                    style="transition: opacity 0.8s ease-in-out; opacity: {{ $index === 0 ? '1' : '0' }}; z-index: {{ $index === 0 ? '10' : '1' }}; pointer-events: {{ $index === 0 ? 'auto' : 'none' }};"
-                    data-index="{{ $index }}">
-                    <div class="absolute inset-0">
-                        <img src="{{ asset('images/' . $item['file']) }}" alt="{{ $item['title'] }}"
-                            class="w-full h-full object-cover object-center"
-                            loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                    <div class="carousel-slide absolute inset-0 w-full h-full"
+                        style="transition: opacity 0.8s ease-in-out; opacity: {{ $index === 0 ? '1' : '0' }}; z-index: {{ $index === 0 ? '10' : '1' }}; pointer-events: {{ $index === 0 ? 'auto' : 'none' }};"
+                        data-index="{{ $index }}">
+                        <div class="absolute inset-0">
+                            <img src="{{ asset('images/' . $item['file']) }}" alt="{{ $item['title'] }}"
+                                class="w-full h-full object-cover object-center"
+                                loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none">
+                        </div>
+                        <!-- Overlay captions keep the image area full size. -->
+                        <div class="programs-carousel-caption absolute bottom-0 inset-x-0 z-10 pointer-events-none">
+                            <p class="programs-carousel-title font-semibold text-white drop-shadow-md line-clamp-2">
+                                {{ $item['title'] }}
+                            </p>
+                        </div>
                     </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
-                    <!-- Overlay captions keep the image area full size. -->
-                    <div class="programs-carousel-caption absolute bottom-0 inset-x-0 z-10 pointer-events-none">
-                        <p class="programs-carousel-title font-semibold text-white drop-shadow-md line-clamp-2">
-                            {{ $item['title'] }}
-                        </p>
-                    </div>
-                </div>
                 @endforeach
 
                 <!-- Indicator Dots -->
                 <div class="programs-carousel-dots absolute z-20 flex items-center">
                     @foreach ($carouselImages as $index => $item)
-                    <button type="button" class="programs-carousel-dot carousel-dot {{ $index === 0 ? 'active' : '' }}"
-                        data-index="{{ $index }}" aria-label="Go to slide {{ $index + 1 }}"></button>
+                        <button type="button"
+                            class="programs-carousel-dot carousel-dot {{ $index === 0 ? 'active' : '' }}"
+                            data-index="{{ $index }}" aria-label="Go to slide {{ $index + 1 }}"></button>
                     @endforeach
                 </div>
             </div>
@@ -649,7 +680,8 @@
                 <span class="contact-subtitle">Get In Touch</span>
                 <h2 class="contact-title">Contact Us</h2>
                 <p class="contact-description">
-                    Find local service locations on the map and use the emergency hotlines to reach the support you need.
+                    Find local service locations on the map and use the emergency hotlines to reach the support you
+                    need.
                 </p>
             </div>
             <div class="contact-grid">
@@ -670,7 +702,8 @@
                             Choose a service to show its locations on the map.
                         </p>
                     </div>
-                    <div id="mapContainer" class="service-map" role="region" aria-label="Map of local services in Silang"></div>
+                    <div id="mapContainer" class="service-map" role="region"
+                        aria-label="Map of local services in Silang"></div>
                 </div>
                 <!-- Emergency Hotlines -->
                 <div data-reveal="up" class="emergency-card">
@@ -771,7 +804,8 @@
                     <h2 class="text-2xl sm:text-3xl font-bold text-white">
                         MSWDO Silang
                     </h2>
-                    <p class="mt-3 lg:mt-5 max-w-2xl mx-auto lg:mx-0 lg:max-w-none text-white/80 leading-7 lg:leading-8 text-sm sm:text-base">
+                    <p
+                        class="mt-3 lg:mt-5 max-w-2xl mx-auto lg:mx-0 lg:max-w-none text-white/80 leading-7 lg:leading-8 text-sm sm:text-base">
                         Municipal Social Welfare and Development Office committed to
                         providing quality, transparent, and compassionate public
                         service.
@@ -781,7 +815,8 @@
                     <h3 class="font-bold text-lg sm:text-xl lg:mb-5 text-white">
                         Quick Links
                     </h3>
-                    <ul class="flex flex-wrap justify-center gap-x-6 gap-y-3 lg:block lg:space-y-3 text-white/80 text-sm sm:text-base">
+                    <ul
+                        class="flex flex-wrap justify-center gap-x-6 gap-y-3 lg:block lg:space-y-3 text-white/80 text-sm sm:text-base">
                         <li><a href="#home" class="hover:text-warm-gold transition">Home</a></li>
                         <li><a href="#services" class="hover:text-warm-gold transition">Services</a></li>
                         <li><a href="#about" class="hover:text-warm-gold transition">About</a></li>
@@ -797,11 +832,13 @@
                         <li>VAWC</li>
                         <li>BCPC</li>
                         <li>Senior Citizens</li>
-                        <!-- <li>Solo Parent</li> -->
+                        <li>Solo Parent</li>
                         <li>Social Case Study</li>
+                        <li>Person with Disabilities</li>
                     </ul>
                 </div>
-                <div class="min-w-0 rounded-2xl border border-white/15 bg-white/5 p-5 sm:p-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
+                <div
+                    class="min-w-0 rounded-2xl border border-white/15 bg-white/5 p-5 sm:p-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
                     <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-5 text-white">
                         Office Information
                     </h3>
@@ -813,7 +850,9 @@
                         <div class="min-w-0">
                             <dt class="text-warm-gold font-semibold">Phone</dt>
                             <dd>
-                                <a href="tel:0464140202" class="inline-block py-1 text-white/80 hover:text-warm-gold transition">(046) 414-0202</a>
+                                <a href="tel:0464140202"
+                                    class="inline-block py-1 text-white/80 hover:text-warm-gold transition">(046)
+                                    414-0202</a>
                             </dd>
                         </div>
                         <div class="min-w-0">

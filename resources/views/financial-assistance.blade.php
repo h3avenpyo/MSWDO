@@ -15,7 +15,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="{{ asset('css/financial-assistance.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/financial-assistance.css') }}?v={{ filemtime(public_path('css/financial-assistance.css')) }}">
 </head>
 
 <body class="bg-[#F1F5F9] text-[#1E293B] antialiased min-h-screen flex flex-col justify-between">
@@ -841,6 +841,7 @@
                                 <option value="Laboratory Test" {{ old('assistance_type') == 'Laboratory Test' ? 'selected' : '' }}>Laboratory Test</option>
                                 <option value="Therapy" {{ old('assistance_type') == 'Therapy' ? 'selected' : '' }}>Therapy</option>
                                 <option value="Checkup/Consultation" {{ old('assistance_type') == 'Checkup/Consultation' ? 'selected' : '' }}>Checkup/Consultation</option>
+                                <option value="Surgery" {{ old('assistance_type') == 'Surgery' ? 'selected' : '' }}>Surgery</option>
                                 <option value="Hospital Bill" {{ old('assistance_type') == 'Hospital Bill' ? 'selected' : '' }}>Hospital Bill</option>
                                 <option value="Other Assistance Purpose" {{ old('assistance_type') == 'Other Assistance Purpose' ? 'selected' : '' }}>Other Assistance Purpose</option>
                             </select>

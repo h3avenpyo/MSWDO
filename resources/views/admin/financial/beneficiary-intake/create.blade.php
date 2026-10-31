@@ -692,6 +692,7 @@
                             <option value="Laboratory Test" {{ old('assistance_type') == 'Laboratory Test' ? 'selected' : '' }}>Laboratory Test</option>
                             <option value="Therapy" {{ old('assistance_type') == 'Therapy' ? 'selected' : '' }}>Therapy</option>
                             <option value="Checkup/Consultation" {{ old('assistance_type') == 'Checkup/Consultation' ? 'selected' : '' }}>Checkup/Consultation</option>
+                            <option value="Surgery" {{ old('assistance_type') == 'Surgery' ? 'selected' : '' }}>Surgery</option>
                             <option value="Hospital Bill" {{ old('assistance_type') == 'Hospital Bill' ? 'selected' : '' }}>Hospital Bill</option>
                             <option value="Other Assistance Purpose" {{ old('assistance_type') == 'Other Assistance Purpose' ? 'selected' : '' }}>Other Assistance Purpose</option>
                         </select>

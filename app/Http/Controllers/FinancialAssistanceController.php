@@ -57,7 +57,6 @@ class FinancialAssistanceController extends Controller
         ];
 
         $medicalConditions = [
-            'Hospital Bill / Medical Needs',
             'Cancer',
             'Cardiovascular',
             'Kidney Diseases',
