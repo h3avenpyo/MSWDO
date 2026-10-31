@@ -109,6 +109,12 @@ $initials = count($words) >= 2
         flex-direction: column;
         gap: 0.4rem;
     }
+    .officer-details-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        min-width: 0;
+    }
     .field-label {
         font-size: 0.75rem;
         font-weight: 600;
@@ -149,6 +155,57 @@ $initials = count($words) >= 2
         background: #FFFFFF;
         border-color: #b11116;
         box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.12);
+    }
+    .officer-verification-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: 0.65rem;
+        margin-top: 0.5rem;
+    }
+    .officer-verification-row .field-group { min-width: 0; }
+    .officer-code-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #64748B;
+    }
+    .officer-code-input {
+        min-width: 0;
+        height: 36px;
+        padding: 0.45rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.825rem;
+    }
+    .officer-code-input::placeholder { color: #94A3B8; }
+    .officer-send-code {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 36px;
+        padding: 0.45rem 0.75rem;
+        border: 1px solid #E2B5B7;
+        border-radius: 8px;
+        background: #FFF7F7;
+        color: #A30F14;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .officer-send-code:hover:not(:disabled) { background: #FEECEE; border-color: #b11116; }
+    .officer-send-code:focus-visible { outline: 2px solid #b11116; outline-offset: 2px; }
+    .officer-send-code:disabled { opacity: 0.6; cursor: wait; }
+    .officer-verification-hint {
+        margin: 0.15rem 0 0;
+        font-size: 0.725rem;
+        line-height: 1.5;
+        color: #64748B;
+        overflow-wrap: anywhere;
+    }
+    @media (max-width: 420px) {
+        .officer-verification-row { grid-template-columns: minmax(0, 1fr); }
+        .officer-send-code { justify-self: start; }
     }
     .form-select-custom {
         width: 100%;
@@ -423,19 +480,12 @@ $initials = count($words) >= 2
             <span>Personal &amp; Contact Details</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-7">
+            <div class="officer-details-column">
             <div class="field-group">
                 <label class="field-label">Full Name <span class="required">*</span></label>
                 <div class="input-wrap">
                     <i data-lucide="user-check" class="input-icon"></i>
                     <input type="text" name="name" class="form-input" placeholder="e.g. Maria Santos Dela Cruz" value="{{ old('name') }}" required autocomplete="off">
-                </div>
-            </div>
-
-            <div class="field-group">
-                <label class="field-label">Email Address (Login Username) <span class="required">*</span></label>
-                <div class="input-wrap">
-                    <i data-lucide="mail" class="input-icon"></i>
-                    <input type="email" name="email" class="form-input" placeholder="e.g. maria.delacruz@mswdo.gov.ph" value="{{ old('email') }}" required autocomplete="off">
                 </div>
             </div>
 
@@ -446,7 +496,6 @@ $initials = count($words) >= 2
                     <input type="text" name="phone" class="form-input" placeholder="e.g. 09171234567" value="{{ old('phone') }}" maxlength="11">
                 </div>
             </div>
-
             <div class="field-group">
                 <label class="field-label">Initial Account Status</label>
                 <div class="status-pill-group">
@@ -465,6 +514,26 @@ $initials = count($words) >= 2
                         </div>
                     </label>
                 </div>
+            </div>
+            </div>
+
+            <div class="officer-details-column">
+            <div class="field-group">
+                <label class="field-label" for="officerEmail">Email Address (Login Username) <span class="required">*</span></label>
+                <div class="input-wrap">
+                    <i data-lucide="mail" class="input-icon"></i>
+                    <input type="email" name="email" id="officerEmail" class="form-input" placeholder="e.g. maria.delacruz@mswdo.gov.ph" value="{{ old('email') }}" required autocomplete="off">
+                </div>
+                <div class="officer-verification-row">
+                    <div class="field-group">
+                        <label class="officer-code-label" for="officerVerificationCode">Verification code <span class="text-red-600">*</span></label>
+                        <input type="text" id="officerVerificationCode" name="email_verification_code" class="form-input officer-code-input" placeholder="6-digit code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" aria-describedby="officerVerificationStatus" required>
+                    </div>
+                    <button type="button" id="sendOfficerVerification" class="officer-send-code">Send verification code</button>
+                </div>
+                <p id="officerVerificationStatus" class="officer-verification-hint" role="status" aria-live="polite">Send a code to the officer's email, then enter it here. Valid for 10 minutes.</p>
+            </div>
+
             </div>
         </div>
 
@@ -559,6 +628,103 @@ $initials = count($words) >= 2
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
+    // Officer email verification guard (also handles backend validation failures).
+    const officerForm = document.getElementById('officerForm');
+    const officerEmail = document.getElementById('officerEmail');
+    const verificationCode = document.getElementById('officerVerificationCode');
+    const sendVerification = document.getElementById('sendOfficerVerification');
+    const verificationStatus = document.getElementById('officerVerificationStatus');
+    let verificationSending = false;
+    let verificationCooldownUntil = 0;
+    let challengeEmail = @json(session('officer_email_verification.email', ''));
+    let challengeExpiresAt = @json(session('officer_email_verification.expires_at', 0));
+    const verificationWarning = @json(\App\Http\Controllers\Admin\Auth\OfficerEmailVerificationController::REQUIRED_MESSAGE);
+
+    function showVerificationWarning() {
+        verificationStatus.textContent = verificationWarning;
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Email verification required',
+                text: verificationWarning,
+                confirmButtonColor: '#b11116'
+            });
+        } else {
+            window.alert(verificationWarning);
+        }
+    }
+
+    // Run the verification warning before native required-field validation.
+    // Other fields still use their existing browser validation below.
+    officerForm.noValidate = true;
+    officerForm.addEventListener('submit', function(event) {
+        if (verificationSending || !/^[0-9]{6}$/.test(verificationCode.value)
+            || officerEmail.value.trim().toLowerCase() !== challengeEmail
+            || Date.now() >= challengeExpiresAt * 1000) {
+            event.preventDefault();
+            showVerificationWarning();
+            return;
+        }
+        if (!officerForm.reportValidity()) event.preventDefault();
+        // The backend checks the code itself before writing either account type.
+    });
+
+    if (@json($errors->has('email_verification_code'))) showVerificationWarning();
+
+    function updateVerificationButton() {
+        const seconds = Math.max(0, Math.ceil((verificationCooldownUntil - Date.now()) / 1000));
+        sendVerification.disabled = verificationSending || seconds > 0;
+        sendVerification.textContent = verificationSending ? 'Sending...' : seconds > 0 ? `Resend in ${seconds}s` : 'Send verification code';
+    }
+    setInterval(updateVerificationButton, 1000);
+
+    officerEmail.addEventListener('input', function() {
+        verificationCode.value = '';
+        verificationStatus.textContent = 'Email changed. Request a code for this email address.';
+    });
+
+    sendVerification.addEventListener('click', async function() {
+        if (!officerEmail.reportValidity()) return;
+        const email = officerEmail.value;
+        verificationSending = true;
+        updateVerificationButton();
+        verificationStatus.textContent = 'Sending verification email...';
+        try {
+            const response = await fetch(@json(route('admin.officers.email-verification.send')), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('#officerForm input[name="_token"]').value
+                },
+                body: JSON.stringify({ email })
+            });
+            const data = await response.json();
+            verificationStatus.textContent = data.errors?.email?.[0] || data.message || 'Unable to send the code. Please try again.';
+            if (response.ok || response.status === 429) {
+                verificationCooldownUntil = Date.now() + 60000;
+            }
+            if (!response.ok && response.status !== 429 && response.status !== 422) {
+                challengeEmail = '';
+                challengeExpiresAt = 0;
+            }
+            if (response.ok) {
+                challengeEmail = email.trim().toLowerCase();
+                challengeExpiresAt = data.expires_at;
+                verificationCode.value = '';
+                if (officerEmail.value === email) verificationCode.focus();
+                else verificationStatus.textContent = 'Code sent to the previous email. Request a new code for the current address.';
+            }
+        } catch (error) {
+            challengeEmail = '';
+            challengeExpiresAt = 0;
+            verificationStatus.textContent = 'Unable to send the code. Check your connection and try again.';
+        } finally {
+            verificationSending = false;
+            updateVerificationButton();
+        }
+    });
+
     // Full Name: letters, spaces, and periods only
     const nameInput = document.querySelector('input[name="name"]');
     if (nameInput) {
@@ -601,7 +767,7 @@ document.addEventListener('DOMContentLoaded', function() {
     @if(session('officer_created') || ($officerCreated ?? false))
         Swal.fire({
             title: 'Officer Created Successfully!',
-            text: 'The new officer account is active and can now log in.',
+            text: 'The officer account was created with a verified email address. Login access follows the selected account status.',
             icon: 'success',
             confirmButtonColor: '#b11116',
             confirmButtonText: 'View Officers Directory',

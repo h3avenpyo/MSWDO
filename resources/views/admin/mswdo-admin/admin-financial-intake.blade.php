@@ -845,25 +845,39 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label" for="assistance_purpose_select">Medical Condition / Assistance
-                            Purpose</label>
+                        <label class="form-label" for="assistance_purpose_select">Medical Condition</label>
                         <select name="assistance_purpose" id="assistance_purpose_select" class="form-select"
                             onchange="togglePurposeOtherInput()">
-                            <option value="">Pumili ng Kondisyon / Layunin ng Tulong</option>
+                            <option value="">Select Medical Condition / Assistance Purpose</option>
                             @foreach($medicalConditions as $cond)
                             <option value="{{ $cond }}" {{ old('assistance_purpose')==$cond ? 'selected' : '' }}>{{
                                 $cond }}</option>
                             @endforeach
-                            <option value="Other Medical Conditions" {{
-                                old('assistance_purpose')=='Other Medical Conditions' ? 'selected' : '' }}>Other Medical
-                                Conditions / Iba pa</option>
                         </select>
                         <input type="text" name="purpose_other" id="purpose_other_input"
                             class="form-control mt-2 {{ old('assistance_purpose') == 'Other Medical Conditions' ? '' : 'd-none' }}"
                             value="{{ old('purpose_other') }}" placeholder="Tukuyin ang medical condition o detalye...">
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="assistance_type_select">Assistance Purpose / Uri ng Assistance</label>
+                        <select name="assistance_type" id="assistance_type_select" class="form-select"
+                            onchange="toggleAssistanceTypeOtherInput()">
+                            <option value="">Select Assistance Purpose / Uri ng Assistance</option>
+                            <option value="Medicine/Gamot" {{ old('assistance_type') == 'Medicine/Gamot' ? 'selected' : '' }}>Medicine/Gamot</option>
+                            <option value="Laboratory Test" {{ old('assistance_type') == 'Laboratory Test' ? 'selected' : '' }}>Laboratory Test</option>
+                            <option value="Therapy" {{ old('assistance_type') == 'Therapy' ? 'selected' : '' }}>Therapy</option>
+                            <option value="Checkup/Consultation" {{ old('assistance_type') == 'Checkup/Consultation' ? 'selected' : '' }}>Checkup/Consultation</option>
+                            <option value="Surgery" {{ old('assistance_type') == 'Surgery' ? 'selected' : '' }}>Surgery</option>
+                            <option value="Hospital Bill" {{ old('assistance_type') == 'Hospital Bill' ? 'selected' : '' }}>Hospital Bill</option>
+                            <option value="Other Assistance Purpose" {{ old('assistance_type') == 'Other Assistance Purpose' ? 'selected' : '' }}>Other Assistance Purpose</option>
+                        </select>
+                        <input type="text" name="assistance_type_other" id="assistance_type_other_input"
+                            class="form-control mt-2 {{ old('assistance_type') == 'Other Assistance Purpose' ? '' : 'd-none' }}"
+                            value="{{ old('assistance_type_other') }}" placeholder="Specify other assistance purpose...">
+                    </div>
+
+                    <div class="col-md-6">
                         <label class="form-label" for="interviewed_by">Interviewed by <span
                                 class="text-muted">(Interviewer)</span></label>
                         <select name="interviewed_by" id="interviewed_by" class="form-select">
@@ -881,7 +895,7 @@
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <label class="form-label" for="reviewed_by">Reviewed by <span
                                 class="text-muted">(Supervisor/Head)</span></label>
                         <input type="text" name="reviewed_by" id="reviewed_by" class="form-control"
@@ -1095,6 +1109,16 @@
                 text.value = '';
             }
         }
+    }
+
+    function toggleAssistanceTypeOtherInput() {
+        const select = document.getElementById('assistance_type_select');
+        const input = document.getElementById('assistance_type_other_input');
+        if (!select || !input) return;
+        const showOther = select.value === 'Other Assistance Purpose';
+        input.classList.toggle('d-none', !showOther);
+        if (showOther) input.focus();
+        else input.value = '';
     }
 
     // Add Family Composition Row

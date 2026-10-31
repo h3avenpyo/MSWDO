@@ -192,6 +192,8 @@ class OfficerController extends Controller
 
     public function storeOfficer(StoreOfficerRequest $request)
     {
+        OfficerEmailVerificationController::validateCode($request);
+
         if (in_array($request->role, ['bcpc_admin', 'swd_admin'], true)) {
             $nameParts = preg_split('/\s+/', trim($request->name), 2);
             $attributes = [
@@ -213,6 +215,8 @@ class OfficerController extends Controller
             }
             WcpuUser::create($attributes);
 
+            $request->session()->forget('officer_email_verification');
+
             return redirect()->route('admin.add-officers')->with('success', 'Officer created successfully.')->with('officer_created', true);
         }
 
@@ -224,7 +228,7 @@ class OfficerController extends Controller
             $signatureImagePath = 'images/signatures/' . $filename;
         }
 
-        User::create([
+        $officer = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -234,6 +238,9 @@ class OfficerController extends Controller
             'signature_position' => $request->signature_position,
             'signature_image' => $signatureImagePath,
         ]);
+
+        $officer->forceFill(['email_verified_at' => now()])->save();
+        $request->session()->forget('officer_email_verification');
 
         return redirect()->route('admin.add-officers')->with('success', 'Officer created successfully.')->with('officer_created', true);
     }

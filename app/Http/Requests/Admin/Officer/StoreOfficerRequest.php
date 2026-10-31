@@ -10,6 +10,14 @@ use Illuminate\Validation\Rule;
 
 class StoreOfficerRequest extends FormRequest
 {
+    public function messages(): array
+    {
+        return [
+            'email_verification_code.required' => \App\Http\Controllers\Admin\Auth\OfficerEmailVerificationController::REQUIRED_MESSAGE,
+            'email_verification_code.digits' => \App\Http\Controllers\Admin\Auth\OfficerEmailVerificationController::REQUIRED_MESSAGE,
+        ];
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -33,6 +41,7 @@ class StoreOfficerRequest extends FormRequest
                     : []),
             ],
             'password' => ['required', 'confirmed', 'min:8'],
+            'email_verification_code' => ['required', 'digits:6'],
             'role' => ['required', Rule::in([...array_column(UserRole::cases(), 'value'), 'bcpc_admin', 'swd_admin'])],
             'phone' => ['nullable', 'string', 'max:20', new \App\Rules\ContactNumber(null, 20)],
             'status' => ['nullable', 'in:active,inactive'],
