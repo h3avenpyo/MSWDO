@@ -277,7 +277,7 @@ async function printAllQuarterlyReports() {
         await Swal.fire({ icon: 'info', title: 'No Reports to Print', text: 'There are no quarterly reports to print.' });
         return;
     }
-    window.open(@json(route('desk-officer.quarterly-reports.print-all')) + '?type=' + encodeURIComponent(result.value), '_blank', 'noopener');
+    window.location.assign(@json(route('desk-officer.quarterly-reports.print-all')) + '?type=' + encodeURIComponent(result.value));
 }
 </script>
 @endif

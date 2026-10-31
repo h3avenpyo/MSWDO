@@ -5,7 +5,7 @@
 @push('styles')
 @if(auth()->user()?->isDepartmentAdmin())
 <style>
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 85.375rem) {
         html body.portal-ui #adminReferralEditForm .admin-referral-edit-date-field {
             display: block !important;
             position: relative;
@@ -616,7 +616,7 @@
                 </div>
             </div>
             
-            <a href="{{ auth()->user()->isBcpcAdmin() ? url('/admin/referrals-print-all?preview=1') : route('admin.referrals.print-all') }}"
+            <a href="{{ url('/admin/referrals-print-all') . '?' . http_build_query(array_merge(request()->only(['status', 'search']), ['preview' => 1])) }}"
                 class="download-referrals-btn inline-flex items-center gap-2 px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium">
                 <i class="fas fa-print"></i>
                 <span>Print All</span>
@@ -985,6 +985,55 @@
 @push('scripts')
 @if(auth()->user()?->isDepartmentAdmin())
 <script>
+(() => {
+    const selectors = ['#referrals-table-panel', '#referrals-mobile-cards'];
+    let pending = null;
+    const cancelRefresh = () => pending?.abort();
+    const refreshReferrals = async () => {
+        const regions = selectors.map(selector => document.querySelector(selector));
+        const modal = document.getElementById('referralModal');
+        if (document.hidden || pending || regions.some(region => !region || region.hasAttribute('aria-busy'))
+            || (modal && !modal.classList.contains('hidden')) || document.querySelector('.swal2-container')) return;
+        const url = location.href;
+        const request = new AbortController();
+        pending = request;
+        const timeout = setTimeout(() => request.abort(), 10000);
+        try {
+            const response = await fetch(url, {
+                cache: 'no-store', signal: request.signal,
+                headers: { 'Accept': 'text/html', 'X-Skip-Loading': '1' },
+            });
+            if (!response.ok || response.redirected) return;
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            const replacements = selectors.map(selector => page.querySelector(selector));
+            if (request.signal.aborted || location.href !== url || replacements.some(region => !region)
+                || regions.some((region, index) => document.querySelector(selectors[index]) !== region || region.hasAttribute('aria-busy'))
+                || (modal && !modal.classList.contains('hidden')) || document.querySelector('.swal2-container')) return;
+            regions.forEach((region, index) => {
+                if (region.innerHTML !== replacements[index].innerHTML) region.innerHTML = replacements[index].innerHTML;
+            });
+        } catch (_) {
+            // Preserve the current referrals if a background refresh is unavailable.
+        } finally {
+            clearTimeout(timeout);
+            if (pending === request) pending = null;
+        }
+    };
+    document.addEventListener('input', cancelRefresh, true);
+    document.addEventListener('submit', cancelRefresh, true);
+    document.addEventListener('click', event => {
+        if (event.target.closest('#referrals-main a[href], #referrals-main button')) cancelRefresh();
+    }, true);
+    window.addEventListener('popstate', cancelRefresh);
+    window.addEventListener('focus', refreshReferrals);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelRefresh();
+        else refreshReferrals();
+    });
+    window.setInterval(refreshReferrals, 3000);
+})();
+</script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
     const responsivePagination = matchMedia('(max-width: 85.375rem)');
     let activeRequest;
@@ -1084,15 +1133,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const link = printButton || downloadButton;
         const result = await Swal.fire({
             title: downloadButton ? 'Print all referrals?' : 'Open referral printout?',
-            text: downloadButton ? 'This will open a print preview of the referral registry.' : 'This will open the referral printout in a new tab.',
+            text: downloadButton ? 'This will open a print preview of the referral registry.' : 'This will open the referral print preview.',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: downloadButton ? 'Preview' : 'Open printout',
             confirmButtonColor: '#7c3aed'
         });
         if (result.isConfirmed) {
-            if (printButton) window.open(link.href, '_blank', 'noopener');
-            else window.open(`${link.href}${link.href.includes('?') ? '&' : '?'}preview=1`, '_blank', 'noopener');
+            if (printButton) window.location.assign(link.href);
+            else window.location.assign(`${link.href}${link.href.includes('?') ? '&' : '?'}preview=1`);
         }
     });
     
@@ -1105,6 +1154,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    const notificationReferralId = new URLSearchParams(window.location.search).get('view_referral');
+    if (notificationReferralId && /^\d+$/.test(notificationReferralId)) {
+        fetchReferralDetails(notificationReferralId);
+    }
+
     function fetchReferralDetails(id) {
         const requestId = ++referralDetailsRequestId;
         configureReferCaseButton();

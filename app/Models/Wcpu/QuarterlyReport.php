@@ -6,6 +6,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class QuarterlyReport extends WcpuBaseModel
 {
+    public function latestGenerationActivity(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(\Spatie\Activitylog\Models\Activity::class, 'subject')
+            ->ofMany(['id' => 'max'], function ($query) {
+                $query->where('log_name', 'multirole_workflow')
+                    ->where('properties->quarterly_report_generated', true);
+            });
+    }
+
+    public function getGeneratedAtAttribute(): ?\Carbon\Carbon
+    {
+        return ($this->latestGenerationActivity?->created_at ?? $this->created_at)?->copy()->timezone('Asia/Manila');
+    }
+
     protected $fillable = [
         'user_id',
         'barangay_id',

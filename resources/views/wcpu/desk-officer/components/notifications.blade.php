@@ -140,6 +140,36 @@
 <!-- Notification Bell -->
 <style>
     @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent#mainContent#mainContent [data-desk-phone-notifications] > .notification-dropdown {
+            max-width: calc(100vw - 1.5rem) !important;
+            max-height: min(29.625rem, calc(100dvh - var(--desk-notification-top, 4.5rem) - 1rem - env(safe-area-inset-bottom))) !important;
+        }
+        html body.portal-ui #mainContent#mainContent#mainContent [data-desk-phone-notifications] .notification-dropdown-list {
+            min-height: 0 !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+        html body.portal-ui #mainContent#mainContent#mainContent [data-desk-phone-notifications] .desk-notification-item p {
+            display: block !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            overflow-wrap: anywhere;
+            text-overflow: clip !important;
+            font-size: .875rem !important;
+            line-height: 1.5 !important;
+            color: #374151 !important;
+            -webkit-text-fill-color: #374151 !important;
+        }
+        html body.portal-ui #mainContent#mainContent#mainContent [data-desk-phone-notifications] .desk-notification-item p :is(strong, span, small) {
+            color: inherit !important;
+            -webkit-text-fill-color: inherit !important;
+        }
+        html body.portal-ui #mainContent#mainContent#mainContent [data-desk-phone-notifications] .desk-notification-item > div > span {
+            display: block !important;
+            white-space: normal !important;
+            color: #b91c1c !important;
+            -webkit-text-fill-color: #b91c1c !important;
+        }
         html body.portal-ui [data-desk-phone-notifications] > .notification-dropdown {
             position: fixed !important;
             top: var(--desk-notification-top, 4.5rem) !important;
@@ -201,7 +231,7 @@
                 id="deskMarkAllReadBtn"
                 type="button"
                 class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors text-white"
-                style="{{ request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'cases.refer.form', 'case-profiles.index', 'desk-officer.cases.index', 'desk-officer.cases.create', 'desk-officer.cases.show', 'admin.barangay-cases.show', 'desk-officer.referrals', 'desk-officer.calendar.index', 'desk-officer.quarterly-reports.index', 'desk-officer.quarterly-reports.create', 'desk-officer.quarterly-reports.show', 'desk-officer.quarterly-reports.edit', 'desk-officer.bcpc-case-monitoring.edit', 'desk-officer.archived-barangay-cases.index', 'desk-officer.referrals.archived', 'desk-officer.quarterly-reports.archived') ? 'background: #ffffff !important; color: #C41E3A !important;' : 'color: #ffffff !important;' }}"
+                style="{{ request()->routeIs('desk-officer.dashboard', 'desk-officer.bcpc.dashboard', 'cases.refer.form', 'case-profiles.index', 'desk-officer.cases.index', 'desk-officer.cases.create', 'desk-officer.cases.show', 'admin.barangay-cases.show', 'desk-officer.referrals', 'desk-officer.referrals.show', 'desk-officer.calendar.index', 'desk-officer.quarterly-reports.index', 'desk-officer.quarterly-reports.create', 'desk-officer.quarterly-reports.show', 'desk-officer.quarterly-reports.edit', 'desk-officer.bcpc-case-monitoring.edit', 'desk-officer.archived-barangay-cases.index', 'desk-officer.referrals.archived', 'desk-officer.quarterly-reports.archived') ? 'background: #ffffff !important; color: #C41E3A !important;' : 'color: #ffffff !important;' }}"
             >
                 Mark all as read
             </button>

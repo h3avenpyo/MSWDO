@@ -50,6 +50,7 @@
     try {
         $recentCases = \App\Models\Wcpu\CaseModel::with('barangay')
             ->when(Auth::user()->isVawcAdmin(), fn ($query) => $query->where('type', 'VAWC'))
+            ->when(Auth::user()->isBcpcAdmin(), fn ($query) => $query->where('type', 'BCPC'))
             ->when($isSwdDeskOfficer, fn ($query) => $query
                 ->where('type', 'VAWC')
                 ->where('case_designation', $deskOfficerBarangayId ?: 0))
@@ -257,10 +258,14 @@
     // Include recorded user actions so the notification bell reflects actions
     // performed throughout the portal, not only cases and reports.
     try {
+        $notificationActions = \Spatie\Activitylog\Models\Activity::with('causer')
+            ->where('log_name', '!=', 'multirole_workflow')
+            ->whereRaw('LOWER(description) NOT LIKE ?', ['user logged in%'])
+            ->whereRaw('LOWER(description) NOT LIKE ?', ['user logged out%']);
         $recentActions = Auth::user()->isBcpcAdmin()
-            ? \Spatie\Activitylog\Models\Activity::with('causer')->where('log_name', '!=', 'multirole_workflow')->latest()->limit(10)->get()
+            ? $notificationActions->latest()->limit(10)->get()
             : (Auth::user()->isVawcAdmin()
-                ? \Spatie\Activitylog\Models\Activity::with('causer')->where('log_name', '!=', 'multirole_workflow')
+                ? $notificationActions
                     ->whereHas('causer', fn ($query) => $query->whereRaw('LOWER(department) LIKE ?', ['%vawc%']))
                     ->latest()->limit(10)->get()
                 : collect());
@@ -269,6 +274,10 @@
     }
 
     foreach ($recentActions as $action) {
+        // Case creation is already listed above using the case's department.
+        if (Auth::user()->isDepartmentAdmin()
+            && $action->subject_type === (new \App\Models\Wcpu\CaseModel())->getMorphClass()
+            && ($action->event === 'created' || preg_match('/^created case\b/i', $action->description ?? ''))) continue;
         if ($action->causer?->position === 'Desk Officer'
             && preg_match('/referred/i', $action->description ?? '')
             && $action->subject_type === (new \App\Models\Wcpu\CaseModel())->getMorphClass()
@@ -314,9 +323,52 @@
 @if($usesReferenceNotificationStyle)
     @include('admin-tailwind.components.notification-reference-style')
 @endif
-<div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false" @if($usesReferenceNotificationStyle) data-admin-notification-reference @endif>
+@if(auth()->user()?->isDepartmentAdmin())
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent#mainContent#mainContent [data-admin-phone-notifications] > .notification-dropdown {
+            position: fixed !important;
+            top: var(--admin-notification-top, 4.5rem) !important;
+            left: auto !important;
+            right: max(.75rem, env(safe-area-inset-right)) !important;
+            width: 20rem !important;
+            max-width: calc(100vw - 1.5rem) !important;
+            max-height: min(29.625rem, calc(100dvh - var(--admin-notification-top, 4.5rem) - 1rem - env(safe-area-inset-bottom))) !important;
+            margin-top: 0 !important;
+            z-index: 100 !important;
+        }
+        html body.portal-ui #mainContent#mainContent#mainContent [data-admin-phone-notifications] .notification-dropdown-list {
+            min-height: 0 !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+        html body.portal-ui #mainContent#mainContent#mainContent [data-admin-phone-notifications] .notification-item p {
+            display: block !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            overflow-wrap: anywhere;
+            text-overflow: clip !important;
+            font-size: .875rem !important;
+            line-height: 1.5 !important;
+            color: #374151 !important;
+            -webkit-text-fill-color: #374151 !important;
+        }
+        html body.portal-ui #mainContent#mainContent#mainContent [data-admin-phone-notifications] .notification-item p :is(strong, span, small) {
+            color: inherit !important;
+            -webkit-text-fill-color: inherit !important;
+        }
+        html body.portal-ui #mainContent#mainContent#mainContent [data-admin-phone-notifications] .notification-item > div > span {
+            display: block !important;
+            white-space: normal !important;
+            color: #b91c1c !important;
+            -webkit-text-fill-color: #b91c1c !important;
+        }
+    }
+</style>
+@endif
+<div class="relative" @if(auth()->user()?->isDepartmentAdmin()) data-admin-phone-notifications @endif x-data="{ open: false, positionDropdown() { if (this.$el.hasAttribute('data-admin-phone-notifications') && window.matchMedia('(max-width: 47.9375rem)').matches) { this.$refs.panel.style.setProperty('--admin-notification-top', (this.$refs.bell.getBoundingClientRect().bottom + 8) + 'px'); } } }" @resize.window="positionDropdown()" @scroll.window="if (open) positionDropdown()" @keydown.escape.window="open = false" @if($usesReferenceNotificationStyle) data-admin-notification-reference @endif>
     <button 
-        @click="open = !open" 
+        x-ref="bell" @click="positionDropdown(); open = !open"
         class="relative p-2 {{ auth()->user()->isBcpcAdmin() ? 'text-white border border-white hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-purple-700 hover:bg-purple-50' }} rounded-full transition-colors"
         aria-label="Notifications"
         @if(request()->routeIs('desk-officer.cases.show') && auth()->user()?->position === 'Desk Officer' && (auth()->user()->canAccessCaseDepartment('BCPC') || auth()->user()->canAccessCaseDepartment('VAWC')))
@@ -333,7 +385,7 @@
     
     <!-- Dropdown -->
     <div 
-        x-show="open" 
+        x-ref="panel" x-show="open"
         x-cloak
         @click.away="open = false"
         x-transition:enter="transition ease-out duration-200"

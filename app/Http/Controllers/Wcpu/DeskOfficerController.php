@@ -1447,13 +1447,13 @@ public function create()
         }
 
         // Get referrals for all cases in this barangay (shared among officers)
-        $query = CaseReferral::with(['case', 'referredBy'])
+        $query = CaseReferral::with(['case', 'referredBy', 'recipient'])
             ->withExists('departmentAdminReferralsForCase')
             ->where('created_by_department_admin', false)
             ->whereHas('case', function($q) use ($barangay) {
                 $q->where('case_designation', $barangay->id);
-                $this->applyCaseDepartmentScope($q);
             })
+            ->forRecipientDepartments($user->caseDepartments())
             ->orderByDesc('updated_at')
             ->orderByDesc('created_at');
 
@@ -1470,7 +1470,7 @@ public function create()
         if ($user->isMultiCaseDepartment()) {
             $referralGroups = [];
             foreach ($user->caseDepartments() as $type) {
-                $referralGroups[$type] = (clone $query)->whereHas('case', fn ($q) => $q->where('type', $type))
+                $referralGroups[$type] = (clone $query)->forRecipientDepartments([$type])
                     ->paginate($perPage, ['*'], strtolower($type) . '_page')->withQueryString();
             }
         }
@@ -1479,8 +1479,7 @@ public function create()
         $baseQuery = CaseReferral::where('created_by_department_admin', false)
             ->whereHas('case', function($q) use ($barangay) {
                 $q->where('case_designation', $barangay->id);
-                $this->applyCaseDepartmentScope($q);
-            });
+            })->forRecipientDepartments($user->caseDepartments());
 
         $stats = [
             'total' => $baseQuery->count(),

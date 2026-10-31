@@ -18,6 +18,26 @@
     controls.setAttribute('aria-label', 'Print preview controls');
     controls.innerHTML = '<span>Click form text to edit. Changes are temporary.</span><button type="button" data-print-action="reset">Reset Changes</button><button type="button" data-print-action="print">Print</button>';
     document.body.appendChild(controls);
+    @if((auth()->user()?->isDepartmentAdmin() && request()->routeIs('admin.quarterly-reports.download', 'admin.quarterly-reports.print-all', 'admin.bcpc-case-monitoring.print', 'admin.referrals.print-all', 'admin.referrals.print', 'admin.barangay-cases.print-individual')) || (auth()->user()?->position === 'Desk Officer' && request()->routeIs('admin.barangay-cases.print-individual', 'desk-officer.referrals.print', 'desk-officer.referrals.print-all', 'desk-officer.quarterly-reports.download', 'desk-officer.quarterly-reports.print-all', 'desk-officer.bcpc-case-monitoring.print', 'desk-officer.cases.print', 'admin.case.print') && (auth()->user()->canAccessCaseDepartment('BCPC') || auth()->user()->canAccessCaseDepartment('VAWC'))) || (auth()->user()?->position === 'Desk Officer' && auth()->user()->isMultiCaseDepartment() && request()->routeIs('desk-officer.cases.print-all')))
+    const backButton = document.createElement('a');
+    backButton.textContent = 'Back';
+    backButton.href = @json(request()->routeIs('admin.referrals.print-all', 'admin.referrals.print') ? route('admin.referrals') : (request()->routeIs('admin.bcpc-case-monitoring.print') ? route('admin.bcpc-case-monitoring.edit') : route('admin.quarterly-reports.index')));
+    @if(request()->routeIs('admin.barangay-cases.print-individual'))
+    backButton.href = @json(request('back') === 'barangay-list' ? route('admin-barangay-cases') : route('admin.barangay-cases.show', ['barangay' => request()->route('barangay')]));
+    @endif
+    @if(auth()->user()?->position === 'Desk Officer' && request()->routeIs('desk-officer.*'))
+    backButton.href = @json(request()->routeIs('desk-officer.referrals.*') ? route('desk-officer.referrals') : (request()->routeIs('desk-officer.bcpc-case-monitoring.print') ? route('desk-officer.bcpc-case-monitoring.edit') : route('desk-officer.quarterly-reports.index')));
+    @endif
+    @if(auth()->user()?->position === 'Desk Officer' && request()->routeIs('desk-officer.cases.print', 'admin.case.print'))
+    backButton.href = @json(request()->filled('back_barangay') && ctype_digit((string) request('back_barangay')) ? route('admin.barangay-cases.show', ['barangay' => request('back_barangay')]) : route('desk-officer.cases.index'));
+    @endif
+    @if(auth()->user()?->position === 'Desk Officer' && auth()->user()->isMultiCaseDepartment() && request()->routeIs('desk-officer.cases.print-all'))
+    @php($casePrintBackUrl = route('desk-officer.cases.index', request()->only(['type', 'status', 'date_from', 'date_to'])))
+    backButton.href = @json($casePrintBackUrl);
+    @endif
+    backButton.style.cssText = 'padding:7px 10px;border-radius:5px;background:#C41E3A;color:#fff;text-decoration:none;';
+    controls.prepend(backButton);
+    @endif
 
     const originals = new Map();
     let active = null;
@@ -85,7 +105,7 @@
         if (active) active.removeAttribute('contenteditable');
         const printWindow = window.open('', '_blank');
         const preview = document.documentElement.cloneNode(true);
-        preview.querySelectorAll('script, .print-edit-controls').forEach(element => element.remove());
+        preview.querySelectorAll('script, .print-edit-controls, .report-back-button').forEach(element => element.remove());
         preview.querySelectorAll('[contenteditable], [data-print-editing], [spellcheck]').forEach(element => {
             element.removeAttribute('contenteditable');
             element.removeAttribute('data-print-editing');

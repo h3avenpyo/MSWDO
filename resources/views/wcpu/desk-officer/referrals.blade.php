@@ -11,7 +11,7 @@
 @push('styles')
 @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
 <style>
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 85.375rem) {
         html body.portal-ui #referralEditForm .referral-edit-date-field {
             display: block !important;
             position: relative;
@@ -108,6 +108,7 @@
             width: 100%;
             box-sizing: border-box;
             text-align: center !important;
+            padding: .75rem .5rem !important;
         }
 
         #desk-referrals-content [data-pagination-label] > div {
@@ -117,9 +118,20 @@
 
         #desk-referrals-content [data-pagination-label] > div:last-child {
             display: flex !important;
-            flex-wrap: wrap;
+            flex-wrap: nowrap !important;
             justify-content: center !important;
             max-width: 100%;
+            gap: .25rem !important;
+        }
+
+        html body.portal-ui #mainContent #desk-referrals-content [data-pagination-label] > div:last-child > a {
+            flex: 0 0 auto !important;
+            width: clamp(1.5rem, 8vw, 2rem) !important;
+            min-width: 0 !important;
+            height: 2rem !important;
+            min-height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
     }
 
@@ -622,7 +634,12 @@
         </div>
 
         @if($referrals->hasPages())
-        @include('components.archived-pagination', ['paginator' => $referrals, 'label' => 'referrals'])
+        <div class="md:hidden">
+            @include('components.archived-pagination', ['paginator' => $referrals, 'label' => 'referrals', 'pageLinkLimit' => 4])
+        </div>
+        <div class="hidden md:block">
+            @include('components.archived-pagination', ['paginator' => $referrals, 'label' => 'referrals', 'pageLinkLimit' => null])
+        </div>
         @endif
         @if($isMultiroleDeskOfficer)
         </section>
@@ -827,7 +844,7 @@ document.addEventListener('click', async function (event) {
             await Swal.fire({ icon: 'info', title: 'No Referrals to Print', text: 'There are no referrals to print.' });
             return;
         }
-        window.open(link.href + '?preview=1&type=' + encodeURIComponent(department), '_blank', 'noopener');
+        window.location.assign(link.href + '?preview=1&type=' + encodeURIComponent(department));
         return;
     }
     @endif
@@ -840,8 +857,8 @@ document.addEventListener('click', async function (event) {
         confirmButtonColor: '#7c3aed'
     });
     if (result.isConfirmed) {
-        if (printButton) window.open(link.href, '_blank', 'noopener');
-        else window.open(link.href + (link.href.includes('?') ? '&' : '?') + 'preview=1', '_blank', 'noopener');
+        if (printButton) window.location.assign(link.href);
+        else window.location.assign(link.href + (link.href.includes('?') ? '&' : '?') + 'preview=1');
     }
 });
 </script>

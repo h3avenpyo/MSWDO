@@ -2487,6 +2487,8 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
         if (logoutButton) {
             logoutButton.addEventListener('click', function(e) {
                 e.preventDefault();
+                const mobileLogout = window.matchMedia('(max-width: 47.9375rem)').matches;
+                if (mobileLogout) closeMobileSidebar();
                 
                 if (typeof Swal === 'undefined') {
                     if (confirm('Are you sure you want to log out?')) {
@@ -2499,6 +2501,8 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
                 
                 Swal.fire({
                     title: 'Logout',
+                    heightAuto: !mobileLogout,
+                    scrollbarPadding: !mobileLogout,
         html: '<svg class="logout-modal-symbol" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 5l7 7-7 7v-4H7V9h5V5Z" fill="currentColor"/></svg><p class="logout-modal-message">Are you sure you want to log out?</p>',
         showCancelButton: true,
                     confirmButtonText: 'Yes, log me out',
@@ -2514,6 +2518,8 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
                     if (result.isConfirmed) {
                         Swal.fire({
                             title: 'Logging out...',
+                            heightAuto: !mobileLogout,
+                            scrollbarPadding: !mobileLogout,
                             html: '<div class="text-center py-4">' +
                                 '<i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>' +
                                 '<p class="text-gray-700">You have been successfully logged out.</p>' +

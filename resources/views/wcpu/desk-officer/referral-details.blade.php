@@ -2,6 +2,36 @@
 
 @section('title', 'Referral Details')
 
+@push('styles')
+<style>
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #mainContent #desk-officer-dashboard-header :is(#dashboardMenuToggle, #pageMobileMenuToggle, #mobileMenuToggle) {
+            flex: 0 0 2.5rem !important;
+            width: 2.5rem !important;
+            min-width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 1.125rem !important;
+        }
+        html body.portal-ui #mainContent #desk-officer-dashboard-header :is(#dashboardMenuToggle, #pageMobileMenuToggle, #mobileMenuToggle) i {
+            width: 18px !important;
+            height: 18px !important;
+            font-size: 18px !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        html body.portal-ui #mainContent #desk-officer-dashboard-header :is(#dashboardMenuToggle, #pageMobileMenuToggle, #mobileMenuToggle) i::before {
+            font-size: 18px !important;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <header id="desk-officer-dashboard-header" class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between px-4 lg:px-8 py-3.5 sm:py-4">

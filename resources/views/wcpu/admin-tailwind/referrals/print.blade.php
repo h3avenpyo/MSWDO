@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    @php $isBcpcReferral = strtoupper((string) ($referral->case->type ?? '')) === 'BCPC'; $referralDepartmentName = $isBcpcReferral ? 'Barangay Council for the Protection of Children' : 'Women and Children Protection Unit'; $referralFormName = $isBcpcReferral ? 'BCPC - Referral for Service' : 'SWD Form 2 - Referral for Service'; @endphp
+    @php $isBcpcReferral = strtoupper((string) ($referral->case->type ?? '')) === 'BCPC'; $referralDepartmentName = $isBcpcReferral ? 'Barangay Council for the Protection of Children' : 'SOCIAL WELFARE AND DEVELOPMENT'; $referralFormName = $isBcpcReferral ? 'BCPC - Referral for Service' : 'SWD Form 2 - Referral for Service'; @endphp
     <title>{{ $referralFormName }}</title>
     <style>
         @page { size: A4 portrait; margin: 8mm 11mm 12mm; }
@@ -87,6 +87,7 @@
     $guardianAddress = $displayValue($referral->family_guardian_address, $referral->case?->guardian_address);
 @endphp
 <body>
+
     <table class="header-table" role="presentation">
         <tr>
             <td class="logo-cell">
@@ -97,7 +98,7 @@
             <td class="header-copy">
                 <div class="republic">Republic of the Philippines</div>
                 <div class="municipality">Municipality of Silang, Province of Cavite</div>
-                <div class="office">{{ $isBcpcReferral ? 'BARANGAY COUNCIL FOR THE PROTECTION OF CHILDREN' : 'Women and Children Protection Unit' }}</div>
+                <div class="office">{{ $isBcpcReferral ? 'BARANGAY COUNCIL FOR THE PROTECTION OF CHILDREN' : 'SOCIAL WELFARE AND DEVELOPMENT' }}</div>
                 <div class="form-title">{{ $isBcpcReferral ? 'BCPC - REFERRAL FOR SERVICE' : 'SWD Form 2 - Referral for Service' }}<br>Confidential</div>
             </td>
             <td class="logo-cell">

@@ -619,8 +619,8 @@
                             <div class="text-xs text-gray-400">{{ $report->user->email ?? '' }}</div>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm text-gray-600">{{ $report->created_at->copy()->timezone('Asia/Manila')->format('M d, Y') }}</div>
-                            <div class="text-xs text-gray-400">{{ $report->created_at->copy()->timezone('Asia/Manila')->format('h:i A') }}</div>
+                            <div class="text-sm text-gray-600">{{ $report->generated_at?->format('M d, Y') ?? 'N/A' }}</div>
+                            <div class="text-xs text-gray-400">{{ $report->generated_at?->format('h:i A') ?? 'N/A' }}</div>
                         </td>
                         <td class="px-6 py-4 text-center">
                             <div class="{{ auth()->user()->isBcpcAdmin() ? 'quarterly-report-actions ' : '' }}flex items-center justify-center gap-2">
@@ -678,7 +678,7 @@
                         </div>
                         <div class="min-w-0">
                             <p class="font-semibold text-gray-800 truncate">{{ $report->barangay->name ?? 'N/A' }}</p>
-                            <p class="text-xs text-gray-500">{{ $report->created_at->copy()->timezone('Asia/Manila')->format('M d, Y h:i A') }}</p>
+                            <p class="text-xs text-gray-500">{{ $report->generated_at?->format('M d, Y h:i A') ?? 'N/A' }}</p>
                         </div>
                     </div>
                     <span class="shrink-0 inline-flex items-center justify-center bg-gray-100 text-gray-700 w-10 h-10 rounded-full font-bold text-sm">
@@ -811,6 +811,54 @@
 </div>
 
 <script>
+@if(auth()->user()?->isDepartmentAdmin())
+(() => {
+    let pending = null;
+    const cancelRefresh = () => pending?.abort();
+    const dialogOpen = () => document.getElementById('generateQuarterlyModal')?.open
+        || !document.getElementById('archiveModal')?.classList.contains('hidden')
+        || document.querySelector('.swal2-container');
+    const refreshQuarterlyReports = async () => {
+        const current = document.getElementById('quarterly-reports-results');
+        if (document.hidden || pending || !current || current.hasAttribute('aria-busy') || dialogOpen()) return;
+        const url = location.href;
+        const request = new AbortController();
+        pending = request;
+        const timeout = setTimeout(() => request.abort(), 10000);
+        try {
+            const response = await fetch(url, {
+                cache: 'no-store', signal: request.signal,
+                headers: { 'Accept': 'text/html', 'X-Skip-Loading': '1' },
+            });
+            if (!response.ok || response.redirected) return;
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            const next = page.getElementById('quarterly-reports-results');
+            if (request.signal.aborted || location.href !== url || dialogOpen()
+                || document.getElementById('quarterly-reports-results') !== current
+                || current.hasAttribute('aria-busy') || !next) return;
+            if (current.innerHTML !== next.innerHTML) current.innerHTML = next.innerHTML;
+        } catch (_) {
+            // Keep the displayed reports if a background refresh is unavailable.
+        } finally {
+            clearTimeout(timeout);
+            if (pending === request) pending = null;
+        }
+    };
+    document.addEventListener('input', cancelRefresh, true);
+    document.addEventListener('change', cancelRefresh, true);
+    document.addEventListener('submit', cancelRefresh, true);
+    document.addEventListener('click', event => {
+        if (event.target.closest('#quarterly-reports-content a[href], #quarterly-reports-content button')) cancelRefresh();
+    }, true);
+    window.addEventListener('popstate', cancelRefresh);
+    window.addEventListener('focus', refreshQuarterlyReports);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelRefresh();
+        else refreshQuarterlyReports();
+    });
+    window.setInterval(refreshQuarterlyReports, 3000);
+})();
+@endif
 function showQuarterlyReportFeedback(options) {
     return Swal.fire(options).finally(() => {
         window.quarterlyReportFeedbackPending = false;
@@ -967,7 +1015,7 @@ function confirmQuarterlyPrint(url) {
         confirmButtonText: 'Open Print Preview',
         cancelButtonText: 'Cancel',
         confirmButtonColor: '#C41E3A',
-        preConfirm: () => { window.open(url, '_blank', 'noopener'); },
+        preConfirm: () => { window.location.assign(url); },
     });
 }
 

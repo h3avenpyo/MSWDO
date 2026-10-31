@@ -246,7 +246,7 @@
 @push('styles')
 @if(auth()->user()?->isDepartmentAdmin())
 <style>
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 85.375rem) {
         html body.portal-ui .admin-mobile-picker-field {
             display: block !important;
             position: relative;

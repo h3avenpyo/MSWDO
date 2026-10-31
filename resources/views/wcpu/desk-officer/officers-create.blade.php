@@ -9,7 +9,7 @@
 @push('styles')
 @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
 <style>
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 85.375rem) {
         html body.portal-ui #mainContent .mobile-date-time-field {
             display: block !important;
             position: relative;
@@ -53,6 +53,47 @@
 @endpush
 @push('styles')
 <style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) {
+        html body.portal-ui #mainContent > header#officers-create-header > div > div > div:last-child {
+            display: flex !important;
+            align-items: center !important;
+            align-self: center !important;
+            flex-wrap: nowrap !important;
+            column-gap: 1rem !important;
+        }
+        html body.portal-ui #mainContent #officers-create-header [data-desk-phone-notifications] {
+            display: flex !important;
+            align-items: center !important;
+            align-self: center !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
+        html body.portal-ui #mainContent #officers-create-header button[aria-label="Notifications"] {
+            align-self: center !important;
+            margin: 0 !important;
+        }
+        html body.portal-ui #mainContent #officers-create-header [data-desk-phone-notifications] > .notification-dropdown {
+            top: calc(100% + .5rem) !important;
+            bottom: auto !important;
+            right: 0 !important;
+            left: auto !important;
+            margin-top: 0 !important;
+            max-height: min(29.625rem, calc(100dvh - 7rem)) !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header > div {
+            box-sizing: border-box;
+            min-height: 5.5rem !important;
+            padding-top: .75rem !important;
+            padding-bottom: .75rem !important;
+            align-items: center !important;
+        }
+        html body.portal-ui #mainContent > header#officers-create-header > div > div {
+            min-height: 0 !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            align-items: center !important;
+        }
+    }
     @media (min-width: 48rem) and (max-width: 80rem) and (orientation: landscape) {
         html body.portal-ui #mainContent > header#officers-create-header > div > div {
             width: 100% !important;

@@ -478,7 +478,7 @@
 @push('styles')
 @if(auth()->user()?->isDepartmentAdmin())
 <style>
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 85.375rem) {
         html body.portal-ui .admin-mobile-picker-field {
             display: block !important;
             position: relative;
@@ -933,7 +933,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <option value="">Select barangay</option>
                             ${barangayOptions}
                         </select>
-                        <p class="text-gray-400 text-sm mt-2">This will open a print preview in a new window.</p>
+                        <p class="text-gray-400 text-sm mt-2">This will open a print preview.</p>
                     </div>
                 `,
                 showCancelButton: true,
@@ -1013,6 +1013,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     const params = new URLSearchParams();
+                    params.set('back', 'barangay-list');
                     const selectedDepartment = new URLSearchParams(window.location.search).get('type');
                     if (selectedDepartment) params.append('type', selectedDepartment);
                     if (currentFilters.dateFrom) params.append('date_from', currentFilters.dateFrom);
@@ -1058,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         printUrl += '?' + params.toString();
                     }
                     
-                    window.open(printUrl, '_blank');
+                    window.location.assign(printUrl);
                 }
             });
         });

@@ -2008,21 +2008,30 @@ class AdminController extends Controller
     /**
      * Display all referrals (admin view - all barangays)
      */
-    public function referrals(Request $request)
+    private function adminReferralQuery(Request $request)
     {
         // Get all referrals from all barangays
         $query = \App\Models\Wcpu\CaseReferral::with(['case.barangay', 'referredBy', 'recipient'])
             ->withExists('departmentAdminReferralsForCase')
             ->orderByDesc((Auth::user()->isBcpcAdmin() || Auth::user()->isVawcAdmin()) ? 'updated_at' : 'created_at');
 
-        if (Auth::user()->isBcpcAdmin()) {
-            $query->where(function ($referralQuery) {
-                $referralQuery
-                    ->where('referred_by_user_id', Auth::id())
-                    ->orWhereHas('case', fn ($caseQuery) => $caseQuery->where('type', Auth::user()->defaultCaseDepartment()));
+        if (Auth::user()->isDepartmentAdmin()) {
+            $allowedRoles = Auth::user()->isBcpcAdmin()
+                ? ['BCPC - Staff', 'BCPC - Focal']
+                : ['SWD - Staff', 'SWD - Focal'];
+            $departmentRoles = ['BCPC - Staff', 'BCPC - Focal', 'SWD - Staff', 'SWD - Focal'];
+            $query->where(function ($referralQuery) use ($allowedRoles, $departmentRoles) {
+                $referralQuery->whereHas('recipient', fn ($recipientQuery) => $recipientQuery->whereIn('role', $allowedRoles))
+                    ->orWhere(function ($otherReferrals) use ($departmentRoles) {
+                        $otherReferrals->whereDoesntHave('recipient', fn ($recipientQuery) => $recipientQuery->whereIn('role', $departmentRoles))
+                            ->where(function ($caseReferrals) {
+                                $caseReferrals->whereHas('case', fn ($caseQuery) => $caseQuery->where('type', Auth::user()->defaultCaseDepartment()));
+                                if (Auth::user()->isBcpcAdmin()) {
+                                    $caseReferrals->orWhere('referred_by_user_id', Auth::id());
+                                }
+                            });
+                    });
             });
-        } elseif (Auth::user()->isDepartmentAdmin()) {
-            $query->whereHas('case', fn ($caseQuery) => $caseQuery->where('type', Auth::user()->defaultCaseDepartment()));
         }
         // Apply status filter if provided
         if ($request->has('status') && !empty($request->status)) {
@@ -2039,6 +2048,13 @@ class AdminController extends Controller
                     ->orWhere('feedback', 'like', "%{$search}%");
             });
         }
+
+        return $query;
+    }
+
+    public function referrals(Request $request)
+    {
+        $query = $this->adminReferralQuery($request);
 
         $referrals = $query->paginate(Auth::user()->isDepartmentAdmin() ? ($request->boolean('portrait_cards') ? 4 : 5) : 10)->withQueryString();
         
@@ -2188,18 +2204,7 @@ class AdminController extends Controller
      */
     public function printAllReferrals(Request $request)
     {
-        $referrals = \App\Models\Wcpu\CaseReferral::with(['case.barangay', 'referredBy', 'recipient'])
-            ->when(Auth::user()->isBcpcAdmin(), function ($query) {
-                $query->where(function ($referralQuery) {
-                    $referralQuery
-                        ->where('referred_by_user_id', Auth::id())
-                        ->orWhereHas('case', fn ($caseQuery) => $caseQuery->where('type', Auth::user()->defaultCaseDepartment()));
-                });
-            })
-            ->when(Auth::user()->isVawcAdmin(), function ($query) {
-                $query->whereHas('case', fn ($caseQuery) => $caseQuery->where('type', 'VAWC'));
-            })
-            ->latest()->get();
+        $referrals = $this->adminReferralQuery($request)->get();
 
         return view('admin-tailwind.referrals.print-all', compact('referrals'));
     }

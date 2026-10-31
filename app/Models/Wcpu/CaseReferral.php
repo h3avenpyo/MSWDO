@@ -48,6 +48,24 @@ class CaseReferral extends WcpuBaseModel
     ];
 
     // Relationships
+    public function scopeForRecipientDepartments($query, array $departments)
+    {
+        $roles = [];
+        foreach ($departments as $department) {
+            $prefix = $department === 'BCPC' ? 'BCPC' : 'SWD';
+            $roles[] = $prefix.' - Focal';
+            $roles[] = $prefix.' - Staff';
+        }
+        return $query->where(function ($referrals) use ($departments, $roles) {
+            $referrals->whereHas('recipient', fn ($recipients) => $recipients->whereIn('role', $roles))
+                ->orWhere(function ($otherReferrals) use ($departments) {
+                    $otherReferrals->whereDoesntHave('recipient', fn ($recipients) => $recipients
+                        ->whereIn('role', ['BCPC - Focal', 'BCPC - Staff', 'SWD - Focal', 'SWD - Staff']))
+                        ->whereHas('case', fn ($cases) => $cases->whereIn('type', $departments));
+                });
+        });
+    }
+
     public function case()
     {
         return $this->belongsTo(CaseModel::class, 'case_id');

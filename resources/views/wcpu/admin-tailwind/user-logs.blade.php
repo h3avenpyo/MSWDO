@@ -494,6 +494,53 @@
 </div>
 
 @push('scripts')
+@if(auth()->user()?->isDepartmentAdmin())
+<script>
+(() => {
+    let pending = null;
+    const cancelRefresh = () => pending?.abort();
+    const refreshActivityLogs = async () => {
+        const current = document.getElementById('logs-results');
+        if (document.hidden || pending || !current || current.hasAttribute('aria-busy')) return;
+        const url = location.href;
+        const request = new AbortController();
+        pending = request;
+        const timeout = setTimeout(() => request.abort(), 10000);
+        try {
+            const response = await fetch(url, {
+                cache: 'no-store',
+                signal: request.signal,
+                headers: { 'Accept': 'text/html', 'X-Requested-With': 'XMLHttpRequest', 'X-Skip-Loading': '1' },
+            });
+            if (!response.ok || response.redirected) return;
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            const next = page.getElementById('logs-results');
+            if (request.signal.aborted || location.href !== url
+                || document.getElementById('logs-results') !== current
+                || current.hasAttribute('aria-busy') || !next) return;
+            if (current.innerHTML !== next.innerHTML) current.innerHTML = next.innerHTML;
+        } catch (_) {
+            // Keep existing logs visible when a background refresh is unavailable.
+        } finally {
+            clearTimeout(timeout);
+            if (pending === request) pending = null;
+        }
+    };
+    document.addEventListener('input', cancelRefresh, true);
+    document.addEventListener('submit', cancelRefresh, true);
+    document.addEventListener('click', event => {
+        if (event.target.closest('#logs-results a[href]')) cancelRefresh();
+    }, true);
+    window.addEventListener('popstate', cancelRefresh);
+    window.addEventListener('focus', refreshActivityLogs);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelRefresh();
+        else refreshActivityLogs();
+    });
+    window.setInterval(refreshActivityLogs, 3000);
+})();
+</script>
+@endif
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('activityModal');

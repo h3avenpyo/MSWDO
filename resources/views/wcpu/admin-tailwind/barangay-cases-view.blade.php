@@ -2054,7 +2054,7 @@
 @push('styles')
 @if(auth()->user()?->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())))
 <style>
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 85.375rem) {
         html body.portal-ui #mainContent .mobile-date-field {
             display: block !important;
             position: relative;
@@ -2447,7 +2447,7 @@
                         </div>
                     </div>
                     <div data-case-header-actions class="flex items-center gap-2">
-                        <a :href="printUrl" target="_blank"
+                        <a :href="isDeskOfficer ? printUrl + (printUrl.includes('?') ? '&' : '?') + 'back_barangay={{ $barangay->id }}' : printUrl" :target="isDeskOfficer ? '_self' : '_blank'"
                             class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                             <i class="fas fa-print"></i>
                             <span class="hidden sm:inline">Print</span>
@@ -3262,7 +3262,7 @@
                 const printButton = document.getElementById('printButton');
                 if (printButton) {
                     printButton.addEventListener('click', async function() {
-                        if (@json(auth()->user()->isVawcAdmin() || auth()->user()->isBcpcAdmin() || $isBarangayDeskOfficer)) {
+                        if (@json(auth()->user()->isVawcAdmin() || auth()->user()->isBcpcAdmin() || $isBarangayDeskOfficer || $isMultiroleDeskOfficer)) {
                             const barangayName = @json($barangay->name);
                             let printUrl = @json(route('admin.barangay-cases.print-individual', ['barangay' => $barangay->id]));
                             const params = new URLSearchParams();
@@ -3283,7 +3283,10 @@
                                 cancelButtonColor: '#6b7280',
                                 reverseButtons: true,
                             }).then((result) => {
-                                if (result.isConfirmed) window.open(printUrl, '_blank');
+                                if (result.isConfirmed) {
+                                    if (@json(auth()->user()->isDepartmentAdmin() || $isBarangayDeskOfficer || $isMultiroleDeskOfficer)) window.location.assign(printUrl);
+                                    else window.open(printUrl, '_blank');
+                                }
                             });
                             return;
                         }

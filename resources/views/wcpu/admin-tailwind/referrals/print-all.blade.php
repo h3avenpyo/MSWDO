@@ -1,4 +1,4 @@
-@php $isBcpcReferralRegistry = strtoupper((string) ($referrals->first()?->case?->type ?? $department ?? auth()->user()?->defaultCaseDepartment() ?? (auth()->user()?->isBcpcAdmin() ? 'BCPC' : 'VAWC'))) === 'BCPC'; @endphp
+@php $isBcpcReferralRegistry = strtoupper((string) ((auth()->user()?->isDepartmentAdmin() ? auth()->user()->defaultCaseDepartment() : null) ?? $referrals->first()?->case?->type ?? $department ?? auth()->user()?->defaultCaseDepartment() ?? (auth()->user()?->isBcpcAdmin() ? 'BCPC' : 'VAWC'))) === 'BCPC'; @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -172,6 +172,7 @@
     $silangLogoBase64 = file_exists($silangLogoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($silangLogoPath)) : '';
 @endphp
 <body data-pdf-print-url="{{ route('admin.referrals.print-edited-pdf') }}" data-csrf-token="{{ csrf_token() }}">
+
     <table class="header-table" role="presentation">
         <tr>
             <td class="logo-cell">

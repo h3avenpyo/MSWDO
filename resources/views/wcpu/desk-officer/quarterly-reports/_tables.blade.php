@@ -346,7 +346,7 @@ document.querySelectorAll('.quarterly-mobile-cards').forEach(cards => {
 });
 
 window.portalPaginationElements('[data-quarterly-preview]').forEach(button => button.addEventListener('click', () => {
-    const openPreview = () => window.open(button.dataset.quarterlyPreview, '_blank', 'noopener');
+    const openPreview = () => window.location.assign(button.dataset.quarterlyPreview);
     if (typeof Swal === 'undefined') return openPreview();
     Swal.fire({
         title: 'Print Report?',

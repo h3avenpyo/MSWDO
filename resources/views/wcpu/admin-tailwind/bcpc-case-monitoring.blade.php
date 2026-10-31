@@ -706,6 +706,55 @@
 @push('scripts')
 @if(auth()->user()?->isDepartmentAdmin())
 <script>
+(() => {
+    let pending = null;
+    const cancelRefresh = () => pending?.abort();
+    const dialogOpen = () => ['addMonitoringModal', 'generateReportModal'].some(id => {
+        const modal = document.getElementById(id);
+        return modal && !modal.classList.contains('hidden');
+    })
+        || document.querySelector('.swal2-container');
+    const refreshMonitoring = async () => {
+        const current = document.getElementById('bcpc-monitoring-results');
+        if (document.hidden || pending || !current || current.hasAttribute('aria-busy') || dialogOpen()) return;
+        const url = location.href;
+        const request = new AbortController();
+        pending = request;
+        const timeout = setTimeout(() => request.abort(), 10000);
+        try {
+            const response = await fetch(url, {
+                cache: 'no-store', signal: request.signal,
+                headers: { 'Accept': 'text/html', 'X-Skip-Loading': '1' },
+            });
+            if (!response.ok || response.redirected) return;
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            const next = page.getElementById('bcpc-monitoring-results');
+            if (request.signal.aborted || location.href !== url || dialogOpen()
+                || document.getElementById('bcpc-monitoring-results') !== current
+                || current.hasAttribute('aria-busy') || !next) return;
+            if (current.innerHTML !== next.innerHTML) current.innerHTML = next.innerHTML;
+        } catch (_) {
+            // Keep the displayed monitoring records if a background refresh is unavailable.
+        } finally {
+            clearTimeout(timeout);
+            if (pending === request) pending = null;
+        }
+    };
+    document.addEventListener('input', cancelRefresh, true);
+    document.addEventListener('change', cancelRefresh, true);
+    document.addEventListener('submit', cancelRefresh, true);
+    document.addEventListener('click', event => {
+        if (event.target.closest('#bcpc-monitoring-results a[href], #bcpc-monitoring-results button, #bcpc-monitoring-filter-form button')) cancelRefresh();
+    }, true);
+    window.addEventListener('popstate', cancelRefresh);
+    window.addEventListener('focus', refreshMonitoring);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelRefresh();
+        else refreshMonitoring();
+    });
+    window.setInterval(refreshMonitoring, 3000);
+})();
+
 document.addEventListener('click', function (event) {
     const link = event.target.closest('a[data-monitoring-print]');
     if (!link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -718,7 +767,7 @@ document.addEventListener('click', function (event) {
         confirmButtonText: 'Open Print Preview',
         cancelButtonText: 'Cancel',
         confirmButtonColor: '#C41E3A',
-        preConfirm: () => { window.open(link.href, '_blank', 'noopener'); },
+        preConfirm: () => { window.location.assign(link.href); },
     });
 });
 </script>

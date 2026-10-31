@@ -164,7 +164,7 @@ class QuarterlyReportController extends Controller
             }
         }
         
-        $query = QuarterlyReport::with(['user', 'barangay'])
+        $query = QuarterlyReport::with(['user', 'barangay', 'latestGenerationActivity'])
             ->orderByDesc('updated_at')
             ->orderByDesc('created_at')
             ->orderByDesc('year')

@@ -49,6 +49,11 @@ class CaseReferralNotificationTest extends TestCase
             $this->assertSame($expected, $entry->properties['recipient_ids']);
             $this->assertSame(10, $entry->subject_id);
             $this->assertSame('REF-10', $entry->properties['referral_number']);
+            MultiroleActionNotifications::recordCaseReferred($case, $actor);
+            $directEntry = ActivityLog::latest('id')->first();
+            $this->assertSame($expected, $directEntry->properties['recipient_ids']);
+            $this->assertSame('', $directEntry->properties['referral_number']);
+            $this->assertSame('Case BCPC-10 was referred.', $directEntry->description);
         }
         DB::disconnect('wcpu');
     }

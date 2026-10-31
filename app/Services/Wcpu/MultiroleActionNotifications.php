@@ -28,7 +28,7 @@ class MultiroleActionNotifications
                 .trim($actor->first_name.' '.$actor->last_name).'.');
     }
 
-    public static function recordCaseReferred(CaseModel $case, User $actor, string $referralNumber): void
+    public static function recordCaseReferred(CaseModel $case, User $actor, string $referralNumber = ''): void
     {
         if ($actor->position !== 'Desk Officer') return;
 
@@ -46,7 +46,7 @@ class MultiroleActionNotifications
                 'kind' => 'case',
                 'referral_number' => $referralNumber,
             ])
-            ->log('Case '.$case->case_number.' was referred ('.$referralNumber.').');
+            ->log('Case '.$case->case_number.' was referred'.($referralNumber !== '' ? ' ('.$referralNumber.')' : '').'.');
     }
 
     public static function record(string $action, Model $record): void
@@ -96,10 +96,23 @@ class MultiroleActionNotifications
                     'quarterly report' => route_has($officer ? 'desk-officer.quarterly-reports.show' : 'admin.quarterly-reports.show') ? route($officer ? 'desk-officer.quarterly-reports.show' : 'admin.quarterly-reports.show', $entry->subject_id) : '#',
                     default => route_has($officer ? 'desk-officer.bcpc-case-monitoring.edit' : 'admin.bcpc-case-monitoring.edit') ? route($officer ? 'desk-officer.bcpc-case-monitoring.edit' : 'admin.bcpc-case-monitoring.edit', ['view' => $entry->subject_id]) : '#',
                 };
+                if (!$officer && $user->isDepartmentAdmin() && $kind === 'case'
+                    && array_key_exists('referral_number', $entry->properties->all())) {
+                    $referral = CaseReferral::where('case_id', $entry->subject_id)
+                        ->when(!empty($entry->properties['referral_number']), fn ($query) => $query
+                            ->where('referral_number', $entry->properties['referral_number']))
+                        ->latest('id')->first();
+                    if ($referral && route_has('admin.referrals')) {
+                        $url = route('admin.referrals', ['view_referral' => $referral->id]);
+                    }
+                }
                 $id = 'multirole_action_'.$entry->id;
                 $deskOfficer = trim(($entry->causer?->first_name ?? '') . ' ' . ($entry->causer?->last_name ?? ''))
                     ?: ($entry->causer?->username ?? 'Desk Officer');
-                return ['id' => $id, 'type' => 'multirole_action', 'icon' => 'bell', 'text' => e($entry->description),
+                $notificationText = !$officer && $user->isDepartmentAdmin() && $kind === 'case'
+                    && array_key_exists('referral_number', $entry->properties->all())
+                    ? 'Case Referred' : $entry->description;
+                return ['id' => $id, 'type' => 'multirole_action', 'icon' => 'bell', 'text' => e($notificationText),
                     'time' => $entry->created_at->diffForHumans(), 'timestamp' => $entry->created_at->getTimestamp(),
                     'unread' => !in_array($id, $readIds, true) && (!$user->notifications_last_viewed_at || $entry->created_at->gte($user->notifications_last_viewed_at)),
                     'url' => $url,

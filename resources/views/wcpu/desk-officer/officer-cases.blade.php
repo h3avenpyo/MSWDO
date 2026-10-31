@@ -30,7 +30,7 @@
         </div>
         <div class="case-modal-header-actions flex items-center gap-2 flex-wrap {{ Auth::user()->position === 'Desk Officer' && (Auth::user()->defaultCaseDepartment() === 'BCPC' || Auth::user()->isMultiCaseDepartment()) ? 'w-full justify-end' : '' }}">
           @if(Auth::user()->position === 'Desk Officer' && (Auth::user()->defaultCaseDepartment() === 'BCPC' || Auth::user()->isMultiCaseDepartment()))
-          <a :href="printUrl" target="_blank" class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+          <a :href="printUrl" target="{{ $isMultiroleDeskOfficer ? '_self' : '_blank' }}" class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
             <i class="fas fa-print"></i><span>Print</span>
           </a>
           <a id="bcpc-refer-case-button" :href="canRefer ? referUrl : null" :aria-disabled="(!canRefer).toString()" :tabindex="canRefer ? 0 : -1" @click="if (!canRefer) $event.preventDefault()" :class="{ 'opacity-50 cursor-not-allowed pointer-events-none': !canRefer }" class="inline-flex items-center gap-2 px-3 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium">
@@ -3729,7 +3729,13 @@ async function submitSendCopy(caseId, emailAddress) {
 window.previewCasePrint = function(printUrl, caseNumber) {
     if (!printUrl || printUrl === '#') return;
 
-    const openPreview = () => window.open(printUrl, '_blank', 'noopener');
+    const openPreview = () => {
+        @if($isMultiroleDeskOfficer)
+        window.location.assign(printUrl);
+        @else
+        window.open(printUrl, '_blank', 'noopener');
+        @endif
+    };
     if (typeof Swal === 'undefined') {
         openPreview();
         return;
@@ -3768,7 +3774,11 @@ function printAllCases() {
                 if (currentParams.has(key)) printUrl.searchParams.set(key, currentParams.get(key));
             });
             const pdfUrl = printUrl.toString();
+            @if($isMultiroleDeskOfficer)
+            window.location.assign(pdfUrl);
+            @else
             window.open(pdfUrl, '_blank', 'noopener');
+            @endif
         }
     });
 }

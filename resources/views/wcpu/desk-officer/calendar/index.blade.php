@@ -16,7 +16,7 @@ $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer'
 @push('styles')
 @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
 <style>
-    @media (max-width: 47.9375rem) {
+    @media (max-width: 85.375rem) {
         html body.portal-ui .calendar-mobile-date-field {
             display: block !important;
             position: relative;

@@ -778,6 +778,10 @@ class CaseController extends Controller
             $case->updated_at = Carbon::now('Asia/Manila');
             $case->save();
 
+            if (Auth::user()?->position === 'Desk Officer') {
+                \App\Services\Wcpu\MultiroleActionNotifications::recordCaseReferred($case, Auth::user());
+            }
+
             // Log activity (wrap in try-catch to not fail the whole operation)
             try {
                 if (function_exists('activity')) {
