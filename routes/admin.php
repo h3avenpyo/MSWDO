@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\Auth\AuthController;
 use App\Http\Controllers\Admin\Auth\EmailCodeController;
 use App\Http\Controllers\Admin\Auth\OfficerController;
+use App\Http\Controllers\Admin\Auth\OfficerEmailVerificationController;
 use App\Http\Controllers\Admin\Auth\PasswordResetManagementController;
 use App\Http\Controllers\Admin\MultiDatabaseDemoController;
 
@@ -35,6 +36,8 @@ Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     // Officers Directory & Management
     Route::get('/admin/add-officers', [OfficerController::class, 'addOfficers'])->name('admin.add-officers');
     Route::post('/admin/add-officers', [OfficerController::class, 'storeOfficer'])->name('admin.officers.store');
+    Route::post('/admin/officers/email-verification/send', [OfficerEmailVerificationController::class, 'send'])
+        ->middleware('throttle:5,1')->name('admin.officers.email-verification.send');
     Route::get('/admin/officers-directory', [OfficerController::class, 'officersDirectory'])->name('admin.officers-directory');
     Route::get('/admin/officers/{id}/edit', [OfficerController::class, 'editOfficer'])->name('admin.officers.edit');
     Route::put('/admin/officers/{id}', [OfficerController::class, 'updateOfficer'])->name('admin.officers.update');

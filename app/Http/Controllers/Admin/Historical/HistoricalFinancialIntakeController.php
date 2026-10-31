@@ -70,7 +70,6 @@ class HistoricalFinancialIntakeController extends Controller
             'Diabetes',
             'Surgical',
             'Trauma and Injury',
-            'Hospital Bill / Medical Needs',
             'Other Medical Conditions',
         ];
 
