@@ -1543,9 +1543,34 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         </div>
     </div>
 </div>
+<style>
+    .or-document-dialog {
+        width: min(1100px, calc(100% - 24px));
+        height: 85vh;
+        max-height: 90dvh;
+        max-width: none;
+        margin: auto;
+        padding: 0;
+        border: 0;
+        border-radius: 14px;
+        background: #fff;
+        color: #1e293b;
+        box-shadow: 0 24px 64px rgba(15, 23, 42, 0.3);
+    }
+    .or-document-dialog[open] { display: flex; flex-direction: column; }
+    .or-document-dialog::backdrop { background: rgba(15, 23, 42, 0.65); }
+    .or-document-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #e2e8f0; }
+    .or-document-header h2 { margin: 0; font-size: 15px; font-weight: 600; overflow-wrap: anywhere; min-width: 0; }
+    .or-document-close { flex-shrink: 0; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; cursor: pointer; font-size: 13px; }
+    .or-document-close:focus-visible { outline: 2px solid #b11116; outline-offset: 2px; }
+    .or-document-body { flex: 1; min-height: 0; overflow: auto; padding: 12px; background: #f8fafc; }
+    .or-document-body iframe { display: block; width: 100%; height: 100%; border: 0; }
+    .or-document-body img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+</style>
 @endsection
 
 @push('scripts')
+<script src="{{ asset('js/social-case-document-preview.js') }}?v={{ filemtime(public_path('js/social-case-document-preview.js')) }}"></script>
 <script>
 window.onlineFilterState = {
     barangay: '{{ request('barangay') && request('barangay') !== 'All' ? request('barangay') : '' }}',
@@ -1721,16 +1746,16 @@ function viewOnlineRequest(id) {
                                     <span>${escapeHtml(att.file_size)}</span>
                                 </div>
                             </div>
-                            <a href="${att.file_url}" target="_blank" rel="noopener noreferrer" class="or-attachment-btn" title="Open file in new tab">
-                                <span>Open File</span>
-                                <i data-lucide="external-link" style="width:12px;height:12px;"></i>
-                            </a>
+                            <button type="button" data-document-url="${escapeHtml(att.file_url)}" data-document-name="${escapeHtml(att.file_name)}" class="or-attachment-btn" title="Preview document">
+                                <span>View File</span>
+                                <i data-lucide="eye" style="width:12px;height:12px;"></i>
+                            </button>
                         </div>
                     `;
                 }).join('');
                 attachmentsContent = `<div class="or-attachment-list">${cards}</div>`;
             } else if (data.attachments_html && data.attachments_html.indexOf('<li') !== -1) {
-                attachmentsContent = data.attachments_html;
+                attachmentsContent = `<div class="or-attachment-list">${data.attachments_html}</div>`;
             } else {
                 attachmentsContent = `
                     <div style="padding: 16px; text-align: center; color: #64748B; background: #F8FAFC; border-radius: 10px; border: 1px dashed #CBD5E1; font-size: 13px;">
@@ -1915,6 +1940,15 @@ function viewOnlineRequest(id) {
                 buttonsStyling: false,
                 didOpen: () => {
                     if (typeof lucide !== 'undefined') lucide.createIcons();
+                    Swal.getPopup().addEventListener('click', event => {
+                        const control = event.target.closest('[data-document-url], .or-attachment-list a[href]');
+                        if (!control) return;
+                        event.preventDefault();
+                        openSocialCaseDocumentPreview({
+                            url: control.dataset.documentUrl || control.href,
+                            name: control.dataset.documentName || control.textContent.trim()
+                        }, control);
+                    });
                 },
             }).then((result) => {
 
