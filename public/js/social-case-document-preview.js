@@ -43,9 +43,17 @@ function openSocialCaseDocumentPreview(file, trigger) {
             if (url.origin !== window.location.origin) {
                 throw new Error('The document URL does not match this site. Please contact the administrator.');
             }
-            const response = await fetch(url, { credentials: 'same-origin', signal: controller.signal });
+            const response = await fetch(url, {
+                credentials: 'same-origin',
+                headers: { Accept: 'application/json' },
+                signal: controller.signal
+            });
             if (!response.ok) {
-                throw new Error(response.status === 404 ? 'The uploaded document could not be found.' : 'Unable to load the document. Please try again.');
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Your session has expired or you do not have permission to view this document. Please log in again.');
+                }
+                const detail = await response.json().catch(() => null);
+                throw new Error(detail?.message || (response.status === 404 ? 'The uploaded document could not be found.' : 'Unable to load the document. Please try again.'));
             }
             const blob = await response.blob();
             if (controller.signal.aborted) return;

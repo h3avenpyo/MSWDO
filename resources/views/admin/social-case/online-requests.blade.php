@@ -1746,7 +1746,7 @@ function viewOnlineRequest(id) {
                                     <span>${escapeHtml(att.file_size)}</span>
                                 </div>
                             </div>
-                            <button type="button" data-document-url="${escapeHtml(att.file_url)}" data-document-name="${escapeHtml(att.file_name)}" class="or-attachment-btn" title="Preview document">
+                            <button type="button" data-document-url="${escapeHtml(att.preview_url || att.file_url)}" data-document-name="${escapeHtml(att.file_name)}" class="or-attachment-btn" title="Preview document">
                                 <span>View File</span>
                                 <i data-lucide="eye" style="width:12px;height:12px;"></i>
                             </button>

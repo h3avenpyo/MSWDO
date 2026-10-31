@@ -7,9 +7,38 @@ use App\Models\OnlineRequest;
 use App\Models\Client;
 use App\Services\NameMatcher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class OnlineRequestController extends Controller
 {
+    public function previewAttachment($id, $attachment)
+    {
+        $onlineRequest = OnlineRequest::findOrFail($id);
+        $file = $onlineRequest->attachments()->findOrFail($attachment);
+        $path = str_replace('\\', '/', $file->file_path);
+        abort_unless(str_starts_with($path, 'online-request-attachments/')
+            && !in_array('..', explode('/', $path), true)
+            && !str_contains($path, "\0"), 404);
+
+        $disk = Storage::disk('public');
+        if (!$disk->exists($path)) {
+            return response()->json([
+                'message' => 'The uploaded file is missing from the hosting storage. Please ask the administrator to restore the uploaded attachments from the original server or backup.',
+            ], 404);
+        }
+
+        $mime = $disk->mimeType($path);
+        if (!in_array($mime, ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'], true)) {
+            return response()->json(['message' => 'Preview is available for PDF and image files only.'], 415);
+        }
+
+        return $disk->response($path, $file->file_name, [
+            'Content-Type' => $mime,
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
+        ], 'inline');
+    }
+
     public function index(Request $request)
     {
         $query = OnlineRequest::where('status', 'pending')
@@ -253,6 +282,7 @@ class OnlineRequestController extends Controller
                     'file_name' => $attachment->file_name,
                     'file_size' => $this->formatFileSize($attachment->file_size),
                     'file_url' => asset('storage/' . $attachment->file_path),
+                    'preview_url' => route('admin.social-case.online-requests.attachments.preview', ['id' => $request->id, 'attachment' => $attachment->id], false),
                     'file_type' => $attachment->file_type,
                     'extension' => strtoupper($ext ?: 'FILE'),
                     'is_image' => $isImage,
