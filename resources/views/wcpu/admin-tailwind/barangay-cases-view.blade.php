@@ -2447,7 +2447,7 @@
                         </div>
                     </div>
                     <div data-case-header-actions class="flex items-center gap-2">
-                        <a :href="isDeskOfficer ? printUrl + (printUrl.includes('?') ? '&' : '?') + 'back_barangay={{ $barangay->id }}' : printUrl" :target="isDeskOfficer ? '_self' : '_blank'"
+                        <a :href="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) ? printUrl + (printUrl.includes('?') ? '&' : '?') + 'back_barangay={{ $barangay->id }}' : printUrl" :target="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) ? '_self' : '_blank'"
                             class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                             <i class="fas fa-print"></i>
                             <span class="hidden sm:inline">Print</span>
