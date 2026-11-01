@@ -533,9 +533,11 @@
                             <div class="min-w-0">
                                 <p class="text-sm font-medium text-gray-800 truncate">{{ $referral->recipient_name }}</p>
                                 <p class="text-xs text-gray-500 truncate max-w-[180px]">{{ $referral->recipient_email }}</p>
-                                @if($isBcpcDeskOfficer && $referral->recipient && ($referral->recipient->trashed() || !$referral->recipient->active))
-                                    <p class="mt-1 text-xs font-medium text-red-600">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
+                                <div data-recipient-availability="{{ $referral->id }}" aria-live="polite">
+                                @if(($isBcpcDeskOfficer || $isSwdDeskOfficer || $isMultiroleDeskOfficer) && $referral->recipient && ($referral->recipient->trashed() || !$referral->recipient->active))
+                                    <p class="mt-1 text-xs font-medium text-red-600" style="color: #dc2626 !important;">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
                                 @endif
+                                </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600">
@@ -612,6 +614,11 @@
                     <div><dt class="text-xs text-gray-500">Sex</dt><dd class="font-medium text-gray-800">{{ $referral->client_sex }}</dd></div>
                     <div class="col-span-2"><dt class="text-xs text-gray-500">Services Needed</dt><dd class="font-medium text-gray-800 break-words">{{ $referral->specific_services_requested ?: 'Not recorded' }}</dd></div>
                     <div class="col-span-2"><dt class="text-xs text-gray-500">Receiving Agency</dt><dd class="font-medium text-gray-800 break-words">{{ $referral->recipient_name ?: 'Not recorded' }}<span class="block text-xs font-normal text-gray-500 break-all">{{ $referral->recipient_email }}</span></dd></div>
+                    <div class="col-span-2" data-recipient-availability="{{ $referral->id }}" aria-live="polite">
+                        @if(($isBcpcDeskOfficer || $isSwdDeskOfficer || $isMultiroleDeskOfficer) && $referral->recipient && ($referral->recipient->trashed() || !$referral->recipient->active))
+                            <p class="mt-1 text-xs font-medium text-red-600" style="color: #dc2626 !important;">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
+                        @endif
+                    </div>
                     <div class="col-span-2"><dt class="text-xs text-gray-500">Feedback</dt><dd class="font-medium text-gray-800 break-words">{{ $referral->feedback ?: 'No feedback yet' }}</dd></div>
                 </dl>
                 <div class="referral-card-actions grid grid-cols-4 gap-2 border-t border-gray-100 pt-3">
@@ -675,6 +682,43 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    let availabilityRequest = null;
+    const refreshRecipientAvailability = async () => {
+        if (document.hidden || availabilityRequest) return;
+        const request = new AbortController();
+        availabilityRequest = request;
+        const url = location.href;
+        const timeout = window.setTimeout(() => request.abort(), 10000);
+        try {
+            const response = await fetch(url, {
+                signal: request.signal,
+                cache: 'no-store',
+                headers: { Accept: 'text/html', 'X-Skip-Loading': '1' }
+            });
+            if (!response.ok || response.redirected || location.href !== url) return;
+            const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+            if (location.href !== url || !page.querySelector('#desk-referrals-content')) return;
+            const warnings = new Map();
+            page.querySelectorAll('[data-recipient-availability]').forEach(element => {
+                warnings.set(element.dataset.recipientAvailability, element.innerHTML);
+            });
+            document.querySelectorAll('[data-recipient-availability]').forEach(element => {
+                const html = warnings.get(element.dataset.recipientAvailability);
+                if (html !== undefined && element.innerHTML !== html) element.innerHTML = html;
+            });
+        } catch (error) {
+            // Keep the current warning if the background check cannot complete.
+        } finally {
+            window.clearTimeout(timeout);
+            if (availabilityRequest === request) availabilityRequest = null;
+        }
+    };
+    window.setInterval(refreshRecipientAvailability, 3000);
+    window.addEventListener('focus', refreshRecipientAvailability);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) availabilityRequest?.abort();
+        else refreshRecipientAvailability();
+    });
     const referralsSearchInput = document.getElementById('referrals-search-input');
     referralsSearchInput?.addEventListener('input', function () {
         const query = this.value.trim().toLowerCase();

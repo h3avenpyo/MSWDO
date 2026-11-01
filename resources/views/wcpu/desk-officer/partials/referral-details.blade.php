@@ -1,3 +1,8 @@
+<div data-recipient-availability="{{ $referral->id }}" aria-live="polite">
+    @if($referral->recipient && ($referral->recipient->trashed() || !$referral->recipient->active))
+        <p class="mb-3 text-xs font-medium text-red-600" style="color: #dc2626 !important;">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
+    @endif
+</div>
 @if($isArchived ?? false)
 <div class="archived-referral-details space-y-5 text-left">
     <section class="overflow-hidden rounded-xl border border-gray-200 bg-white">
