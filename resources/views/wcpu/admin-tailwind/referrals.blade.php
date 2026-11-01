@@ -676,7 +676,7 @@
                                 <p class="text-sm font-medium text-gray-800 truncate">{{ $referral->recipient_name }}</p>
                                 <p class="text-xs text-gray-500 truncate max-w-[180px]">{{ $referral->created_by_department_admin ? $referral->recipient_address : $referral->recipient_email }}</p>
                                 @if($recipientUnavailable)
-                                    <p class="mt-1 text-xs font-medium text-red-600">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
+                                    <p class="mt-1 text-xs font-medium text-red-600" style="color: #dc2626 !important;">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
                                 @endif
                             </div>
                         </td>
@@ -821,7 +821,7 @@
                         <div><dt>Sex</dt><dd>{{ $referral->client_sex }}</dd></div>
                         <div class="referral-wide"><dt>Services Needed</dt><dd>{{ $referral->specific_services_requested ?: 'N/A' }}</dd></div>
                         <div class="referral-wide"><dt>Receiving Agency</dt><dd>{{ $referral->recipient_name }}<small>{{ $referral->created_by_department_admin ? $referral->recipient_address : $referral->recipient_email }}</small></dd>
-                            @if($recipientUnavailable)<small class="text-red-600">The recipient is currently unavailable. The referral cannot be processed due to this reason.</small>@endif
+                            @if($recipientUnavailable)<small class="text-red-600" style="color: #dc2626 !important;">The recipient is currently unavailable. The referral cannot be processed due to this reason.</small>@endif
                         </div>
                         <div class="referral-wide"><dt>Feedback</dt><dd>{{ $referral->feedback ?: 'No feedback yet' }}</dd></div>
                     </dl>
@@ -845,7 +845,7 @@
                             <p class="font-medium text-gray-700">{{ $referral->recipient_name }}</p>
                             <p class="text-xs text-gray-500">{{ $referral->created_by_department_admin ? $referral->recipient_address : $referral->recipient_email }}</p>
                             @if($recipientUnavailable)
-                                <p class="mt-1 text-xs font-medium text-red-600">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
+                                <p class="mt-1 text-xs font-medium text-red-600" style="color: #dc2626 !important;">The recipient is currently unavailable. The referral cannot be processed due to this reason.</p>
                             @endif
                         </div>
                     </div>
