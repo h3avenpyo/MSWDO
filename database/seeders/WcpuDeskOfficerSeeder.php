@@ -8,13 +8,11 @@ use App\Models\Wcpu\CaseReferral;
 use App\Models\Wcpu\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Sample WCPU login accounts for the desk officers plus a small set of cases
  * and referrals so the SWD (VAWC) and BCPC dashboards have data to display.
  *
- * All dummy accounts share the password: Password1!
  *
  * | Email                    | Position     | Department |
  * |--------------------------|--------------|------------|
@@ -23,7 +21,6 @@ use Illuminate\Support\Facades\Hash;
  */
 class WcpuDeskOfficerSeeder extends Seeder
 {
-    public const PASSWORD = 'Password1!';
 
     public function run(): void
     {
@@ -139,7 +136,7 @@ class WcpuDeskOfficerSeeder extends Seeder
             'Purok 1, Adlas, Silang, Cavite'
         );
 
-        $this->command->info('WCPU Desk Officer seed complete. 2 desk officer accounts created (password: ' . self::PASSWORD . ').');
+        $this->command->info('WCPU Desk Officer seed complete. 2 desk officer accounts created.');
         $this->command->info('  SWD (VAWC) desk officer: swd.desk@wcpu.test');
         $this->command->info('  BCPC desk officer:       bcpc.desk@wcpu.test');
         $this->command->info('Sample cases seeded: 2 VAWC (SWD), 1 BCPC with 1 referral.');
@@ -147,13 +144,12 @@ class WcpuDeskOfficerSeeder extends Seeder
 
     private function deskOfficer(string $email, string $username, string $firstName, string $lastName, string $department, string $barangay): User
     {
-        return User::updateOrCreate(
+        return SecureSeedAccount::updateOrCreate(User::class,
             ['email' => $email],
             [
                 'first_name' => $firstName,
                 'last_name' => $lastName,
                 'username' => $username,
-                'password' => Hash::make(self::PASSWORD),
                 'phone_number' => '0917' . str_pad((string) abs(crc32($email)) % 10000000, 7, '0', STR_PAD_LEFT),
                 'position' => 'Desk Officer',
                 'department' => $department,

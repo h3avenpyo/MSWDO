@@ -13,7 +13,6 @@ use App\Models\SocialCase\SocialCaseStudy;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Curated, idempotent sample data for the Social Case module.
@@ -424,11 +423,10 @@ class SocialCaseModuleSeeder extends Seeder
 
     private function officer(array $attributes): User
     {
-        return User::updateOrCreate(
+        return SecureSeedAccount::updateOrCreate(User::class,
             ['email' => $attributes['email']],
             [
                 'name' => $attributes['name'],
-                'password' => Hash::make('password'),
                 'role' => $attributes['role'],
                 'status' => 'active',
             ]

@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
         ]);
 
-        $this->call(FeaHeavenUserSeeder::class);
         $this->call(InBetweenEligibleSeeder::class);
 
         // Curated sample data for all modules (social case, senior citizen,

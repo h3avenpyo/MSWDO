@@ -4,12 +4,10 @@ namespace Database\Seeders;
 
 use App\Models\Wcpu\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Sample WCPU administrator accounts for the SWD (VAWC) and BCPC departments.
  *
- * All dummy accounts share the password: Password1!
  *
  * | Email                 | Position      | Department |
  * |-----------------------|---------------|------------|
@@ -18,7 +16,6 @@ use Illuminate\Support\Facades\Hash;
  */
 class WcpuAdminSeeder extends Seeder
 {
-    public const PASSWORD = 'Password1!';
 
     public function run(): void
     {
@@ -40,13 +37,12 @@ class WcpuAdminSeeder extends Seeder
         ];
 
         foreach ($admins as $admin) {
-            User::updateOrCreate(
+            SecureSeedAccount::updateOrCreate(User::class,
                 ['email' => $admin['email']],
                 [
                     'first_name' => $admin['first_name'],
                     'last_name' => $admin['last_name'],
                     'username' => $admin['username'],
-                    'password' => Hash::make(self::PASSWORD),
                     'phone_number' => '0918' . str_pad((string) abs(crc32($admin['email'])) % 10000000, 7, '0', STR_PAD_LEFT),
                     'position' => 'Administrator',
                     'department' => $admin['department'],
@@ -60,7 +56,7 @@ class WcpuAdminSeeder extends Seeder
             );
         }
 
-        $this->command->info('WCPU Admin seed complete. 2 administrator accounts created (password: ' . self::PASSWORD . ').');
+        $this->command->info('WCPU Admin seed complete. 2 administrator accounts created.');
         $this->command->info('  SWD (VAWC) administrator: swd.admin@wcpu.test');
         $this->command->info('  BCPC administrator:       bcpc.admin@wcpu.test');
     }

@@ -14,6 +14,10 @@ class TruncateAndSeedAdmin extends Seeder
      */
     public function run(): void
     {
+        if (! app()->environment(['local', 'testing'])) {
+            throw new \RuntimeException('Destructive seeding is restricted to local and testing environments.');
+        }
+
         // 1. Truncate unified database tables preserving migrations, barangays, and case_types
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS = 0;');
 
@@ -35,7 +39,7 @@ class TruncateAndSeedAdmin extends Seeder
         User::create([
             'name' => 'Fredrick Calos',
             'email' => 'fredcalos@gmail.com',
-            'password' => 'Password1!',
+            'password' => Hash::make(bin2hex(random_bytes(24))),
             'role' => 'admin',
             'status' => 'active',
             'position' => 'MSWDO Administrator',
@@ -61,7 +65,6 @@ class TruncateAndSeedAdmin extends Seeder
             $this->command->info('Administrator account created:');
             $this->command->info('  Name: Fredrick Calos');
             $this->command->info('  Email: fredcalos@gmail.com');
-            $this->command->info('  Password: Password1!');
         }
     }
 }

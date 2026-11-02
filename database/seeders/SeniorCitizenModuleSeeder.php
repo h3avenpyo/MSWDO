@@ -11,7 +11,6 @@ use App\Models\Senior\SeniorCitizenRecord;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Curated, idempotent sample data for the Senior Citizen module.
@@ -24,11 +23,10 @@ class SeniorCitizenModuleSeeder extends Seeder
 {
     public function run(): void
     {
-        $officer = User::updateOrCreate(
+        $officer = SecureSeedAccount::updateOrCreate(User::class,
             ['email' => 'senior@mswdo.test'],
             [
                 'name' => 'Senior Citizen Officer',
-                'password' => Hash::make('password'),
                 'role' => UserRole::SeniorCitizenOfficer,
                 'status' => 'active',
             ]

@@ -16,7 +16,7 @@ class MultiDatabaseSeeder extends Seeder
             ['email' => 'admin@example.com'],
             [
                 'name' => 'System Admin',
-                'password' => bcrypt('password123'),
+                'password' => bcrypt(bin2hex(random_bytes(24))),
             ]
         );
 

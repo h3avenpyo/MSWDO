@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
 {
@@ -14,51 +13,46 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::updateOrCreate(
+        SecureSeedAccount::updateOrCreate(User::class,
             ['email' => 'admin@mswdo.test'],
             [
                 'name' => 'Admin User',
-                'password' => Hash::make('AdminPass123!'),
                 'role' => 'admin',
                 'status' => 'active',
             ]
         );
 
-        User::updateOrCreate(
+        SecureSeedAccount::updateOrCreate(User::class,
             ['email' => 'social@mswdo.test'],
             [
                 'name' => 'Social Case Officer',
-                'password' => Hash::make('password'),
                 'role' => 'social_worker',
                 'status' => 'active',
             ]
         );
 
-        User::updateOrCreate(
+        SecureSeedAccount::updateOrCreate(User::class,
             ['email' => 'social2@mwsdo.test'],
             [
                 'name' => 'Social Case Eligibility Checker',
-                'password' => Hash::make('password'),
                 'role' => 'eligibility_checker',
                 'status' => 'active',
             ]
         );
 
-        User::updateOrCreate(
+        SecureSeedAccount::updateOrCreate(User::class,
             ['email' => 'senior@mswdo.test'],
             [
                 'name' => 'Senior Citizen Officer',
-                'password' => Hash::make('password'),
                 'role' => 'staff',
                 'status' => 'active',
             ]
         );
 
-        User::updateOrCreate(
+        SecureSeedAccount::updateOrCreate(User::class,
             ['email' => 'financial@mswdo.test'],
             [
                 'name' => 'Financial Assistance Officer',
-                'password' => Hash::make('password'),
                 'role' => 'Financial assistance officer',
                 'status' => 'active',
             ]

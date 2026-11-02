@@ -10,7 +10,6 @@ use App\Models\SocialCase\BeneficiaryIntake;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Curated, idempotent sample data for the Financial Assistance module.
@@ -23,31 +22,28 @@ class FinancialModuleSeeder extends Seeder
 {
     public function run(): void
     {
-        $officer = User::updateOrCreate(
+        $officer = SecureSeedAccount::updateOrCreate(User::class,
             ['email' => 'financial@mswdo.test'],
             [
                 'name' => 'Financial Assistance Officer',
-                'password' => Hash::make('password'),
                 'role' => UserRole::FinancialAssistanceOfficer,
                 'status' => 'active',
             ]
         );
 
-        $step1 = User::updateOrCreate(
+        $step1 = SecureSeedAccount::updateOrCreate(User::class,
             ['email' => 'financialstep1@mswdo.test'],
             [
                 'name' => 'Financial Assistance Step 1',
-                'password' => Hash::make('password'),
                 'role' => UserRole::FinancialStep1,
                 'status' => 'active',
             ]
         );
 
-        $step2 = User::updateOrCreate(
+        $step2 = SecureSeedAccount::updateOrCreate(User::class,
             ['email' => 'financialstep2@mswdo.test'],
             [
                 'name' => 'Financial Assistance Step 2',
-                'password' => Hash::make('password'),
                 'role' => UserRole::FinancialStep2,
                 'status' => 'active',
             ]
