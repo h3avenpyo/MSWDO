@@ -25,8 +25,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             <p class="mobile-brand-subtitle">Social Case Study Dashboard</p>
         </div>
         <div class="mobile-header-actions">
-            <button type="button" id="mobileNotifBellBtn" class="mobile-header-notif-btn notif-bell-btn-trigger" title="Notifications" onclick="toggleNotificationDropdown(event)">
-                <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+            <button type="button" id="mobileNotifBellBtn" class="mobile-header-notif-btn notif-bell-btn-trigger social-case-notification-btn" title="Notifications" aria-label="Notifications" aria-controls="notifDropdown" aria-expanded="false" onclick="toggleNotificationDropdown(event)">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a6 6 0 0 0-6 6v3.6c0 1.3-.5 2.5-1.4 3.4L3 16.6V18h18v-1.4L19.4 15a4.8 4.8 0 0 1-1.4-3.4V8a6 6 0 0 0-6-6Zm-3 18a3 3 0 0 0 6 0H9Z"/></svg>
                 <span class="notif-badge" style="display: none;">0</span>
                 <span class="notif-ping" style="display: none;"></span>
             </button>
@@ -587,6 +587,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         text-decoration: underline;
     }
 </style>
+<link rel="stylesheet" href="{{ asset('css/social-case-notification-button.css') }}?v={{ filemtime(public_path('css/social-case-notification-button.css')) }}">
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -653,8 +654,8 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
 
             <!-- Notification Bell Wrapper -->
             <div class="notification-wrapper" style="position: relative;">
-                <button type="button" id="notifBellBtn" class="notif-bell-btn notif-bell-btn-trigger" title="Notifications" onclick="toggleNotificationDropdown(event)">
-                    <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+                <button type="button" id="notifBellBtn" class="notif-bell-btn notif-bell-btn-trigger social-case-notification-btn" title="Notifications" aria-label="Notifications" aria-controls="notifDropdown" aria-expanded="false" onclick="toggleNotificationDropdown(event)">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a6 6 0 0 0-6 6v3.6c0 1.3-.5 2.5-1.4 3.4L3 16.6V18h18v-1.4L19.4 15a4.8 4.8 0 0 1-1.4-3.4V8a6 6 0 0 0-6-6Zm-3 18a3 3 0 0 0 6 0H9Z"/></svg>
                     <span id="notifBadge" class="notif-badge" style="display: none;">0</span>
                     <span id="notifPing" class="notif-ping" style="display: none;"></span>
                 </button>
@@ -923,7 +924,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
             positionDropdown(triggerBtn);
             dropdown.style.display = 'block';
             dropdown.classList.add('is-open');
-            bellBtns.forEach(btn => btn.classList.add('active'));
+            bellBtns.forEach(btn => {
+                btn.classList.add('active');
+                btn.setAttribute('aria-expanded', 'true');
+            });
             if (backdrop && window.innerWidth < 768) {
                 backdrop.style.display = 'block';
             }
@@ -942,7 +946,10 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         if (backdrop) {
             backdrop.style.display = 'none';
         }
-        bellBtns.forEach(btn => btn.classList.remove('active'));
+        bellBtns.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-expanded', 'false');
+        });
     }
 
     document.addEventListener('click', function(e) {
@@ -1017,7 +1024,7 @@ if(file_exists(public_path('images/mswdo-logo.png'))){
         if (countWalkinEl) countWalkinEl.textContent = `(${walkinCount})`;
         if (countOnlineEl) countOnlineEl.textContent = `(${onlineCount})`;
 
-        const badgeText = unreadCount > 99 ? '99+' : String(unreadCount);
+        const badgeText = unreadCount > 9 ? '9+' : String(unreadCount);
 
         if (unreadCount > 0) {
             badges.forEach(b => {

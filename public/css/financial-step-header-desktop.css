@@ -1,0 +1,52 @@
+/* Header cards throughout the financial module only.
+   Preserve the module's existing desktop breakpoint and card geometry. */
+@media screen and (min-width: 1024px) {
+    body.financial-module .step-wizard-card {
+        background: #FFFFFF !important;
+        color: #1F2937 !important;
+        border-color: #E5E7EB;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, .06) !important;
+    }
+
+    body.financial-module .step-wizard-card .wizard-heading {
+        color: #1F2937 !important;
+    }
+
+    body.financial-module .step-wizard-card .hero-subtitle {
+        color: #64748B !important;
+    }
+
+    body.financial-module .step-wizard-card :is(.step-1-badge, .step-2-badge, .step-pill-badge, .user-welcome, .stats-period-badge) {
+        background: #FFF1F2 !important;
+        color: #99172E !important;
+        border-color: #FECDD3 !important;
+        box-shadow: none !important;
+    }
+
+    body.financial-module .step-wizard-card .wizard-responsibilities-box {
+        background: #F8FAFC;
+        border-color: #E5E7EB;
+    }
+
+    body.financial-module .step-wizard-card .wizard-responsibilities-box:hover {
+        background: #F1F5F9;
+        border-color: #CBD5E1;
+    }
+
+    /* Dashboard overview descriptions have inline white text on the old red card. */
+    body.financial-module .step-wizard-card .wizard-responsibilities-box span {
+        color: #475569 !important;
+    }
+
+    body.financial-module .step-wizard-card :is(.wizard-responsibility-title, i) {
+        color: #C41E3A !important;
+    }
+
+    body.financial-module .step-wizard-card .btn i {
+        color: inherit !important;
+    }
+
+    body.financial-module .step-wizard-card .stats-filter-pill {
+        border-color: #E5E7EB;
+    }
+}

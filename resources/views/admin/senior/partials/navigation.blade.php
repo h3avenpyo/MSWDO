@@ -764,9 +764,10 @@
         .sidebar, .mobile-header, .sidebar-overlay { display: none !important; }
     }
 </style>
+<link rel="stylesheet" href="{{ asset('css/senior-sidebar-theme.css') }}?v={{ filemtime(public_path('css/senior-sidebar-theme.css')) }}">
 
 <!-- Sidebar -->
-<div class="sidebar" id="sidebar">
+<div class="sidebar senior-sidebar-theme" id="sidebar">
     <div class="sidebar-brand">
         <div class="sidebar-brand-content" onclick="handleBrandClick()" title="Senior Citizen">
             <img src="{{ asset('images/IserveIcon.png') }}" class="sidebar-brand-logo" alt="iSERVE">

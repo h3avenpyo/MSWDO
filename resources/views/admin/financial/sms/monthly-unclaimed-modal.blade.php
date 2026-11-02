@@ -46,8 +46,9 @@
                             <i class="fas fa-search text-primary me-1"></i> Search in Table
                         </label>
                         <div class="position-relative">
-                            <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2.5 text-muted small" style="pointer-events: none;"></i>
-                            <input type="text" class="form-control form-control-sm rounded-3 ps-4" id="monthlySearchInput"
+                            <i class="fas fa-search position-absolute top-50 translate-middle-y text-muted small"
+                                style="left: 0.75rem; width: 1rem; text-align: center; pointer-events: none;" aria-hidden="true"></i>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="monthlySearchInput" style="padding-left: 2.25rem;"
                                 placeholder="Filter by beneficiary name, representative, barangay, or contact number..." maxlength="150">
                         </div>
                     </div>

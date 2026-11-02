@@ -1,0 +1,25 @@
+/* MSWDO Admin dashboard and its shared-layout pages, at every screen size.
+   Override only sidebar colors; keep responsive layout and controls intact. */
+@media screen {
+    #sidebar.mswdo-admin-sidebar-theme {
+        background: #C41E3A !important;
+        color: #FFFFFF !important;
+    }
+
+    #sidebar.mswdo-admin-sidebar-theme :is(a, button, span, i, svg, [data-lucide], .sidebar-menu-header) {
+        color: #FFFFFF !important;
+    }
+
+    #sidebar.mswdo-admin-sidebar-theme .sidebar-menu a {
+        background: #C41E3A !important;
+    }
+
+    #sidebar.mswdo-admin-sidebar-theme .sidebar-menu a:hover {
+        background: #99172E !important;
+    }
+
+    #sidebar.mswdo-admin-sidebar-theme .sidebar-menu a.active {
+        background: #99172E !important;
+        box-shadow: inset 3px 0 0 #FFFFFF !important;
+    }
+}

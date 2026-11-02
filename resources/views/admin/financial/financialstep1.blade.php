@@ -85,7 +85,7 @@ $userName = session('admin_user_name') ?? 'Officer';
 @endif
 
 <!-- Step Wizard Header Card -->
-<div class="step-wizard-card animate-fade-in mb-4">
+<div class="step-wizard-card financial-step-header animate-fade-in mb-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
             <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">

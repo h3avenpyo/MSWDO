@@ -1,0 +1,47 @@
+/* White desktop headers for the MSWDO Admin layout and its related pages. */
+@media screen and (min-width: 1024px) {
+    body.mswdo-admin-module :is(.dash-banner, .form-header-bar) {
+        background: #FFFFFF !important;
+        color: #1F2937 !important;
+        border-color: #E5E7EB;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, .06) !important;
+    }
+
+    body.mswdo-admin-module .dash-banner::before {
+        background: transparent;
+    }
+
+    body.mswdo-admin-module .dash-banner .dash-banner-title {
+        color: #1F2937 !important;
+    }
+
+    body.mswdo-admin-module .dash-banner :is(.dash-banner-sub, [class~="text-white/70"]) {
+        color: #64748B !important;
+    }
+
+    body.mswdo-admin-module .dash-banner :is(#liveClock, #currentDateTime) {
+        color: #374151 !important;
+    }
+
+    body.mswdo-admin-module .dash-banner .dash-live-badge {
+        background: #F8FAFC;
+        color: #475569 !important;
+        border-color: #E5E7EB;
+    }
+
+    body.mswdo-admin-module .dash-banner [class~="text-amber-200"] {
+        background: #FFFBEB;
+        color: #92400E;
+        border-color: #FDE68A;
+    }
+
+    body.mswdo-admin-module .dash-banner [title^="Logged in as:"] {
+        background: #C41E3A;
+        color: #FFFFFF !important;
+        border-color: #FECDD3;
+    }
+
+    body.mswdo-admin-module :is(.dash-banner, .form-header-bar) :is(i, svg) {
+        color: #C41E3A;
+    }
+}

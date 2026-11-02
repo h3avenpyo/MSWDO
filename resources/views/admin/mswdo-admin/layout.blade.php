@@ -801,8 +801,10 @@
     </style>
     @stack('styles')
     <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/mswdo-admin-sidebar-theme.css') }}?v={{ filemtime(public_path('css/mswdo-admin-sidebar-theme.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/mswdo-admin-header-desktop.css') }}?v={{ filemtime(public_path('css/mswdo-admin-header-desktop.css')) }}">
 </head>
-<body>
+<body class="mswdo-admin-module">
 <div class="app">
     @php
         $logo = 'IserveIcon.png';
@@ -838,7 +840,7 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar mswdo-admin-sidebar-theme" id="sidebar">
         <div class="sidebar-brand">
             <div class="sidebar-brand-content">
                 <img src="{{ asset('images/IserveIcon.png') }}" class="sidebar-brand-logo" alt="iSERVE">

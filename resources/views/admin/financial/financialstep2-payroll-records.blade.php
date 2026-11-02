@@ -651,18 +651,6 @@
                     class="btn btn-light btn-sm rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
                     <i class="fas fa-edit me-1"></i> Payroll Generation
                 </a>
-                <a href="{{ route('admin.financial.financialstep2') }}"
-                    class="btn btn-outline-light btn-sm rounded-pill px-3">
-                    <i class="fas fa-list-check me-1"></i> Step 2 Masterlist
-                </a>
-                <a href="{{ route('admin.financial.financialstep2.liquidation') }}"
-                    class="btn btn-outline-light btn-sm rounded-pill px-3">
-                    <i class="fas fa-receipt me-1"></i> Liquidation
-                </a>
-                <a href="{{ route('admin.financial.financialstep2.statistics') }}"
-                    class="btn btn-outline-light btn-sm rounded-pill px-3">
-                    <i class="fas fa-chart-pie me-1"></i> Statistics
-                </a>
             </div>
         </div>
     </div>

@@ -1,0 +1,64 @@
+/* One palette for financial primary actions, including header and Print buttons.
+   Keep semantic actions, secondary buttons, smaller screens, and print unchanged. */
+@media screen and (min-width: 1024px) {
+    body.financial-module {
+        --financial-action-background: #B11116;
+        --financial-action-hover: #8E0D11;
+        --financial-action-pressed: #7A0B0E;
+    }
+
+    body.financial-module :is(
+        .btn-red-theme, .btn-search-red, .btn-brand-primary, .btn-brand,
+        .btn-primary-action, .btn-save-amount, .btn-submit-red,
+        .btn-print-statistics, .btn-stats-print,
+        .step-wizard-card .btn-light, .step-wizard-card .btn-outline-light,
+        .empty-desc .btn-primary:not(.action-btn)
+    ) {
+        background: var(--financial-action-background) !important;
+        border-color: var(--financial-action-background) !important;
+        color: #FFFFFF !important;
+    }
+
+    body.financial-module :is(
+        .btn-red-theme, .btn-search-red, .btn-brand-primary, .btn-brand,
+        .btn-primary-action, .btn-save-amount, .btn-submit-red,
+        .btn-print-statistics, .btn-stats-print,
+        .step-wizard-card .btn-light, .step-wizard-card .btn-outline-light,
+        .empty-desc .btn-primary:not(.action-btn)
+    ):hover:not(:disabled):not(.disabled):not([aria-disabled="true"]) {
+        background: var(--financial-action-hover) !important;
+        border-color: var(--financial-action-hover) !important;
+    }
+
+    body.financial-module :is(
+        .btn-red-theme, .btn-search-red, .btn-brand-primary, .btn-brand,
+        .btn-primary-action, .btn-save-amount, .btn-submit-red,
+        .btn-print-statistics, .btn-stats-print,
+        .step-wizard-card .btn-light, .step-wizard-card .btn-outline-light,
+        .empty-desc .btn-primary:not(.action-btn)
+    ):is(:focus, :active):not(:disabled):not(.disabled):not([aria-disabled="true"]) {
+        background: var(--financial-action-pressed) !important;
+        border-color: var(--financial-action-pressed) !important;
+    }
+
+    body.financial-module :is(
+        .btn-red-theme, .btn-search-red, .btn-brand-primary, .btn-brand,
+        .btn-primary-action, .btn-save-amount, .btn-submit-red,
+        .btn-print-statistics, .btn-stats-print,
+        .step-wizard-card .btn-light, .step-wizard-card .btn-outline-light,
+        .empty-desc .btn-primary:not(.action-btn)
+    ):focus-visible {
+        outline: 2px solid var(--financial-action-background) !important;
+        outline-offset: 2px;
+    }
+
+    body.financial-module :is(
+        .btn-red-theme, .btn-search-red, .btn-brand-primary, .btn-brand,
+        .btn-primary-action, .btn-save-amount, .btn-submit-red,
+        .btn-print-statistics, .btn-stats-print,
+        .step-wizard-card .btn-light, .step-wizard-card .btn-outline-light,
+        .empty-desc .btn-primary:not(.action-btn)
+    ) :is(i, svg, span) {
+        color: #FFFFFF !important;
+    }
+}

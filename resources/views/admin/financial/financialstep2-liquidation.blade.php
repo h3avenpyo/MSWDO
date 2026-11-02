@@ -45,16 +45,6 @@
                     monthly allocated funds, claimed disbursements, and remaining balances in real time.
                 </p>
             </div>
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
-                    class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold">
-                    <i class="fas fa-archive me-1"></i> Payroll Records
-                </a>
-                <a href="{{ route('admin.financial.financialstep2') }}"
-                    class="btn btn-light btn-sm rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
-                    <i class="fas fa-list-check me-1"></i> Step 2 Masterlist
-                </a>
-            </div>
         </div>
     </div>
 

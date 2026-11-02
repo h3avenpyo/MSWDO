@@ -1,0 +1,77 @@
+/* Financial Step 1 and Step 2 only. Match the module's existing desktop
+   breakpoint; smaller-screen palettes and all sidebar geometry stay intact. */
+@media screen and (min-width: 1024px) {
+    #sidebar.financial-sidebar-desktop-theme {
+        --financial-sidebar-background: #C41E3A;
+        --financial-sidebar-active: #99172E;
+        --financial-sidebar-foreground: #FFFFFF;
+
+        background: var(--financial-sidebar-background) !important;
+        color: var(--financial-sidebar-foreground) !important;
+    }
+
+    #sidebar.financial-sidebar-desktop-theme :is(a, button, .sidebar-brand-text, .menu-label, i, svg) {
+        color: var(--financial-sidebar-foreground) !important;
+    }
+
+    #sidebar.financial-sidebar-desktop-theme .sidebar-menu a {
+        background: var(--financial-sidebar-background) !important;
+    }
+
+    #sidebar.financial-sidebar-desktop-theme .sidebar-menu a:hover {
+        background: var(--financial-sidebar-active) !important;
+    }
+
+    #sidebar.financial-sidebar-desktop-theme .sidebar-menu a.active {
+        background: var(--financial-sidebar-active) !important;
+        box-shadow: inset 3px 0 0 var(--financial-sidebar-foreground) !important;
+    }
+
+    /* Step 1 submenu labels must fit beside their icon and pending-count badge. */
+    #sidebar.financial-sidebar-desktop-theme .sidebar-submenu .menu-label {
+        flex: 1 1 0;
+        min-width: 0;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.35;
+    }
+
+    #sidebar.financial-sidebar-desktop-theme .sidebar-submenu .badge {
+        flex-shrink: 0;
+    }
+
+    /* Step 1 has nested navigation. Keep its hover treatment flat and consistent. */
+    #sidebar.financial-sidebar-desktop-theme:has(.sidebar-submenu) .sidebar-submenu {
+        background: transparent;
+        padding-block: 0;
+        border-radius: 0;
+    }
+
+    #sidebar.financial-sidebar-desktop-theme:has(.sidebar-submenu) .sidebar-menu a:hover {
+        background: #AD1B33 !important;
+    }
+
+    #sidebar.financial-sidebar-desktop-theme:has(.sidebar-submenu) .sidebar-menu a.active {
+        background: var(--financial-sidebar-active) !important;
+    }
+
+    /* The selected child identifies the page while the expanded parent is a toggle.
+       Keep the parent's active marker when collapsed, since children are hidden. */
+    html:not(.sidebar-collapsed) body:not(.sidebar-collapsed) #sidebar.financial-sidebar-desktop-theme:not(.collapsed) .sidebar-dropdown.open > .dropdown-toggle-btn.active {
+        background: var(--financial-sidebar-background) !important;
+        box-shadow: none !important;
+    }
+
+    html:not(.sidebar-collapsed) body:not(.sidebar-collapsed) #sidebar.financial-sidebar-desktop-theme:not(.collapsed) .sidebar-dropdown.open > .dropdown-toggle-btn.active:hover {
+        background: #AD1B33 !important;
+    }
+
+    #sidebar.financial-sidebar-desktop-theme:has(.sidebar-submenu) .sidebar-menu a i:not(.submenu-arrow) {
+        transform: none !important;
+    }
+
+    #sidebar.financial-sidebar-desktop-theme:has(.sidebar-submenu) .sidebar-menu a:focus-visible {
+        outline: 2px solid #FFFFFF;
+        outline-offset: -3px;
+    }
+}

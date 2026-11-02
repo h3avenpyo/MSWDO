@@ -9,7 +9,7 @@ $userName = session('admin_user_name') ?? 'Officer';
 @endphp
 
 <!-- Header Card -->
-<div class="step-wizard-card animate-fade-in mb-4">
+<div class="step-wizard-card financial-step-header animate-fade-in mb-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
             <h2 class="wizard-heading mb-1"><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance Dashboard</h2>

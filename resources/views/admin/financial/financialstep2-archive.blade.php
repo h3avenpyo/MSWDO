@@ -79,16 +79,6 @@
                 <p class="mb-0 hero-subtitle">View, search, and restore completed or archived financial assistance
                     records.</p>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
-                <a href="{{ route('admin.financial.financialstep2.all-intakes') }}"
-                    class="btn btn-light rounded-pill px-3 fw-bold shadow-xs" style="color: #b11116;">
-                    <i class="fas fa-arrow-left me-1"></i> Step 2 Masterlist
-                </a>
-                <a href="{{ route('admin.financial.financialstep2.payroll-records') }}"
-                    class="btn btn-outline-light rounded-pill px-3 fw-semibold">
-                    <i class="fas fa-file-invoice-dollar me-1"></i> Payroll Records
-                </a>
-            </div>
         </div>
     </div>
 

@@ -1,4 +1,4 @@
-<div class="sidebar" id="sidebar">
+<div class="sidebar financial-sidebar-desktop-theme" id="sidebar">
     <div class="sidebar-brand">
         <div class="sidebar-brand-wrapper" onclick="handleBrandClick()" title="Financial Assistance">
             <img src="{{ asset('images/IserveIcon.png') }}" class="sidebar-brand-logo" alt="iSERVE">

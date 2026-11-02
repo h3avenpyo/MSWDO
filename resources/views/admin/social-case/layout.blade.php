@@ -4749,9 +4749,10 @@
         }
     </style>
     <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/social-case-sidebar-theme.css') }}?v={{ filemtime(public_path('css/social-case-sidebar-theme.css')) }}">
 </head>
 
-<body>
+<body class="social-case-module">
     <h1 class="sr-only">Social case study management system for tracking client eligibility, intake, workflow, and
         generating agency-specific reports</h1>
     <!-- Hidden form for secure POST logout -->

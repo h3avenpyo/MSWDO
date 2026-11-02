@@ -37,8 +37,11 @@
         })();
     </script>
     <link rel="stylesheet" href="{{ asset('css/logout-modal.css') }}?v={{ filemtime(public_path('css/logout-modal.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/financial-sidebar-desktop-theme.css') }}?v={{ filemtime(public_path('css/financial-sidebar-desktop-theme.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/financial-step-header-desktop.css') }}?v={{ filemtime(public_path('css/financial-step-header-desktop.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/financial-action-desktop.css') }}?v={{ filemtime(public_path('css/financial-action-desktop.css')) }}">
 </head>
-<body>
+<body class="financial-module">
     <!-- Reusable Sidebar Component -->
     @include('partials.financial-sidebar')
 

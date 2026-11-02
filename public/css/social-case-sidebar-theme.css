@@ -1,0 +1,27 @@
+/* Social Case dashboard and related pages only, across all screen sizes.
+   Keep sidebar layout, dropdowns, badges, and responsive behavior intact. */
+@media screen {
+    body.social-case-module #sidebar {
+        --sidebar-bg: #C41E3A;
+        --sidebar-dark: #99172E;
+        background: #C41E3A !important;
+        color: #FFFFFF !important;
+    }
+
+    body.social-case-module #sidebar :is(a, button, span, i, svg, [data-lucide]) {
+        color: #FFFFFF !important;
+    }
+
+    body.social-case-module #sidebar :is(.sidebar-menu a, .sidebar-dropdown-menu) {
+        background: #C41E3A !important;
+    }
+
+    body.social-case-module #sidebar .sidebar-menu a:hover {
+        background: #99172E !important;
+    }
+
+    body.social-case-module #sidebar .sidebar-menu a.active {
+        background: #99172E !important;
+        box-shadow: inset 3px 0 0 #FFFFFF !important;
+    }
+}

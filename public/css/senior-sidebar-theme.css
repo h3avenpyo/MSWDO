@@ -1,0 +1,27 @@
+/* Senior module shared navigation only, across all screen sizes.
+   Keep existing layout, responsive controls, tooltips, and print behavior. */
+@media screen {
+    #sidebar.senior-sidebar-theme {
+        --sidebar-bg: #C41E3A;
+        --sidebar-dark: #99172E;
+        background: #C41E3A !important;
+        color: #FFFFFF !important;
+    }
+
+    #sidebar.senior-sidebar-theme :is(a, button, span, i, svg, [data-lucide]) {
+        color: #FFFFFF !important;
+    }
+
+    #sidebar.senior-sidebar-theme .sidebar-menu a {
+        background: #C41E3A !important;
+    }
+
+    #sidebar.senior-sidebar-theme .sidebar-menu a:hover {
+        background: #99172E !important;
+    }
+
+    #sidebar.senior-sidebar-theme .sidebar-menu a.active {
+        background: #99172E !important;
+        box-shadow: inset 3px 0 0 #FFFFFF !important;
+    }
+}
