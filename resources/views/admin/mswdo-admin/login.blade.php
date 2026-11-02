@@ -910,7 +910,7 @@
                                         d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                                 </svg>
                                 <input type="text" id="email" name="email" required autocomplete="username"
-                                    class="form-input" placeholder="Enter your email or username" value="{{ old('email') }}">
+                                    class="form-input" placeholder="Email or username" value="{{ old('email') }}">
                             </div>
                         </div>
 
@@ -924,7 +924,7 @@
                                 </svg>
                                 <input type="password" id="password" name="password" required
                                     autocomplete="current-password" class="form-input"
-                                    placeholder="Enter your password">
+                                    placeholder="Password">
                                 <button type="button" class="password-toggle" id="passwordToggle"
                                     onclick="togglePassword()" aria-label="Show password" title="Show password">
                                     <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
