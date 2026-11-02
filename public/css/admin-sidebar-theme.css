@@ -1,0 +1,33 @@
+/* Admin sidebar palette. Loaded after shared and responsive sidebar styles.
+   The repeated ID matches the specificity of the shared tablet portrait rules.
+   Keep these overrides limited to colors; layout and behavior stay in their
+   existing responsive stylesheets. */
+@media screen {
+    html body.portal-ui #sidebar#sidebar.admin-sidebar-theme {
+        --admin-sidebar-background: #C41E3A;
+        --admin-sidebar-active: #99172E;
+        --admin-sidebar-foreground: #FFFFFF;
+
+        background: var(--admin-sidebar-background) !important;
+        color: var(--admin-sidebar-foreground) !important;
+    }
+
+    html body.portal-ui #sidebar#sidebar.admin-sidebar-theme :is(a, button, span, h1, p, i, svg) {
+        color: var(--admin-sidebar-foreground) !important;
+    }
+
+    html body.portal-ui #sidebar#sidebar.admin-sidebar-theme :is(.sidebar-link, nav a, nav button) {
+        background: var(--admin-sidebar-background) !important;
+    }
+
+    html body.portal-ui #sidebar#sidebar.admin-sidebar-theme :is(.sidebar-link, nav a, nav button):hover {
+        background: var(--admin-sidebar-active) !important;
+    }
+
+    /* Include submenu links and both active classes used by Admin dropdowns.
+       These also win over collapsed-sidebar rules that remove the indicator. */
+    html body.portal-ui #sidebar#sidebar.admin-sidebar-theme :is(.sidebar-link, nav a, nav button):is([class~="bg-purple-600"], [class~="bg-purple-700/70"]) {
+        background: var(--admin-sidebar-active) !important;
+        box-shadow: inset 3px 0 0 var(--admin-sidebar-foreground) !important;
+    }
+}

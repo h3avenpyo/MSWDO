@@ -10,6 +10,9 @@ $isArchivedReportPreview = auth()->user()?->position === 'Desk Officer'
 $persistsDeskOfficerSidebar = auth()->user()?->position === 'Desk Officer'
 && (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'],
 true));
+// Use the same palette for BCPC, SWD/VAWC, and multi-role desk officers.
+$usesOfficerSidebarPalette = auth()->user()?->position === 'Desk Officer'
+&& (auth()->user()?->isMultiCaseDepartment() || in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true));
 $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
 ? 'multiRoleDeskOfficerSidebarCollapsed'
 : ($persistsDeskOfficerSidebar
@@ -1662,6 +1665,9 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
     <link rel="stylesheet" href="{{ asset('css/desk-officer-tablet-portrait-sidebar.css') }}?v={{ filemtime(public_path('css/desk-officer-tablet-portrait-sidebar.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/desk-officer-tablet-landscape-sidebar.css') }}?v={{ filemtime(public_path('css/desk-officer-tablet-landscape-sidebar.css')) }}">
     @endif
+    @if($usesOfficerSidebarPalette)
+    <link rel="stylesheet" href="{{ asset('css/desk-officer-sidebar-theme.css') }}?v={{ filemtime(public_path('css/desk-officer-sidebar-theme.css')) }}">
+    @endif
 </head>
 
 <body
@@ -1750,7 +1756,7 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
     <!-- Sidebar -->
     <aside id="sidebar" class="fixed top-0 left-0 h-screen w-72 bg-[#C41E3A] text-white z-40
                lg:translate-x-0 flex flex-col shadow-2xl
-               rounded-r-3xl lg:rounded-none">
+               {{ $usesOfficerSidebarPalette ? 'desk-officer-sidebar-theme' : '' }} rounded-r-3xl lg:rounded-none">
         @if($persistsDeskOfficerSidebar)
         <script>
             if (document.documentElement.classList.contains('bcpc-desk-sidebar-collapsed')) {

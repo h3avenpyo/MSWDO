@@ -1,0 +1,31 @@
+/* BCPC, SWD/VAWC, and multi-role officer palette, matching the Admin sidebar.
+   Loaded only for these officers, after the shared responsive stylesheets.
+   Match the tablet rules' repeated ID without changing shared CSS or layout. */
+@media screen {
+    html body.portal-ui aside#sidebar#sidebar.desk-officer-sidebar-theme {
+        --officer-sidebar-background: #C41E3A;
+        --officer-sidebar-active: #99172E;
+        --officer-sidebar-foreground: #FFFFFF;
+
+        background: var(--officer-sidebar-background) !important;
+        color: var(--officer-sidebar-foreground) !important;
+    }
+
+    html body.portal-ui aside#sidebar#sidebar.desk-officer-sidebar-theme :is(a, button, span, h1, p, i, svg) {
+        color: var(--officer-sidebar-foreground) !important;
+    }
+
+    html body.portal-ui aside#sidebar#sidebar.desk-officer-sidebar-theme :is(.sidebar-link, nav a, nav button) {
+        background: var(--officer-sidebar-background) !important;
+    }
+
+    html body.portal-ui aside#sidebar#sidebar.desk-officer-sidebar-theme :is(.sidebar-link, nav a, nav button):hover {
+        background: var(--officer-sidebar-active) !important;
+    }
+
+    /* Cover top-level menus and nested links, expanded or collapsed. */
+    html body.portal-ui aside#sidebar#sidebar.desk-officer-sidebar-theme :is(.sidebar-link, nav a, nav button):is([class~="bg-purple-600"], [class~="bg-purple-700/70"]) {
+        background: var(--officer-sidebar-active) !important;
+        box-shadow: inset 3px 0 0 var(--officer-sidebar-foreground) !important;
+    }
+}
