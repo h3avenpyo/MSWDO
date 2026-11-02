@@ -31,3 +31,9 @@
         box-shadow: inset 3px 0 0 var(--admin-sidebar-foreground) !important;
     }
 }
+
+@media screen and (min-width: 48rem) and (max-width: 85.375rem) {
+    html body.portal-ui.admin-tablet-portrait-sidebar #sidebar#sidebar.admin-sidebar-theme {
+        background: #C41E3A !important;
+    }
+}

@@ -238,7 +238,7 @@
         @if(auth()->user()?->isDepartmentAdmin())
         #sidebar [x-show] > a, #sidebar [x-show] > button { font-family: inherit; font-size: .875rem; line-height: 1.25rem; font-weight: 500; }
         #sidebar [x-show] > a > i, #sidebar [x-show] > button > i { font-size: .875rem; width: 1rem; text-align: center; flex-shrink: 0; }
-        @media (min-width: 64rem) {
+        @media (min-width: 64rem), (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
             #sidebar.sidebar-collapsed [x-show],
             #sidebar.sidebar-collapsed-init [x-show] {
                 width: 100% !important;
@@ -1188,6 +1188,17 @@
     <link rel="stylesheet" href="{{ asset('css/desk-officer-tablet-portrait-sidebar.css') }}?v={{ filemtime(public_path('css/desk-officer-tablet-portrait-sidebar.css')) }}">
     @endif
     <link rel="stylesheet" href="{{ asset('css/admin-sidebar-theme.css') }}?v={{ filemtime(public_path('css/admin-sidebar-theme.css')) }}">
+    @if(auth()->user()?->isDepartmentAdmin())
+    <style>
+        @media screen and (max-width: 47.9375rem) {
+            html body.portal-ui:is(.bcpc-admin-header-theme, .swd-admin-header-theme) #mobileTopBar#mobileTopBar#mobileTopBar,
+            html body.portal-ui:is(.bcpc-admin-header-theme, .swd-admin-header-theme) #mainContent#mainContent#mainContent > header,
+            html body.portal-ui:is(.bcpc-admin-header-theme, .swd-admin-header-theme) #mainContent#mainContent#mainContent .portal-page-header {
+                background: #C41E3A !important;
+            }
+        }
+    </style>
+    @endif
 </head>
 <body class="portal-ui {{ auth()->user()?->isDepartmentAdmin() ? 'admin-tablet-portrait-sidebar' : '' }} {{ request()->routeIs('admin-dashboard') ? 'admin-dashboard-mobile-nav' : '' }} {{ request()->routeIs('case-profiles.index') ? 'case-profiles-mobile-profile-hidden' : '' }} {{ request()->routeIs('case-profiles.index') && auth()->user()?->isDepartmentAdmin() ? 'case-profiles-admin-mobile-nav' : '' }} {{ request()->routeIs('cases.show') && auth()->user()?->isDepartmentAdmin() ? 'case-details-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.users.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-desk-officers-profile-mobile-nav' : '' }} {{ request()->routeIs('admin.users.create') && auth()->user()?->isDepartmentAdmin() ? 'admin-register-user-mobile-nav' : '' }} {{ (request()->routeIs('admin.users.logs', 'admin.users.archived', 'admin.referrals.index', 'admin.referrals', 'admin.referrals.archived', 'admin.referral-info.index', 'admin.quarterly-reports.index', 'admin.quarterly-reports.show', 'admin.quarterly-reports.edit', 'admin.bcpc-case-monitoring.edit', 'admin.bcpc-case-monitoring.archived', 'admin.calendar.index') || (request()->routeIs('admin.quarterly-reports.archived') && in_array(request('section'), ['barangay-cases', 'quarterly'], true))) && auth()->user()?->isDepartmentAdmin() ? 'admin-reference-mobile-nav' : '' }} {{ request()->routeIs('admin.referrals', 'admin.referrals.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-referrals-mobile-nav' : '' }} {{ request()->routeIs('admin.referral-info.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-referral-info-mobile-nav' : '' }} {{ request()->routeIs('admin.quarterly-reports.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-quarterly-reports-mobile-nav' : '' }} {{ request()->routeIs('admin.calendar.index') && auth()->user()?->isDepartmentAdmin() ? 'admin-calendar-mobile-nav' : '' }} {{ request()->routeIs('admin.quarterly-reports.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-quarterly-reports-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.referrals.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-referrals-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.users.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-users-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.bcpc-case-monitoring.archived') && auth()->user()?->isDepartmentAdmin() ? 'admin-bcpc-case-monitoring-archived-mobile-nav' : '' }} {{ request()->routeIs('admin.bcpc-case-monitoring.edit') && auth()->user()?->isDepartmentAdmin() ? 'admin-bcpc-case-monitoring-mobile-nav' : '' }} {{ request()->routeIs('admin.users.logs') && auth()->user()?->isDepartmentAdmin() ? 'admin-user-logs-mobile-nav' : '' }} {{ request()->routeIs('admin-barangay-cases') && auth()->user()?->isDepartmentAdmin() ? 'barangay-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin.barangay-cases.show') ? 'view-cases-admin-mobile-nav' : '' }} {{ request()->routeIs('admin-add-new-case') && auth()->user()?->isDepartmentAdmin() ? 'add-case-admin-mobile-nav' : '' }} {{ auth()->user()?->isBcpcAdmin() ? 'bcpc-admin-header-theme' : (auth()->user()?->isVawcAdmin() ? 'swd-admin-header-theme' : '') }} font-['Raleway','Montserrat',sans-serif] bg-gray-100 text-gray-600 min-h-screen antialiased" style="--portal-user-initials: '{{ strtoupper(mb_substr((string) auth()->user()?->first_name, 0, 1) . mb_substr((string) auth()->user()?->last_name, 0, 1)) }}';">
     

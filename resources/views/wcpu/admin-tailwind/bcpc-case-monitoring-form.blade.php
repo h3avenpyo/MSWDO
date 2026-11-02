@@ -2,13 +2,13 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/bcpc-monitoring-mobile-cards.css') }}">
-@if($isView || request()->filled('edit'))
+@if($isView || request()->filled('edit') || request()->boolean('add'))
 <link rel="stylesheet" href="{{ asset('css/bcpc-monitoring-card-layout.css') }}?v={{ filemtime(public_path('css/bcpc-monitoring-card-layout.css')) }}" media="screen and (max-width: 80rem)">
 <link rel="stylesheet" href="{{ asset('css/bcpc-monitoring-tablet-cards.css') }}" media="screen and (min-width: 48rem) and (max-width: 80rem)">
 @endif
 <link rel="stylesheet" href="{{ asset('css/desk-officer-tables.css') }}">
 <style>
-    @if($isView || request()->filled('edit'))
+    @if($isView || request()->filled('edit') || request()->boolean('add'))
     @media (max-width: 80rem) {
         #mainContent .bcpc-monitoring-back-to-list {
             display: inline-flex;
@@ -41,7 +41,7 @@
         }
     }
     @endif
-    @if(request()->filled('edit'))
+    @if(request()->filled('edit') || request()->boolean('add'))
     @media (max-width: 47.9375rem) {
         #bcpc-monitoring-save-actions {
             align-items: stretch;
@@ -64,6 +64,11 @@
             background-image: none;
             box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
         }
+    }
+    @endif
+    @if(request()->boolean('add') && !$isView && !request()->filled('edit'))
+    @media (min-width: 80.0625rem) {
+        #bcpc-monitoring-section-filter-panel { display: none !important; }
     }
     @endif
     @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
@@ -302,7 +307,7 @@
     @endif
 
     @if($barangay)
-        @if($isView || request()->filled('edit'))
+        @if($isView || request()->filled('edit') || request()->boolean('add'))
         <div id="bcpc-monitoring-section-filter-panel" data-monitoring-filter hidden>
             <label for="bcpc-monitoring-section-filter">Show section</label>
             <div class="bcpc-monitoring-section-filter-controls">
@@ -322,7 +327,7 @@
 
         @endif
         <!-- Monitoring Data Form -->
-        <form id="bcpc-monitoring-form" data-card-max-width="{{ ($isView || request()->filled('edit')) ? '80rem' : '47.9375rem' }}" method="POST" action="{{ route('admin.bcpc-case-monitoring.update') }}" class="space-y-6">
+        <form id="bcpc-monitoring-form" data-card-max-width="{{ ($isView || request()->filled('edit') || request()->boolean('add')) ? '80rem' : '47.9375rem' }}" method="POST" action="{{ route('admin.bcpc-case-monitoring.update') }}" class="space-y-6">
             @csrf
             @if(auth()->user()->isBcpcAdmin() && $monitoring?->exists)<input type="hidden" name="monitoring_id" value="{{ $monitoring->id }}">@endif
             <input type="hidden" name="barangay_id" value="{{ $barangay->id }}">
@@ -459,7 +464,7 @@
 
             @if($isGenerated)
                 <div class="pt-4 flex justify-end">
-                    <a href="{{ route('admin.bcpc-case-monitoring.print', ['barangay_id' => $barangay->id, 'quarter' => $quarter, 'year' => $year]) }}" target="_blank" rel="noopener" class="px-6 py-3 rounded-xl bg-purple-700 text-white font-semibold hover:bg-purple-800">Preview / Print Report</a>
+                    <a href="{{ route('admin.bcpc-case-monitoring.print', ['barangay_id' => $barangay->id, 'quarter' => $quarter, 'year' => $year]) }}" target="_blank" rel="noopener" class="w-full md:w-auto text-center px-6 py-3 rounded-xl bg-purple-700 text-white font-semibold hover:bg-purple-800">Preview / Print Report</a>
                 </div>
             @endif
             @if(!$isView)
@@ -502,7 +507,7 @@
 @endsection
 
 @push('scripts')
-@if($isView || request()->filled('edit'))
+@if($isView || request()->filled('edit') || request()->boolean('add'))
 <script src="{{ asset('js/bcpc-monitoring-mobile-cards.js') }}" defer></script>
 @endif
 @include('components.bcpc-monitoring-input-restrictions')

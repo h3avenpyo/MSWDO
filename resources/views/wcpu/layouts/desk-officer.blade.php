@@ -400,12 +400,12 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
             }
         }
 
-        /* Keep the admin-style nesting while leaving room around submenu highlights. */
-        @media screen and (min-width: 48rem) and (max-width: 80rem) {
+        /* Center closed-sidebar dropdowns like Admin on tablets in either orientation. */
+        @media screen and (min-width: 48rem) and (max-width: 85.375rem) {
             html body.portal-ui #sidebar:is(.sidebar-collapsed, .sidebar-collapsed-init) nav [x-show] {
                 box-sizing: border-box;
                 width: 100% !important;
-                padding-left: 1rem !important;
+                padding-left: 0 !important;
                 padding-right: 0 !important;
             }
 
@@ -1667,6 +1667,15 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
     @endif
     @if($usesOfficerSidebarPalette)
     <link rel="stylesheet" href="{{ asset('css/desk-officer-sidebar-theme.css') }}?v={{ filemtime(public_path('css/desk-officer-sidebar-theme.css')) }}">
+    <style>
+        @media screen and (max-width: 47.9375rem) {
+            html body.portal-ui.desk-officer-header-theme #mobileTopBar#mobileTopBar#mobileTopBar,
+            html body.portal-ui.desk-officer-header-theme #mainContent#mainContent#mainContent > header,
+            html body.portal-ui.desk-officer-header-theme #mainContent#mainContent#mainContent .portal-page-header {
+                background: #C41E3A !important;
+            }
+        }
+    </style>
     @endif
 </head>
 

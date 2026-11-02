@@ -544,7 +544,7 @@
                 <dd>{{ $case->created_at->format('F j, Y \a\t g:i A') }}</dd>
                 
                 <dt>Last Updated</dt>
-                <dd>{{ $case->updated_at->diffForHumans() }}</dd>
+                <dd>{{ $case->trashed() && auth()->user()?->position === 'Desk Officer' ? ($case->updated_at?->copy()->timezone('Asia/Manila')->format('F j, Y \a\t g:i A') ?? 'N/A') : $case->updated_at->diffForHumans() }}</dd>
                 
                 <dt>Reported By</dt>
                 @php

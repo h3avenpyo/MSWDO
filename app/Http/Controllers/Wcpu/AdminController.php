@@ -2074,11 +2074,12 @@ class AdminController extends Controller
         abort_unless(Auth::user()->isDepartmentAdmin(), 403);
         $department = Auth::user()->defaultCaseDepartment();
         $referrals = \App\Models\Wcpu\CaseReferral::onlyTrashed()
-            ->whereHas('case', fn ($query) => $query->where('type', $department))
+            ->forRecipientDepartments([$department])
             ->latest('deleted_at')
             ->paginate(request()->boolean('portrait_cards') ? 4 : 5, ['*'], 'referrals_page')
             ->withQueryString();
-        $recipients = \App\Models\Wcpu\ReportRecipient::onlyTrashed()->latest('deleted_at')->paginate(request()->boolean('portrait_cards') ? 4 : 5, ['*'], 'info_page')->withQueryString();
+        $roles = Auth::user()->isBcpcAdmin() ? ['BCPC - Focal', 'BCPC - Staff'] : ['SWD - Focal', 'SWD - Staff'];
+        $recipients = \App\Models\Wcpu\ReportRecipient::onlyTrashed()->whereIn('role', $roles)->latest('deleted_at')->paginate(request()->boolean('portrait_cards') ? 4 : 5, ['*'], 'info_page')->withQueryString();
         return view('admin-tailwind.archived-referrals', compact('referrals', 'recipients'));
     }
 
@@ -2104,7 +2105,10 @@ class AdminController extends Controller
         $query = $model::onlyTrashed();
         if ($type === 'referral') {
             $department = Auth::user()->defaultCaseDepartment();
-            $query->whereHas('case', fn ($caseQuery) => $caseQuery->where('type', $department));
+            $query->forRecipientDepartments([$department]);
+        } else {
+            $roles = Auth::user()->isBcpcAdmin() ? ['BCPC - Focal', 'BCPC - Staff'] : ['SWD - Focal', 'SWD - Staff'];
+            $query->whereIn('role', $roles);
         }
 
         return $query->findOrFail($id);

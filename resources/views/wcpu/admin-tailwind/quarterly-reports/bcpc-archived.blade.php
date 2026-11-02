@@ -455,7 +455,7 @@
                                 <td class="px-5 py-4">{{ $record->case_number }}</td>
                                 <td class="px-5 py-4">{{ $record->barangay?->name ?? 'N/A' }}</td>
                                 <td class="px-5 py-4">{{ $record->victim_name }}</td>
-                                <td class="px-5 py-4">{{ $record->deleted_at?->format('M d, Y h:i A') }}</td>
+                                <td class="px-5 py-4">{{ $record->deleted_at?->copy()->timezone('Asia/Manila')->format('M d, Y h:i A') }}</td>
                                 <td class="px-5 py-4 text-center">
                                     <div class="flex items-center justify-center gap-3">
                                         <a @if(auth()->user()?->isDepartmentAdmin()) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[#C41E3A] text-white no-underline hover:bg-[#A01830] active:bg-[#8B1429] transition-colors" href="{{ route('cases.show', ['id' => $record->id, 'archived' => 1]) }}" data-admin-archive-view="case" data-swd-archive-view="case" data-modal-title="Case Details" title="View Case"><i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span></a>
@@ -535,7 +535,7 @@
                         </div>
                         <div class="col-span-2">
                             <p class="text-xs text-gray-500 mb-1">Archived At</p>
-                            <p class="text-gray-700">{{ $record->deleted_at?->format('M d, Y h:i A') }}</p>
+                            <p class="text-gray-700">{{ $record->deleted_at?->copy()->timezone('Asia/Manila')->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
                     <div class="archived-barangay-case-actions pt-3 border-t border-gray-100">

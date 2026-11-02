@@ -363,6 +363,11 @@
     use App\Models\Barangay;
     $createdAt = $case->created_at ?? null;
     $updatedAt = $case->updated_at ?? null;
+    if ($case->trashed() && auth()->user()?->isDepartmentAdmin() && request()->boolean('bcpc_modal_preview')) {
+        $updatedAt = $case->getRawOriginal('updated_at')
+            ? \Carbon\Carbon::parse($case->getRawOriginal('updated_at'), config('app.timezone', 'UTC'))->timezone('Asia/Manila')
+            : null;
+    }
     
     // Resolve barangay name
     $barangayDisplay = null;

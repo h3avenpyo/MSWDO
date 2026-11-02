@@ -181,7 +181,7 @@
 </style>
 
 @foreach($reportGroups as $department => $reports)
-<section data-ajax-pagination="quarterly-{{ $department }}" data-ajax-page="{{ $reports->getPageName() }}" class="desk-officer-quarterly-report-table {{ $isBcpcDeskOfficer ? 'bcpc-quarterly-report-table' : '' }} bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 mb-6">
+<section @if($archived ?? false) data-live-archived-reports @endif data-ajax-pagination="quarterly-{{ $department }}" data-ajax-page="{{ $reports->getPageName() }}" class="desk-officer-quarterly-report-table {{ $isBcpcDeskOfficer ? 'bcpc-quarterly-report-table' : '' }} bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 mb-6">
     @unless(($archived ?? false) && $isSwdDeskOfficer && !auth()->user()->isMultiCaseDepartment())
     <h2 class="px-6 py-4 text-lg font-semibold text-purple-800">{{ ($archived ?? false) && auth()->user()->isMultiCaseDepartment() ? ($department === 'VAWC' ? 'SWD' : $department) . ' Quarterly Reports' : (($archived ?? false) && $isBcpcDeskOfficer && !auth()->user()->isMultiCaseDepartment() ? 'Quarterly Reports' : (auth()->user()->isMultiCaseDepartment() && $department === 'VAWC' ? 'SWD' : $department) . ' Case Reports') }}</h2>
     @endunless
@@ -324,7 +324,7 @@
 const quarterlyPhoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
 const isQuarterlyPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
     || (/Android|iPhone|iPod/i.test(navigator.userAgent) && quarterlyPhoneWidth <= 480);
-document.querySelectorAll('.quarterly-table-view').forEach(view => {
+window.portalPaginationElements('.quarterly-table-view').forEach(view => {
     view.style.display = isQuarterlyPhoneView ? 'none' : '';
 });
 
@@ -341,7 +341,7 @@ const submitQuarterlyReportAction = async (form, successTitle) => {
         Swal.fire({ icon: 'error', title: 'Action Not Completed', text: error.message || 'Unable to complete this action.', confirmButtonText: 'OK', confirmButtonColor: '#C41E3A' });
     }
 };
-document.querySelectorAll('.quarterly-mobile-cards').forEach(cards => {
+window.portalPaginationElements('.quarterly-mobile-cards').forEach(cards => {
     cards.style.display = isQuarterlyPhoneView ? 'grid' : '';
 });
 

@@ -3175,22 +3175,30 @@
                 document.addEventListener('DOMContentLoaded', () => {
                     const responsivePagination = matchMedia(@json(auth()->user()?->position === 'Desk Officer' ? '(min-width: 48rem) and (max-width: 85.375rem)' : '(max-width: 85.375rem)'));
                     let activeRequest;
-                    async function loadCases(url, pushHistory) {
+                    const backgroundPaused = () => document.hidden || document.querySelector('.swal2-container')
+                        || ['caseModal', 'editCaseModal'].some(id => document.getElementById(id)?.firstElementChild?.getClientRects().length)
+                        || document.getElementById('view-cases-filter-panel')?.getClientRects().length;
+                    async function loadCases(url, pushHistory, background = false) {
+                        if (background && (activeRequest || backgroundPaused())) return;
                         activeRequest?.abort();
                         const controller = new AbortController();
                         activeRequest = controller;
                         const cards = document.querySelector('.view-cases-table-cards');
-                        cards?.setAttribute('aria-busy', 'true');
+                        if (!background) cards?.setAttribute('aria-busy', 'true');
+                        const timeout = background ? setTimeout(() => controller.abort(), 10000) : null;
                         try {
                             const response = await fetch(url, {
                                 signal: controller.signal,
+                                ...(background ? { cache: 'no-store' } : {}),
                                 headers: {
-                                    Accept: 'text/html'
+                                    Accept: 'text/html',
+                                    ...(background ? { 'X-Skip-Loading': '1' } : {})
                                 }
                             });
                             if (!response.ok || response.redirected) throw new Error('Unable to load cases');
                             const page = new DOMParser().parseFromString(await response.text(), 'text/html');
                             if (controller.signal.aborted) return;
+                            if (background && (location.href !== url || backgroundPaused())) return;
                             const replacements = ['.view-cases-table-cards', '.view-cases-table-desktop',
                                     '.view-cases-pagination'
                                 ]
@@ -3199,24 +3207,34 @@
                             if (replacements.some(([current, next]) => !current || !next)) throw new Error(
                                 'Missing cases');
                             const top = cards.getBoundingClientRect().top;
-                            replacements.forEach(([current, next]) => current.replaceWith(next));
+                            replacements.forEach(([current, next]) => {
+                                if (!background || current.innerHTML !== next.innerHTML) current.replaceWith(next);
+                            });
                             if (@json(auth()->user()?->isDepartmentAdmin())) {
                                 if (pushHistory) history.pushState(null, '', url);
                             } else history.replaceState(null, '', url);
                             document.dispatchEvent(new CustomEvent('case-list-updated'));
+                            if (background) {
+                                const search = document.getElementById('swd-case-search');
+                                if (search?.value) search.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
                             const nextCards = document.querySelector('.view-cases-table-cards');
-                            window.scrollBy({
+                            if (!background) window.scrollBy({
                                 top: nextCards.getBoundingClientRect().top - top,
                                 behavior: 'instant'
                             });
                         } catch (error) {
-                            if (error.name !== 'AbortError' && activeRequest === controller) {
+                            if (!background && error.name !== 'AbortError' && activeRequest === controller) {
                                 if (@json(auth()->user()?->isDepartmentAdmin())) {
                                     Swal.fire('Unable to load cases', 'Please try the page link again.', 'error');
                                 } else location.assign(url);
                             }
                         } finally {
-                            cards?.removeAttribute('aria-busy');
+                            if (timeout !== null) clearTimeout(timeout);
+                            if (activeRequest === controller) {
+                                if (!background) cards?.removeAttribute('aria-busy');
+                                activeRequest = null;
+                            }
                         }
                     }
                     document.addEventListener('click', event => {
@@ -3228,6 +3246,12 @@
                     });
                     @if(auth()->user()?->isDepartmentAdmin())
                     window.addEventListener('popstate', () => loadCases(location.href, false));
+                    const refreshRestoredCases = () => loadCases(location.href, false, true);
+                    window.setInterval(refreshRestoredCases, 3000);
+                    window.addEventListener('focus', refreshRestoredCases);
+                    document.addEventListener('visibilitychange', () => {
+                        if (!document.hidden) refreshRestoredCases();
+                    });
                     @endif
                 });
             </script>

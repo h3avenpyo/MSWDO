@@ -747,7 +747,7 @@
 <!-- Custom Archive Confirmation Modal -->
 @if(auth()->user()->isDepartmentAdmin())
 <dialog id="generateQuarterlyModal" class="rounded-xl p-6 shadow-xl" style="box-sizing:border-box; margin:auto; width:min(28rem, calc(100vw - 2rem)); max-height:min(90vh, calc(100vh - 2rem)); max-height:min(90dvh, calc(100dvh - 2rem)); overflow-y:auto; overscroll-behavior:contain;">
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Generate Quarterly Report</h2>
+    <h2 tabindex="-1" autofocus class="text-xl font-bold text-gray-800 mb-4">Generate Quarterly Report</h2>
     <form id="generateQuarterlyReportForm" method="POST" action="{{ route('admin.quarterly-reports.store') }}" class="space-y-4">
         @csrf
         <input type="hidden" name="portrait_cards" value="0">

@@ -609,7 +609,7 @@
         @foreach($fields as $field)
         <div class="min-w-0 {{ in_array($field, ['client_name', 'client_address', 'family_guardian_address', 'reason_for_referral', 'specific_services_requested', 'additional_notes', 'recipient_address', 'feedback']) ? 'sm:col-span-2' : '' }}">
             <dt class="text-xs text-gray-500 mb-1">{{ $field === 'deleted_at' ? 'Archived At' : ucwords(str_replace('_', ' ', $field)) }}</dt>
-            <dd class="text-gray-800 whitespace-pre-wrap break-words">{{ $referral->$field instanceof \DateTimeInterface ? $referral->$field->format('M d, Y h:i A') : ($referral->$field ?? '—') }}</dd>
+            <dd class="text-gray-800 whitespace-pre-wrap break-words">{{ $referral->$field instanceof \DateTimeInterface ? ($field === 'deleted_at' ? $referral->$field->copy()->timezone('Asia/Manila') : $referral->$field)->format('M d, Y h:i A') : ($referral->$field ?? '—') }}</dd>
         </div>
         @endforeach
             </dl>
@@ -624,7 +624,7 @@
         @foreach(['name', 'email', 'contact_number', 'role', 'deleted_at'] as $field)
         <div class="rounded-lg border border-gray-200 p-3">
             <dt class="text-xs text-gray-500 mb-1">{{ $field === 'deleted_at' ? 'Archived At' : ucwords(str_replace('_', ' ', $field)) }}</dt>
-            <dd class="text-gray-800 whitespace-pre-wrap break-words">{{ $recipient->$field instanceof \DateTimeInterface ? $recipient->$field->format('M d, Y h:i A') : ($recipient->$field ?: 'N/A') }}</dd>
+            <dd class="text-gray-800 whitespace-pre-wrap break-words">{{ $recipient->$field instanceof \DateTimeInterface ? ($field === 'deleted_at' ? $recipient->$field->copy()->timezone('Asia/Manila') : $recipient->$field)->format('M d, Y h:i A') : ($recipient->$field ?: 'N/A') }}</dd>
         </div>
         @endforeach
     </dl>

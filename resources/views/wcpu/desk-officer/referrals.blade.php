@@ -732,6 +732,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     const modal = new bootstrap.Modal(document.getElementById('referralDetailsModal'));
+    let discardReferralEdits = false;
+    document.getElementById('referralDetailsModal').addEventListener('hide.bs.modal', event => {
+        const form = document.querySelector('#referralDetailsContent #referralEditForm');
+        const guard = window.portalUnsavedChanges;
+        if (!form || discardReferralEdits || !guard?.isDirty()) return;
+        event.preventDefault();
+        guard.confirmExit(() => {
+            discardReferralEdits = true;
+            modal.hide();
+            discardReferralEdits = false;
+        });
+    });
     const directReferralPopups = @json($isMultiroleDeskOfficer || $isBcpcDeskOfficer || $isSwdDeskOfficer);
     let referralPopupRequest = 0;
     window.portalPaginationElements('.view-referral-btn').forEach(function(btn) {
@@ -821,6 +833,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then(data => {
                             if (!data.success) throw new Error(data.message || 'Failed to save changes');
 
+                            window.portalUnsavedChanges?.markSaved(form);
                             modal.hide();
                             Swal.fire({
                                 icon: 'success',

@@ -295,7 +295,7 @@
                 </div>
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-1">
                     <span class="text-sm font-medium text-gray-500 sm:w-32 flex-shrink-0">Last Updated:</span>
-                    <span class="text-sm text-gray-800">{{ $case->updated_at ? $case->updated_at->format('F j, Y \a\t g:i A') : 'N/A' }}</span>
+                    <span class="text-sm text-gray-800">{{ $case->updated_at ? ($case->trashed() && (auth()->user()?->position === 'Desk Officer' || auth()->user()?->isDepartmentAdmin()) ? \Carbon\Carbon::parse($case->getRawOriginal('updated_at'), config('app.timezone', 'UTC'))->timezone('Asia/Manila') : $case->updated_at)->format('F j, Y \a\t g:i A') : 'N/A' }}</span>
                 </div>
                 @if($case->createdBy)
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-1">

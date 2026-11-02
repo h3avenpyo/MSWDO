@@ -26,15 +26,23 @@
             link.href = target.href;
         });
     }
-    async function load(url, key, push) {
+    const archiveRefreshPaused = () => document.hidden || document.querySelector('.swal2-container, .modal.show')
+        || document.activeElement?.closest('[data-live-archived-referrals], [data-live-archived-cases], [data-live-archived-reports]');
+    async function load(url, key, push, background = false) {
+        if (background && (pending || archiveRefreshPaused())) return;
         pending?.abort();
         const request = new AbortController();
         pending = request;
         const current = key ? document.querySelector(`[data-ajax-pagination="${CSS.escape(key)}"]`) : null;
         const busy = current || document.querySelector('#mainContent');
-        busy?.setAttribute('aria-busy', 'true');
+        if (!background) busy?.setAttribute('aria-busy', 'true');
+        const timeout = background ? setTimeout(() => request.abort(), 10000) : null;
         try {
-            const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }, signal: request.signal });
+            const response = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', ...(background ? { 'X-Skip-Loading': '1' } : {}) },
+                signal: request.signal,
+                ...(background ? { cache: 'no-store' } : {})
+            });
             if (!response.ok || response.redirected) throw new Error('Request failed');
             const page = new DOMParser().parseFromString(await response.text(), 'text/html');
             const regions = key ? [current] : Array.from(document.querySelectorAll('[data-ajax-pagination]'));
@@ -44,7 +52,10 @@
                 return [region, replacement];
             });
             if (request.signal.aborted || pending !== request) return;
-            updates.forEach(([region, replacement]) => region.replaceWith(replacement));
+            if (background && (archiveRefreshPaused() || location.href !== url.href)) return;
+            updates.forEach(([region, replacement]) => {
+                if (!background || region.innerHTML !== replacement.innerHTML) region.replaceWith(replacement);
+            });
             // Keep the hidden case print data in sync with the displayed page.
             document.querySelectorAll('[data-ajax-pagination-companion]').forEach(region => {
                 const owner = region.dataset.ajaxPaginationCompanion;
@@ -67,7 +78,7 @@
                 updated.focus({ preventScroll: true });
             }
         } catch (error) {
-            if (error.name === 'AbortError' || pending !== request) return;
+            if (background || error.name === 'AbortError' || pending !== request) return;
             const region = current || document.querySelector('[data-ajax-pagination]');
             if (!region) return;
             let message = region.querySelector('[data-pagination-error]');
@@ -80,7 +91,11 @@
             }
             message.textContent = 'Unable to load this page. Please try the page link again.';
         } finally {
-            if (pending === request) busy?.removeAttribute('aria-busy');
+            if (timeout !== null) clearTimeout(timeout);
+            if (pending === request) {
+                if (!background) busy?.removeAttribute('aria-busy');
+                pending = null;
+            }
         }
     }
     document.addEventListener('click', event => {
@@ -105,5 +120,13 @@
     });
     window.addEventListener('popstate', () => {
         if (document.querySelector('[data-ajax-pagination]')) load(new URL(location.href), null, false);
+    });
+    const refreshArchives = () => {
+        if (document.querySelector('[data-live-archived-referrals], [data-live-archived-cases], [data-live-archived-reports]')) load(new URL(location.href), null, false, true);
+    };
+    window.setInterval(refreshArchives, 3000);
+    window.addEventListener('focus', refreshArchives);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) refreshArchives();
     });
 })();

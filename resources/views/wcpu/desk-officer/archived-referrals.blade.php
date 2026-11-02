@@ -452,7 +452,7 @@ case referrals'])
     </form>
     @php($groups = isset($referralGroups) && !empty($referralGroups) ? $referralGroups : ['' => $referrals])
     @foreach($groups as $department => $referralList)
-    <section data-ajax-pagination="archived-referrals-{{ $department ?: 'all' }}" data-ajax-page="{{ $referralList->getPageName() }}" class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-6">
+    <section data-live-archived-referrals data-ajax-pagination="archived-referrals-{{ $department ?: 'all' }}" data-ajax-page="{{ $referralList->getPageName() }}" class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-6">
         @if(auth()->user()->isMultiCaseDepartment())
         <div class="border-b border-gray-100 px-6 py-4">
             <h2 class="text-lg font-semibold text-[#991b1b]">{{ $department === 'VAWC' ? 'SWD' : $department }} Archived

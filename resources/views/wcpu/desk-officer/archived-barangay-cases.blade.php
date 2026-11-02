@@ -423,7 +423,7 @@ BCPC cases'])
     </form>
 
     @foreach($caseGroups as $department => $cases)
-    <section data-ajax-pagination="archived-cases-{{ $department }}" data-ajax-page="{{ $cases->getPageName() }}" class="mb-6 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+    <section data-live-archived-cases data-ajax-pagination="archived-cases-{{ $department }}" data-ajax-page="{{ $cases->getPageName() }}" class="mb-6 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
         @if(auth()->user()->isMultiCaseDepartment())
         <div class="border-b border-gray-100 px-4 py-4">
             <h2 class="text-lg font-semibold text-[#991b1b]">{{ $department === 'VAWC' ? 'SWD' : $department }} Cases

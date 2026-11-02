@@ -7,6 +7,42 @@
 <style>
     @media (max-width: 47.9375rem) {
         #register-user-form-actions > a { border-radius: .5rem !important; }
+        html body.portal-ui #mainContent#mainContent #register-user-page-header .notification-dropdown > div:first-child {
+            box-sizing: border-box;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: .75rem !important;
+            height: 3.25rem !important;
+            min-height: 3.25rem !important;
+            flex-shrink: 0;
+            padding: .75rem 1.375rem !important;
+            background: #C41E3A !important;
+        }
+        html body.portal-ui #mainContent#mainContent #register-user-page-header .notification-dropdown > div:first-child > h4 {
+            margin: 0 !important;
+            font-size: .875rem !important;
+            line-height: 1.25rem !important;
+            font-weight: 600 !important;
+            color: #fff !important;
+            white-space: nowrap;
+        }
+        html body.portal-ui #mainContent#mainContent #register-user-page-header #markAllReadBtn {
+            width: auto !important;
+            min-width: 0 !important;
+            height: 1.375rem !important;
+            min-height: 1.375rem !important;
+            flex: 0 0 auto !important;
+            padding: .125rem .625rem !important;
+            border: 0 !important;
+            border-radius: 9999px !important;
+            background: #fff !important;
+            color: #C41E3A !important;
+            font-size: .75rem !important;
+            font-weight: 400 !important;
+            line-height: 1.125rem !important;
+            white-space: nowrap;
+        }
     }
 </style>
 @endif
