@@ -2095,11 +2095,54 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
     && !auth()->user()?->isMultiCaseDepartment()
     && session('bcpc_case_archived_success');
     @endphp
+    <style>
+        .quarterly-no-update {
+            width: 29rem !important;
+            max-width: 100% !important;
+            padding: 2rem !important;
+            border: 1px solid #eadde0 !important;
+            border-top: 5px solid #a71930 !important;
+            border-radius: 20px !important;
+            background: #fff !important;
+            box-shadow: 0 24px 70px rgba(40, 16, 23, .22) !important;
+        }
+        .quarterly-no-update > .fa-info-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 76px;
+            height: 76px;
+            margin-bottom: 1.25rem;
+            border-radius: 50%;
+            background: #fbf0f2;
+            color: #a71930 !important;
+            font-size: 36px;
+        }
+        .quarterly-no-update .swal2-icon { color: #a71930 !important; border-color: #ead0d6 !important; background: #fbf0f2; }
+        .quarterly-no-update .swal2-x-mark-line-left,
+        .quarterly-no-update .swal2-x-mark-line-right { background: #a71930 !important; }
+        .quarterly-no-update h2 { margin-bottom: .75rem !important; color: #27252a !important; font-size: 24px !important; font-weight: 700 !important; }
+        .quarterly-no-update p,
+        .quarterly-no-update .swal2-html-container { color: #687080 !important; font-size: 14px !important; line-height: 1.7 !important; }
+        .quarterly-no-update button {
+            min-width: 112px;
+            padding: 11px 26px !important;
+            border: 0 !important;
+            border-radius: 10px !important;
+            background: #a71930 !important;
+            color: #fff !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            box-shadow: none !important;
+        }
+        .quarterly-no-update button:hover { background: #871329 !important; }
+        .quarterly-no-update button:focus-visible { outline: 3px solid #e8bdc6; outline-offset: 3px; }
+    </style>
     @if($showSwdQuarterlyResult)
     <div id="quarterly-report-success" role="alertdialog" aria-modal="true" aria-labelledby="quarterly-success-title"
         aria-describedby="quarterly-success-message"
         style="position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .45); padding: 1rem;">
-        <div class="bg-white rounded-xl shadow-xl p-8 text-center" style="width: 32rem; max-width: 100%;">
+        <div class="bg-white rounded-xl shadow-xl p-8 text-center {{ !session('success') && str_contains((string) session('error'), 'already up to date') ? 'quarterly-no-update' : '' }}" style="width: 32rem; max-width: 100%;">
             <i class="fas {{ session('success') ? 'fa-check-circle text-green-500' : 'fa-info-circle text-blue-500' }} text-5xl mb-4"
                 aria-hidden="true"></i>
             <h2 id="quarterly-success-title" class="text-2xl font-semibold text-gray-800 mb-3">{{ session('success') ?

@@ -382,7 +382,8 @@ class QuarterlyReportController extends Controller
             ->orderBy('id')
             ->get();
 
-            if ($cases->isEmpty()) {
+            if ($cases->isEmpty() && !($user->position === 'Desk Officer'
+                && (in_array($user->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || $user->isMultiCaseDepartment()))) {
                 $noDataCount++;
                 continue;
             }

@@ -515,6 +515,8 @@ $isMultiroleDeskOfficer = Auth::user()->position === 'Desk Officer' && Auth::use
 $isSwdDeskOfficer = Auth::user()->position === 'Desk Officer' && Auth::user()->defaultCaseDepartment() === 'VAWC' &&
 !$isMultiroleDeskOfficer;
 $isSwdCase = !$isBCPCCase;
+$hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
+    && (Auth::user()->defaultCaseDepartment() === 'BCPC' || $isMultiroleDeskOfficer));
 @endphp
 
 <!-- Top Header -->
@@ -731,18 +733,20 @@ $isSwdCase = !$isBCPCCase;
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Age <span class="text-red-500">*</span>
-                            @unless($isSwdCase)<span class="text-xs text-red-600 font-bold">(0 - 17
-                                only)</span>@endunless
+                            @if($hasVictimAgeLimit)<span class="text-xs text-red-600 font-bold">(0 - 17
+                                only)</span>@endif
                         </label>
-                        <input type="number" id="victim_age" name="victim_age" required min="0" @unless($isSwdCase)
-                            max="17" @endunless value="{{ old('victim_age') }}"
-                            placeholder="{{ $isSwdCase ? 'Age' : 'Age (0-17)' }}"
+                        <input type="number" id="victim_age" name="victim_age" required min="0" @if($hasVictimAgeLimit)
+                            max="17" @endif value="{{ old('victim_age') }}"
+                            placeholder="{{ $hasVictimAgeLimit ? 'Age (0-17)' : 'Age' }}"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
-                        @unless($isSwdCase)<p class="text-xs text-gray-500 mt-1">Victim age must be from 0 to 17 years
-                            old.</p>@endunless
+                        @if($hasVictimAgeLimit)<p class="text-xs text-gray-500 mt-1">Victim age must be from 0 to 17 years
+                            old.</p>@endif
+                        @if($hasVictimAgeLimit)
                         <p id="victim_age_error" class="text-xs text-red-600 font-semibold mt-1 hidden">
                             <i class="fas fa-exclamation-circle"></i> Victim age can only be 17 and below.
                         </p>
+                        @endif
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -1106,6 +1110,7 @@ $isSwdCase = !$isBCPCCase;
     document.addEventListener('DOMContentLoaded', function() {
     const isBCPCCase = {{ $isBCPCCase ? 'true' : 'false' }};
     const isSwdCase = !isBCPCCase;
+    const hasVictimAgeLimit = @json($hasVictimAgeLimit);
     const victimAgeInput = document.getElementById('victim_age');
     const victimAgeError = document.getElementById('victim_age_error');
     let hasVictimAgeLimitError = false;
@@ -1114,7 +1119,7 @@ $isSwdCase = !$isBCPCCase;
     
     // Enforce the 17-and-below limit for victim information only.
     function enforceVictimAgeRule() {
-        if (!victimAgeInput || isSwdCase) return;
+        if (!victimAgeInput || !hasVictimAgeLimit) return;
         const val = parseInt(victimAgeInput.value);
         if (!isNaN(val) && val > 17) {
             victimAgeInput.value = '';
@@ -1283,7 +1288,7 @@ $isSwdCase = !$isBCPCCase;
             e.preventDefault();
             
             // Re-validate the victim age limit.
-            if (victimAgeInput && !isSwdCase) {
+            if (victimAgeInput && hasVictimAgeLimit) {
                 const vAge = parseInt(victimAgeInput.value);
                 if (isNaN(vAge) || vAge > 17 || vAge < 0) {
                     victimAgeInput.focus();

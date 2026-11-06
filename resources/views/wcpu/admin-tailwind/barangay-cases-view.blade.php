@@ -2695,8 +2695,7 @@
                         <p class="text-xs text-gray-500 uppercase tracking-wide">Case Closed</p>
                         <p class="text-lg font-bold text-gray-800">
                             {{ ($allCases ?? $cases)->whereIn('status', [
-                                    'Case
-                                                    closed',
+                                    'Case closed',
                                     'Case Closed',
                                     'Complete case',
                                     'Complete Case',
@@ -2713,8 +2712,7 @@
                         <p class="text-lg font-bold text-gray-800">
                             {{ ($allCases ?? $cases)->where(
                                     'status',
-                                    'Case
-                                                    Referred',
+                                    'Case Referred',
                                 )->count() }}
                         </p>
                     </div>
@@ -2728,8 +2726,7 @@
                         <p class="text-lg font-bold text-gray-800">
                             {{ ($allCases ?? $cases)->where(
                                     'status',
-                                    'Case
-                                                    Filed',
+                                    'Case Filed',
                                 )->count() }}</p>
                     </div>
                 </div>

@@ -15,6 +15,8 @@
     form.noValidate = true;
     form.setAttribute('data-skip-loading-modal', '');
     const showResult = (success, message) => {
+        const noUpdate = operation === 'update' && !success && /already up to date/i.test(message);
+        dialog.classList.toggle('quarterly-no-update', noUpdate);
         if (window.Swal) {
             Swal.fire({
                 icon: success ? 'success' : 'error',
@@ -22,6 +24,7 @@
                 text: message,
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#C41E3A',
+                customClass: { popup: noUpdate ? 'quarterly-no-update' : '' },
             }).then(() => {
                 if (success && redirectUrl) window.location.assign(redirectUrl);
             });
@@ -58,7 +61,7 @@
         try {
             const response = await fetch(form.action, {
                 method: 'POST', body: new FormData(form), credentials: 'same-origin',
-                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest', ...(operation === 'update' && window.Swal ? { 'X-Skip-Loading': '1' } : {}) }
             });
             const data = await response.json().catch(() => ({ success: false, message: `Unable to ${operation} the report. Please refresh the page and try again.` }));
             if (!response.ok || !data.success) throw new Error(data.message || `Unable to ${operation} the report.`);

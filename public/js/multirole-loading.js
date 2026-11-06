@@ -39,13 +39,13 @@
     document.addEventListener('submit', event => {
         queueMicrotask(() => {
             const form = event.target;
-            if (!event.defaultPrevented && !form.hasAttribute('data-skip-loading-modal') && form.target !== '_blank' && isWriteMethod(form.method) && !isSwalBusy()) show();
+            if (!event.defaultPrevented && !form.hasAttribute('data-skip-loading-modal') && !(window.Swal && form.hasAttribute('data-skip-loading-overlay')) && form.target !== '_blank' && isWriteMethod(form.method) && !isSwalBusy()) show();
         });
     });
 
     const submit = HTMLFormElement.prototype.submit;
     HTMLFormElement.prototype.submit = function() {
-        if (!this.hasAttribute('data-skip-loading-modal') && this.target !== '_blank' && isWriteMethod(this.method)) show();
+        if (!this.hasAttribute('data-skip-loading-modal') && !(window.Swal && this.hasAttribute('data-skip-loading-overlay')) && this.target !== '_blank' && isWriteMethod(this.method)) show();
         return submit.call(this);
     };
 

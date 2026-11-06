@@ -621,7 +621,9 @@ public function create()
         }
 
         $caseDepartment = $this->requestedCaseDepartment($request->input('case_type'));
-        $victimAgeRule = $caseDepartment === 'VAWC' ? 'required|integer|min:0' : 'required|integer|min:0|max:17';
+        $removeVictimAgeLimit = Auth::user()?->position === 'Desk Officer'
+            && (Auth::user()?->defaultCaseDepartment() === 'BCPC' || Auth::user()?->isMultiCaseDepartment());
+        $victimAgeRule = $caseDepartment === 'VAWC' || $removeVictimAgeLimit ? 'required|integer|min:0' : 'required|integer|min:0|max:17';
         $validated = $request->validate([
             'victim_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'victim_age' => $victimAgeRule,

@@ -426,7 +426,7 @@
                        class="px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-medium text-sm transition">
                         Cancel
                     </a>
-                    <form id="regenerate-quarterly-report-form" action="{{ route($quarterlyRegenerateRoute, $report->id) }}" method="POST">
+                    <form id="regenerate-quarterly-report-form" action="{{ route($quarterlyRegenerateRoute, $report->id) }}" method="POST" @if(auth()->user()?->position === 'Desk Officer') data-skip-loading-overlay @endif>
                         @csrf
                         <button type="submit" 
                                 class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 text-white rounded-xl text-sm font-medium shadow-md transition">
