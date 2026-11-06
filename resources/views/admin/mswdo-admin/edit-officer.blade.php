@@ -113,7 +113,7 @@ $initials = count($words) >= 2
     }
 
     .btn-submit {
-        background: var(--primary);
+        background: var(--brand, #B11116);
         color: #fff;
         border: none;
         border-radius: 8px;
@@ -124,7 +124,11 @@ $initials = count($words) >= 2
         transition: all .2s;
     }
     .btn-submit:hover {
-        background: var(--primary-dark);
+        background: #8E0D11;
+    }
+    .btn-submit:focus-visible {
+        outline: 3px solid rgba(177, 17, 22, .3);
+        outline-offset: 2px;
     }
 
     /* ── Status Selection with Circle Radio Buttons ── */
@@ -244,6 +248,12 @@ $initials = count($words) >= 2
                 <input type="text" name="name" class="form-control" placeholder="Enter full name" value="{{ old('name', $officer->name) }}" required>
             </div>
             <div>
+                <label class="form-label" for="officerUsername">Username</label>
+                <input type="text" id="officerUsername" name="username" class="form-control" placeholder="e.g. maria.delacruz" value="{{ old('username', $officer->username) }}" minlength="3" maxlength="255" pattern="[A-Za-z0-9_.\-]+" autocomplete="off" autocapitalize="none" spellcheck="false">
+                <p class="text-xs text-slate-500 mt-1"> Use at least 3 letters, numbers, periods, underscores, or hyphens. Log in with this username or your email.</p>
+                @error('username') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div>
                 <label class="form-label">Email Address</label>
                 <input type="email" name="email" class="form-control" placeholder="Enter email address" value="{{ old('email', $officer->email) }}" required>
             </div>
@@ -251,15 +261,13 @@ $initials = count($words) >= 2
                 <label class="form-label">Role / Assignment</label>
                 <div class="select-dropdown-wrap">
                     <select class="form-select" name="role" id="roleSelect" required>
-                        <option value="" disabled selected>Select Role / Assignment</option>
-                        <option value="Senior Citizen officer" {{ old('role', $officer->role) == 'Senior Citizen officer' ? 'selected' : '' }}>Senior Citizen Officer</option>
-                        <option value="financialstep1" {{ old('role', $officer->role) == 'financialstep1' ? 'selected' : '' }}>Financial Assistance Step 1</option>
-                        <option value="financialstep2" {{ old('role', $officer->role) == 'financialstep2' ? 'selected' : '' }}>Financial Assistance Step 2</option>
-                        <option value="eligibility_checker" {{ old('role', $officer->role) == 'eligibility_checker' ? 'selected' : '' }}>Social Case Worker (Checker)</option>
-                        <option value="social_worker" {{ old('role', $officer->role) == 'social_worker' ? 'selected' : '' }}>Social Case Worker (Encoder)</option>
-                        <option value="encoder" {{ old('role', $officer->role) == 'encoder' ? 'selected' : '' }}>Encoder</option>
-                        <option value="staff" {{ old('role', $officer->role) == 'staff' ? 'selected' : '' }}>Staff</option>
-                        <option value="admin" {{ old('role', $officer->role) == 'admin' ? 'selected' : '' }}>Administrator</option>
+                        @php
+                            $selectedRole = old('role', $officer->role instanceof \BackedEnum ? $officer->role->value : $officer->role);
+                        @endphp
+                        <option value="" disabled @selected(!$selectedRole)>Select Role / Assignment</option>
+                        @foreach(\App\Enums\UserRole::cases() as $role)
+                            <option value="{{ $role->value }}" @selected($selectedRole === $role->value)>{{ $role->label() }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <p class="select-hint">

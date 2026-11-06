@@ -4287,9 +4287,9 @@ function renderCaseDetail(){
             Print
           </button>
           ${(c.status === 'Approved' || c.status === 'Released' || c.status === 'Printed') ? `
-            <button class="header-btn primary" style="width:120px;flex-shrink:0;" onclick="reprintCase('${c.id}')">
+            <button class="header-btn primary" style="min-width:150px;flex-shrink:0;" onclick="reprintCase('${c.id}')">
               <i data-lucide="printer" style="width:16px;height:16px;"></i>
-              Reprint
+              Reprint/Update
             </button>
           ` : ''}
           ${CAN_ENCODE ? `

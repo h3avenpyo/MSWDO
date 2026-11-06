@@ -519,7 +519,16 @@ $initials = count($words) >= 2
 
             <div class="officer-details-column">
             <div class="field-group">
-                <label class="field-label" for="officerEmail">Email Address (Login Username) <span class="required">*</span></label>
+                <label class="field-label" for="officerUsername">Username <span class="required">*</span></label>
+                <div class="input-wrap">
+                    <i data-lucide="user" class="input-icon"></i>
+                    <input type="text" name="username" id="officerUsername" class="form-input" placeholder="e.g. maria.delacruz" value="{{ old('username') }}" required minlength="3" maxlength="255" pattern="[A-Za-z0-9_.\-]+" autocomplete="off" autocapitalize="none" spellcheck="false">
+                </div>
+                <p class="text-xs text-slate-500">Use at least 3 letters, numbers, periods, underscores, or hyphens. You can log in with this username or your email.</p>
+                @error('username') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div class="field-group">
+                <label class="field-label" for="officerEmail">Email Address <span class="required">*</span></label>
                 <div class="input-wrap">
                     <i data-lucide="mail" class="input-icon"></i>
                     <input type="email" name="email" id="officerEmail" class="form-input" placeholder="e.g. maria.delacruz@mswdo.gov.ph" value="{{ old('email') }}" required autocomplete="off">

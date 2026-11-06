@@ -145,6 +145,12 @@ $portal = $officer->isBcpcAdmin() ? 'BCPC' : 'SWD';
                 <input type="text" name="last_name" class="form-control" placeholder="Enter last name" value="{{ old('last_name', $officer->last_name) }}" required>
             </div>
             <div>
+                <label class="form-label" for="officerUsername">Username</label>
+                <input type="text" id="officerUsername" name="username" class="form-control" placeholder="e.g. maria.delacruz" value="{{ old('username', $officer->username) }}" minlength="3" maxlength="255" autocomplete="off" autocapitalize="none" spellcheck="false">
+                <p class="text-xs text-slate-500 mt-1">Optional. For a new username, use letters, numbers, periods, underscores, or hyphens. You can also log in with your email.</p>
+                @error('username') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div>
                 <label class="form-label">Email Address</label>
                 <input type="email" name="email" class="form-control" placeholder="Enter email address" value="{{ old('email', $officer->email) }}" required>
             </div>

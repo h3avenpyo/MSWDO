@@ -26,6 +26,12 @@ class StoreOfficerRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'username' => ['required', 'string', 'min:3', 'max:255', 'regex:/\A[A-Za-z0-9_.-]+\z/',
+                Rule::unique(User::class, 'username'),
+                Rule::unique(WcpuUser::class, 'username'),
+                Rule::unique(User::class, 'email'),
+                Rule::unique(WcpuUser::class, 'email'),
+            ],
             'name' => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
                 if (in_array($this->input('role'), ['bcpc_admin', 'swd_admin'], true)) {
                     return;

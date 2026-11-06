@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Officer;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Models\Wcpu\User as WcpuUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -19,6 +20,12 @@ class UpdateOfficerRequest extends FormRequest
         $officerId = $this->route('id');
 
         return [
+            'username' => ['nullable', 'string', 'min:3', 'max:255', 'regex:/\A[A-Za-z0-9_.-]+\z/',
+                Rule::unique(User::class, 'username')->ignore($officerId),
+                Rule::unique(WcpuUser::class, 'username'),
+                Rule::unique(User::class, 'email')->ignore($officerId),
+                Rule::unique(WcpuUser::class, 'email'),
+            ],
             'name' => ['required', 'string', 'max:255', function ($attribute, $value, $fail) use ($officerId) {
                 $exists = User::whereRaw('LOWER(name) = ?', [strtolower($value)])
                     ->where('id', '!=', $officerId)

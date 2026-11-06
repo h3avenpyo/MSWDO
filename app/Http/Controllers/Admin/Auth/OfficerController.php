@@ -211,7 +211,7 @@ class OfficerController extends Controller
             ];
             $model = new WcpuUser();
             if ($model->getConnection()->getSchemaBuilder()->hasColumn($model->getTable(), 'username')) {
-                $attributes['username'] = $request->email;
+                $attributes['username'] = $request->username;
             }
             WcpuUser::create($attributes);
 
@@ -230,6 +230,7 @@ class OfficerController extends Controller
 
         $officer = User::create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
@@ -269,6 +270,7 @@ class OfficerController extends Controller
 
         $officer->update([
             'name' => $request->name,
+            'username' => $request->exists('username') ? $request->username : $officer->username,
             'email' => $request->email,
             'role' => $request->role,
             'phone' => $request->phone,
@@ -308,6 +310,13 @@ class OfficerController extends Controller
         $officer = WcpuUser::findOrFail($id);
 
         $validated = $request->validate([
+            'username' => ['nullable', 'string', 'min:3', 'max:255',
+                ...($request->input('username') !== $officer->username ? ['regex:/\A[A-Za-z0-9_.-]+\z/'] : []),
+                Rule::unique(WcpuUser::class, 'username')->ignore($officer->id),
+                Rule::unique(User::class, 'username'),
+                Rule::unique(WcpuUser::class, 'email')->ignore($officer->id),
+                Rule::unique(User::class, 'email'),
+            ],
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
@@ -326,6 +335,9 @@ class OfficerController extends Controller
         }
 
         $officer->first_name = $validated['first_name'];
+        if ($request->exists('username')) {
+            $officer->username = $validated['username'] ?? null;
+        }
         $officer->last_name = $validated['last_name'];
         $officer->email = $validated['email'];
         $officer->phone_number = $validated['phone_number'] ?? null;

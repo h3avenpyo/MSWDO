@@ -29,7 +29,7 @@ class AuthController extends Controller
         $password = (string) $request->input('password');
 
         // 1. Attempt authentication against MSWDO accounts
-        $mswdoUser = User::where('email', $login)->first();
+        $mswdoUser = User::where('email', $login)->orWhere('username', $login)->first();
 
         if ($mswdoUser && Hash::check($password, $mswdoUser->password)) {
             // Check if MSWDO account is deactivated
