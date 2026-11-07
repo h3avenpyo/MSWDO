@@ -346,7 +346,10 @@ window.portalPaginationElements('.quarterly-mobile-cards').forEach(cards => {
 });
 
 window.portalPaginationElements('[data-quarterly-preview]').forEach(button => button.addEventListener('click', () => {
-    const openPreview = () => window.location.assign(button.dataset.quarterlyPreview);
+    const openPreview = () => {
+        if (isQuarterlyPhoneView && window.openQuarterlyReportPreview) return window.openQuarterlyReportPreview(button.dataset.quarterlyPreview);
+        window.location.assign(button.dataset.quarterlyPreview);
+    };
     if (typeof Swal === 'undefined') return openPreview();
     Swal.fire({
         title: 'Print Report?',

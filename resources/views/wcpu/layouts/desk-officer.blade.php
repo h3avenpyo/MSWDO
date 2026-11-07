@@ -2608,6 +2608,111 @@ $deskOfficerSidebarStateKey = auth()->user()?->isMultiCaseDepartment()
     </script>
 
     <script src="{{ asset('js/desk-officer-pagination.js') }}?v={{ filemtime(public_path('js/desk-officer-pagination.js')) }}"></script>
+    @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
+    <script>
+    window.openQuarterlyReportPreview = function (url) {
+        let modal = document.getElementById('quarterly-print-preview-modal');
+        if (!modal) {
+            modal = document.createElement('dialog');
+            modal.id = 'quarterly-print-preview-modal';
+            modal.setAttribute('aria-label', 'Quarterly report print preview');
+            modal.style.cssText = 'margin:auto;padding:0;border:0;border-radius:12px;width:96vw;max-width:1500px;height:92dvh;max-height:92dvh;overflow:hidden;background:#fff;';
+            modal.innerHTML = '<div style="height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #e5e7eb;color:#1f2937"><strong>Print Preview</strong><button type="button" aria-label="Close print preview" style="border:0;background:transparent;font-size:14px;cursor:pointer;color:#374151">Close</button></div><iframe title="Quarterly report print preview" style="display:block;width:100%;height:calc(100% - 48px);border:0;background:#fff"></iframe>';
+            const style = document.createElement('style');
+            style.textContent = `
+                #quarterly-print-preview-modal::backdrop { background:rgba(0,0,0,.55); }
+                #quarterly-print-preview-modal > div > button { display:inline-flex !important; align-items:center; justify-content:center; width:64px; min-width:64px; height:40px; padding:0 !important; flex-shrink:0; background:#C41E3A !important; color:#fff !important; border-radius:8px; }
+                @media (max-width: 47.9375rem) {
+                    #quarterly-print-preview-modal { width:calc(100vw - 16px) !important; max-width:calc(100vw - 16px) !important; height:calc(100dvh - 24px) !important; max-height:calc(100dvh - 24px) !important; }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(modal);
+            modal.querySelector('button').addEventListener('click', () => modal.close());
+            modal.querySelector('iframe').addEventListener('load', () => {
+                const previewDocument = modal.querySelector('iframe').contentDocument;
+                if (!previewDocument) return;
+                if (!previewDocument.querySelector('meta[name="viewport"]')) {
+                    const viewport = previewDocument.createElement('meta');
+                    viewport.name = 'viewport';
+                    viewport.content = 'width=device-width, initial-scale=1';
+                    previewDocument.head.appendChild(viewport);
+                }
+                const mobilePreviewStyle = previewDocument.createElement('style');
+                mobilePreviewStyle.textContent = `
+                    .quarterly-mobile-report, .quarterly-mobile-viewport { display:contents; }
+                    @media screen and (max-width: 47.9375rem) {
+                        html { overflow-x:hidden; }
+                        body { min-width:0; margin:0; padding-top:108px; padding-bottom:16px; }
+                        .quarterly-mobile-viewport { display:block; width:100%; height:var(--quarterly-preview-height, auto); overflow:hidden; }
+                        .quarterly-mobile-report { display:block; width:1120px; transform:scale(var(--quarterly-preview-scale, 1)); transform-origin:top left; }
+                        .quarterly-mobile-report,
+                        .quarterly-mobile-report * { color:#000 !important; -webkit-text-fill-color:#000 !important; }
+                        .quarterly-mobile-report .summary-table th,
+                        .quarterly-mobile-report .summary-table th *,
+                        .quarterly-mobile-report .referrals-table th,
+                        .quarterly-mobile-report .referrals-table th *,
+                        .quarterly-mobile-report .section-caption,
+                        .quarterly-mobile-report .section-caption *,
+                        .quarterly-mobile-report .table-heading,
+                        .quarterly-mobile-report .table-heading * { color:#fff !important; -webkit-text-fill-color:#fff !important; }
+                        .page-content { width:1088px; max-width:none; margin:0 16px; }
+                        .footer { position:static; margin-top:16px; }
+                        .print-edit-controls { top:8px; left:8px; right:8px; width:auto; box-sizing:border-box; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:stretch; gap:6px; padding:8px; }
+                        .print-edit-controls > span { grid-column:1 / -1; grid-row:1; font-size:12px; }
+                        .print-edit-controls > a,
+                        .print-edit-controls > button { display:flex !important; align-items:center; justify-content:center; align-self:stretch; grid-row:2; box-sizing:border-box; width:100%; min-width:0; height:40px !important; min-height:40px !important; max-height:40px !important; margin:0 !important; padding:8px 6px !important; border:0; border-radius:5px; text-align:center; white-space:normal; font:12px/1.2 Arial,sans-serif !important; }
+                    }
+                `;
+                previewDocument.head.appendChild(mobilePreviewStyle);
+                const report = previewDocument.createElement('div');
+                report.className = 'quarterly-mobile-report';
+                [...previewDocument.body.childNodes].forEach(node => {
+                    if (node.nodeType === 1 && (node.matches('script, style, .print-edit-controls'))) return;
+                    report.appendChild(node);
+                });
+                const reportViewport = previewDocument.createElement('div');
+                reportViewport.className = 'quarterly-mobile-viewport';
+                reportViewport.appendChild(report);
+                previewDocument.body.appendChild(reportViewport);
+                const fitMobileReport = () => {
+                    const frame = modal.querySelector('iframe');
+                    const width = frame.getBoundingClientRect().width || previewDocument.documentElement.clientWidth;
+                    const scale = Math.min(1, width / 1120);
+                    previewDocument.documentElement.style.setProperty('--quarterly-preview-scale', scale);
+                    previewDocument.documentElement.style.setProperty('--quarterly-preview-height', Math.ceil(Math.max(report.scrollHeight, report.offsetHeight) * scale) + 'px');
+                    report.querySelectorAll('.referrals-table thead th, .referrals-table thead th *').forEach(heading => {
+                        if (width < 768) {
+                            heading.style.setProperty('color', '#fff', 'important');
+                            heading.style.setProperty('-webkit-text-fill-color', '#fff', 'important');
+                        } else {
+                            heading.style.removeProperty('color');
+                            heading.style.removeProperty('-webkit-text-fill-color');
+                        }
+                    });
+                };
+                fitMobileReport();
+                const previewWindow = modal.querySelector('iframe').contentWindow;
+                previewWindow.addEventListener('resize', fitMobileReport);
+                previewWindow.requestAnimationFrame(fitMobileReport);
+                if (previewWindow.ResizeObserver) {
+                    const reportResizeObserver = new previewWindow.ResizeObserver(fitMobileReport);
+                    reportResizeObserver.observe(report);
+                }
+                if (previewDocument.fonts) previewDocument.fonts.ready.then(fitMobileReport);
+                previewDocument.addEventListener('click', event => {
+                    if (!event.target.closest('.print-edit-controls a')) return;
+                    event.preventDefault();
+                    modal.close();
+                });
+            });
+            modal.addEventListener('close', () => modal.querySelector('iframe').removeAttribute('src'));
+        }
+        modal.querySelector('iframe').src = url;
+        if (!modal.open) modal.showModal();
+    };
+    </script>
+    @endif
     @stack('scripts')
     @if(auth()->user()?->position === 'Desk Officer' && (auth()->user()->canAccessCaseDepartment('BCPC') || auth()->user()->canAccessCaseDepartment('VAWC')))
     <script src="{{ asset('js/desk-case-referral-return.js') }}?v={{ filemtime(public_path('js/desk-case-referral-return.js')) }}"></script>

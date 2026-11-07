@@ -881,6 +881,13 @@ document.addEventListener('click', async function (event) {
         return;
     }
     const link = printButton || downloadButton;
+    const openAllReferralsPreview = url => {
+        const phoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
+        const isPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
+            || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneWidth <= 480);
+        if (isPhoneView && window.openQuarterlyReportPreview) return window.openQuarterlyReportPreview(url);
+        window.location.assign(url);
+    };
     let department = '';
     @if(auth()->user()->isMultiCaseDepartment())
     if (downloadButton) {
@@ -901,7 +908,7 @@ document.addEventListener('click', async function (event) {
             await Swal.fire({ icon: 'info', title: 'No Referrals to Print', text: 'There are no referrals to print.' });
             return;
         }
-        window.location.assign(link.href + '?preview=1&type=' + encodeURIComponent(department));
+        openAllReferralsPreview(link.href + '?preview=1&type=' + encodeURIComponent(department));
         return;
     }
     @endif
@@ -914,8 +921,8 @@ document.addEventListener('click', async function (event) {
         confirmButtonColor: '#7c3aed'
     });
     if (result.isConfirmed) {
-        if (printButton) window.location.assign(link.href);
-        else window.location.assign(link.href + (link.href.includes('?') ? '&' : '?') + 'preview=1');
+        if (printButton) openAllReferralsPreview(link.href);
+        else openAllReferralsPreview(link.href + (link.href.includes('?') ? '&' : '?') + 'preview=1');
     }
 });
 </script>

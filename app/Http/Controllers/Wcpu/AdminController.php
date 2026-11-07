@@ -78,6 +78,19 @@ class AdminController extends Controller
         $isBcpcAdmin = Auth::user()->isBcpcAdmin();
         $swdDepartment = Auth::user()->defaultCaseDepartment();
         $dashboardCaseDepartment = $isSwdAdmin ? $swdDepartment : ($isBcpcAdmin ? 'BCPC' : null);
+        $dashboardFilters = [];
+        if ($isSwdAdmin || $isBcpcAdmin) {
+            $dashboardFilters = request()->validate([
+                'quarter' => ['nullable', 'integer', 'between:1,4'],
+                'year' => ['nullable', 'integer', 'between:1900,2100'],
+                'barangay_id' => ['nullable', Rule::exists(Barangay::class, 'id')],
+            ]);
+        }
+        $dashboardCases = CaseModel::query()
+            ->when($dashboardCaseDepartment, fn ($query) => $query->where('type', $dashboardCaseDepartment))
+            ->when($dashboardFilters['quarter'] ?? null, fn ($query, $quarter) => $query->whereMonth('date_reported', '>=', ($quarter - 1) * 3 + 1)->whereMonth('date_reported', '<=', $quarter * 3))
+            ->when($dashboardFilters['year'] ?? null, fn ($query, $year) => $query->whereYear('date_reported', $year))
+            ->when($dashboardFilters['barangay_id'] ?? null, fn ($query, $id) => $query->where('case_designation', $id));
 
         // Debug: Check database connection and tables
         try {
@@ -126,11 +139,11 @@ class AdminController extends Controller
             
             try {
                 // Get total cases count
-                $totalCases = CaseModel::when($dashboardCaseDepartment, fn ($query) => $query->where('type', $dashboardCaseDepartment))->count();
+                $totalCases = (clone $dashboardCases)->count();
                 Log::info('Total cases count: ' . $totalCases);
                 
                 // SWD dashboard shows only filed VAWC cases.
-                $activeCases = CaseModel::when(
+                $activeCases = (clone $dashboardCases)->when(
                     $isSwdAdmin,
                     fn ($query) => $query->where('type', $swdDepartment)->where('status', 'Case Filed'),
                     fn ($query) => $query
@@ -143,6 +156,12 @@ class AdminController extends Controller
                 
                 // Get total users count
                 $totalUsers = User::where('is_active', true)
+                    ->when($dashboardFilters['quarter'] ?? null, fn ($query, $quarter) => $query->whereMonth('created_at', '>=', ($quarter - 1) * 3 + 1)->whereMonth('created_at', '<=', $quarter * 3))
+                    ->when($dashboardFilters['year'] ?? null, fn ($query, $year) => $query->whereYear('created_at', $year))
+                    ->when($dashboardFilters['barangay_id'] ?? null, function ($query, $id) {
+                        $name = Barangay::whereKey($id)->value('name');
+                        $query->where(fn ($users) => $users->where('barangay', $id)->orWhere('barangay', $name));
+                    })
                     ->when($isSwdAdmin, fn ($query) => $query
                         ->whereRaw('LOWER(department) LIKE ?', ['%' . strtolower($swdDepartment) . '%'])
                         ->whereRaw('LOWER(TRIM(position)) = ?', ['desk officer']))
@@ -154,13 +173,13 @@ class AdminController extends Controller
                 Log::info('Total active users: ' . $totalUsers);
                 
                 // Get today's cases count
-                $todayCases = CaseModel::when($dashboardCaseDepartment, fn ($query) => $query->where('type', $dashboardCaseDepartment))
+                $todayCases = (clone $dashboardCases)
                     ->whereDate('created_at', today())
                     ->count();
                 Log::info("Today's cases: " . $todayCases);
                 
                 // Get referred cases count
-                $referredCases = CaseModel::when($dashboardCaseDepartment, fn ($query) => $query->where('type', $dashboardCaseDepartment))
+                $referredCases = (clone $dashboardCases)
                     ->where('status', 'Case Referred')
                     ->count();
                 Log::info("Referred cases: " . $referredCases);
@@ -183,7 +202,7 @@ class AdminController extends Controller
             }
             
             // Get recent cases with only the fields we need
-            $recentCases = CaseModel::when($isSwdAdmin, fn ($query) => $query->where('type', $swdDepartment))->select([
+            $recentCases = (clone $dashboardCases)->select([
                     'id',
                     'case_number',
                     'victim_name',
@@ -210,7 +229,7 @@ class AdminController extends Controller
             Log::info('Recent cases loaded:', ['count' => $recentCases->count()]);
                 
             // Get case status distribution directly from cases table
-            $caseStatuses = CaseModel::when($isSwdAdmin, fn ($query) => $query->where('type', $swdDepartment))
+            $caseStatuses = (clone $dashboardCases)
                 ->select('status', DB::raw('count(*) as count'))
                 ->groupBy('status')
                 ->get()
@@ -226,7 +245,7 @@ class AdminController extends Controller
             Log::info('Case statuses loaded:', $caseStatuses->toArray());
                 
             // Get case types distribution directly from cases table
-            $caseTypes = CaseModel::when($dashboardCaseDepartment, fn ($query) => $query->where('type', $dashboardCaseDepartment))
+            $caseTypes = (clone $dashboardCases)
                 ->select('abuse_type', DB::raw('count(*) as count'))
                 ->groupBy('abuse_type')
                 ->get()
@@ -246,10 +265,8 @@ class AdminController extends Controller
             try {
                 // Get all barangays with their case counts
                 $barangayCases = \App\Models\Wcpu\Barangay::select('barangays.id', 'barangays.name', 'barangays.code')
-                    ->withCount(['cases as case_count' => function ($query) use ($dashboardCaseDepartment) {
-                        if ($dashboardCaseDepartment) {
-                            $query->where('type', $dashboardCaseDepartment);
-                        }
+                    ->withCount(['cases as case_count' => function ($query) use ($dashboardCases) {
+                        $query->whereIn('cases.id', (clone $dashboardCases)->select('cases.id'));
                     }])
                     ->having('case_count', '>', 0)
                     ->orderBy('case_count', 'desc')
@@ -277,7 +294,7 @@ class AdminController extends Controller
                 
                 // If no barangays with cases found, check if there are any cases at all
                 if ($barangayCases->isEmpty()) {
-                    $caseCount = CaseModel::when($dashboardCaseDepartment, fn ($query) => $query->where('type', $dashboardCaseDepartment))->count();
+                    $caseCount = (clone $dashboardCases)->count();
                     if ($caseCount > 0) {
                         $barangayCases = collect([[
                             'barangay' => 'Unassigned',
@@ -290,7 +307,7 @@ class AdminController extends Controller
                 
                 // If no barangays with cases found, check if there are any cases at all
                 if ($barangayCases->isEmpty()) {
-                    $caseCount = CaseModel::when($dashboardCaseDepartment, fn ($query) => $query->where('type', $dashboardCaseDepartment))->count();
+                    $caseCount = (clone $dashboardCases)->count();
                     Log::info('No barangays with cases found. Total cases in system: ' . $caseCount);
                     
                     if ($caseCount > 0) {
@@ -353,7 +370,12 @@ class AdminController extends Controller
                 'caseTypes' => $caseTypes,
                 'barangayCases' => $barangayCases,
                 'recentActivities' => $recentActivities,
-                'dbError' => false
+                'dbError' => false,
+                'dashboardFilters' => $dashboardFilters,
+                'dashboardYears' => ($isSwdAdmin || $isBcpcAdmin)
+                    ? range($yearBlockStart = 2024 + (int) floor((now('Asia/Taipei')->year - 2024) / 3) * 3, $yearBlockStart + 2)
+                    : [],
+                'dashboardBarangays' => ($isSwdAdmin || $isBcpcAdmin) ? Barangay::orderBy('name')->get(['id', 'name']) : collect(),
             ];
             
             return view('admin-tailwind.dashboard', $viewData);
@@ -2229,15 +2251,21 @@ class AdminController extends Controller
             403
         );
 
-        $html = $request->validate([
+        $validated = $request->validate([
             'html' => ['required', 'string', 'max:2000000'],
-        ])['html'];
+            'filename' => ['nullable', 'string', 'max:200', 'regex:/\A[A-Za-z0-9_-]+\.pdf\z/'],
+        ]);
 
-        return \Barryvdh\DomPDF\Facade\Pdf::setOptions([
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::setOptions([
             'isHtml5ParserEnabled' => true,
-        ])->loadHtml($html)
-            ->setPaper('a4', 'landscape')
-            ->stream('referral-registry.pdf');
+        ])->loadHtml($validated['html'])
+            ->setPaper('a4', 'landscape');
+
+        if ($user->position === 'Desk Officer' && !empty($validated['filename'])) {
+            return $pdf->download($validated['filename']);
+        }
+
+        return $pdf->stream('referral-registry.pdf');
     }
 
     /**
@@ -2247,13 +2275,19 @@ class AdminController extends Controller
     {
         abort_unless($request->user(), 403);
 
-        $html = $request->validate([
+        $validated = $request->validate([
             'html' => ['required', 'string', 'max:2000000'],
-        ])['html'];
+            'filename' => ['nullable', 'string', 'max:200', 'regex:/\A[A-Za-z0-9_-]+\.pdf\z/'],
+        ]);
 
-        return \Barryvdh\DomPDF\Facade\Pdf::loadHtml($html)
-            ->setPaper('a4', 'landscape')
-            ->stream('print-preview.pdf');
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHtml($validated['html'])
+            ->setPaper('a4', 'landscape');
+
+        if ($request->user()->position === 'Desk Officer' && $request->user()->isMultiCaseDepartment() && !empty($validated['filename'])) {
+            return $pdf->download($validated['filename']);
+        }
+
+        return $pdf->stream('print-preview.pdf');
     }
 
     /**

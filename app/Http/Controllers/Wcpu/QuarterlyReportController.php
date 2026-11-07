@@ -52,7 +52,9 @@ class QuarterlyReportController extends Controller
         }
         $html = '<html><head><meta charset="UTF-8">' . $styles . '</head><body>'
             . implode('<div style="page-break-before:always"></div>', $pages) . '</body></html>';
-        $html = str_replace('</body>', view('print.edit-controls')->render() . '</body>', $html);
+        $quarterlyAllDownloadFilename = ($type === 'VAWC' ? 'SWD' : 'BCPC')
+            . '_Quarterly_Reports_' . \Illuminate\Support\Str::slug($barangay->name, '_') . '_All.pdf';
+        $html = str_replace('</body>', view('print.edit-controls', compact('quarterlyAllDownloadFilename'))->render() . '</body>', $html);
         return response($html)->header('Content-Type', 'text/html; charset=UTF-8');
     }
 

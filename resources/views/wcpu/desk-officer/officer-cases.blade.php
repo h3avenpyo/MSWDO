@@ -30,7 +30,7 @@
         </div>
         <div class="case-modal-header-actions flex items-center gap-2 flex-wrap {{ Auth::user()->position === 'Desk Officer' && (Auth::user()->defaultCaseDepartment() === 'BCPC' || Auth::user()->isMultiCaseDepartment()) ? 'w-full justify-end' : '' }}">
           @if(Auth::user()->position === 'Desk Officer' && (Auth::user()->defaultCaseDepartment() === 'BCPC' || Auth::user()->isMultiCaseDepartment()))
-          <a :href="printUrl" target="{{ $isMultiroleDeskOfficer ? '_self' : '_blank' }}" class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+          <a :href="printUrl" @click="if (window.openCaseMobilePrintPreview(printUrl)) $event.preventDefault()" target="{{ $isMultiroleDeskOfficer ? '_self' : '_blank' }}" class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
             <i class="fas fa-print"></i><span>Print</span>
           </a>
           <a id="bcpc-refer-case-button" :href="canRefer ? referUrl : null" :aria-disabled="(!canRefer).toString()" :tabindex="canRefer ? 0 : -1" @click="if (!canRefer) $event.preventDefault()" :class="{ 'opacity-50 cursor-not-allowed pointer-events-none': !canRefer }" class="inline-flex items-center gap-2 px-3 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors text-sm font-medium">
@@ -3726,8 +3726,17 @@ async function submitSendCopy(caseId, emailAddress) {
 }
 
 // Print All Cases Function (now streams a PDF preview)
+window.openCaseMobilePrintPreview = function(printUrl) {
+    const phoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
+    const isPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
+        || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneWidth <= 480);
+    if (!isPhoneView || !window.openQuarterlyReportPreview || !printUrl || printUrl === '#') return false;
+    window.openQuarterlyReportPreview(printUrl);
+    return true;
+};
 window.previewCasePrint = function(printUrl, caseNumber) {
     if (!printUrl || printUrl === '#') return;
+    if (window.openCaseMobilePrintPreview(printUrl)) return;
 
     const openPreview = () => {
         @if($isMultiroleDeskOfficer)
@@ -3774,6 +3783,10 @@ function printAllCases() {
                 if (currentParams.has(key)) printUrl.searchParams.set(key, currentParams.get(key));
             });
             const pdfUrl = printUrl.toString();
+            const phoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
+            const isPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
+                || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneWidth <= 480);
+            if (isPhoneView && window.openQuarterlyReportPreview) return window.openQuarterlyReportPreview(pdfUrl);
             @if($isMultiroleDeskOfficer)
             window.location.assign(pdfUrl);
             @else

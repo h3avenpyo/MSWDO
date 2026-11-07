@@ -1,3 +1,50 @@
+@php
+        $quarterlyDownloadFilename = null;
+        $quarterlyAllDownloadFilename = $quarterlyAllDownloadFilename ?? null;
+        $barangayDownloadFilename = null;
+        $caseDownloadFilename = null;
+        $referralRegistryDownloadFilename = null;
+        $referralDownloadFilename = null;
+        if (request()->routeIs('desk-officer.quarterly-reports.download')
+            && auth()->user()?->position === 'Desk Officer'
+            && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) {
+            $quarterlyDownloadFilename = (!empty($reportData['is_bcpc_report']) ? 'BCPC' : 'SWD')
+                . '_Quarterly_Report_' . \Illuminate\Support\Str::slug($barangay->name, '_')
+                . '_Q' . $quarter . '_' . $year . '.pdf';
+        }
+        if (request()->routeIs('admin.barangay-cases.print-individual', 'desk-officer.cases.print-all')
+            && auth()->user()?->position === 'Desk Officer'
+            && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) {
+            $printDepartments = collect($cases ?? [])->pluck('type')->filter()->unique();
+            $printDepartmentLabel = $printDepartments->count() > 1 ? 'BCPC_SWD'
+                : str_replace('VAWC', 'SWD', $printDepartments->first() ?? $department ?? auth()->user()->defaultCaseDepartment());
+            $barangayDownloadFilename = $printDepartmentLabel . '_Barangay_Cases_'
+                . \Illuminate\Support\Str::slug($barangay->name, '_') . '.pdf';
+        }
+        if (request()->routeIs('desk-officer.cases.print', 'admin.case.print')
+            && auth()->user()?->position === 'Desk Officer'
+            && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) {
+            $caseDownloadFilename = str_replace('VAWC', 'SWD', strtoupper((string) $case->type))
+                . '_Case_Report_' . \Illuminate\Support\Str::slug((string) $case->case_number, '_') . '.pdf';
+        }
+        if (request()->routeIs('desk-officer.referrals.print-all')
+            && auth()->user()?->position === 'Desk Officer'
+            && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) {
+            $registryDepartments = collect($referrals ?? [])->pluck('case.type')->filter()->unique();
+            $registryDepartment = $registryDepartments->count() > 1 ? 'BCPC_SWD'
+                : str_replace('VAWC', 'SWD', $department ?? $registryDepartments->first() ?? auth()->user()->defaultCaseDepartment());
+            $registryBarangay = \App\Models\Wcpu\Barangay::where('name', auth()->user()->barangay)
+                ->orWhere('id', auth()->user()->barangay)->value('name');
+            $referralRegistryDownloadFilename = $registryDepartment . '_Referral_Registry_'
+                . \Illuminate\Support\Str::slug((string) $registryBarangay, '_') . '.pdf';
+        }
+        if (request()->routeIs('desk-officer.referrals.print')
+            && auth()->user()?->position === 'Desk Officer'
+            && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) {
+            $referralDownloadFilename = str_replace('VAWC', 'SWD', strtoupper((string) ($referral->case?->type ?? auth()->user()->defaultCaseDepartment())))
+                . '_Referral_' . \Illuminate\Support\Str::slug((string) ($referral->referral_number ?: $referral->id), '_') . '.pdf';
+        }
+    @endphp
 <script>
 (() => {
     const style = document.createElement('style');
@@ -47,6 +94,13 @@
     let active = null;
     const browserPrint = window.print.bind(window);
     const genericPdfPrintUrl = @json(route('print.edited-pdf'));
+
+    const quarterlyDownloadFilename = @json($quarterlyDownloadFilename);
+    const quarterlyAllDownloadFilename = @json($quarterlyAllDownloadFilename);
+    const barangayDownloadFilename = @json($barangayDownloadFilename);
+    const caseDownloadFilename = @json($caseDownloadFilename);
+    const referralRegistryDownloadFilename = @json($referralRegistryDownloadFilename);
+    const referralDownloadFilename = @json($referralDownloadFilename);
     const isProtectedTitle = (element) => Boolean(element?.closest(
         'h1, h2, h3, h4, h5, h6, caption, thead, th, label, [data-print-locked], [class*="title"], [class*="header"], [class*="label"]'
     ));
@@ -107,7 +161,12 @@
 
     const openCleanPdf = () => {
         if (active) active.removeAttribute('contenteditable');
-        const printWindow = window.open('', '_blank');
+        const phoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
+        const isPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
+            || (window.frameElement && window.frameElement.getBoundingClientRect().width < 768)
+            || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneWidth <= 480);
+        const downloadFilename = quarterlyDownloadFilename || (isPhoneView ? (quarterlyAllDownloadFilename || referralDownloadFilename || referralRegistryDownloadFilename || caseDownloadFilename || barangayDownloadFilename) : null);
+        const printWindow = downloadFilename ? null : window.open('', '_blank');
         const preview = document.documentElement.cloneNode(true);
         preview.querySelectorAll('script, .print-edit-controls, .report-back-button').forEach(element => element.remove());
         preview.querySelectorAll('[contenteditable], [data-print-editing], [spellcheck]').forEach(element => {
@@ -116,6 +175,30 @@
             element.removeAttribute('spellcheck');
         });
 
+        if (isPhoneView && (quarterlyAllDownloadFilename || referralRegistryDownloadFilename)) {
+            const downloadForm = document.createElement('form');
+            downloadForm.method = 'POST';
+            downloadForm.action = document.body.dataset.pdfPrintUrl || genericPdfPrintUrl;
+            downloadForm.target = '_top';
+            downloadForm.hidden = true;
+            const fields = {
+                html: `<!doctype html>${preview.outerHTML}`,
+                filename: quarterlyAllDownloadFilename || referralRegistryDownloadFilename,
+                _token: document.body.dataset.csrfToken || document.querySelector('meta[name="csrf-token"]')?.content || @json(csrf_token())
+            };
+            Object.entries(fields).forEach(([name, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                downloadForm.appendChild(input);
+            });
+            document.body.appendChild(downloadForm);
+            downloadForm.submit();
+            window.setTimeout(() => downloadForm.remove(), 60000);
+            return;
+        }
+
         fetch(document.body.dataset.pdfPrintUrl || genericPdfPrintUrl, {
             method: 'POST',
             headers: {
@@ -123,7 +206,7 @@
                 'Accept': 'application/pdf',
                         'X-CSRF-TOKEN': document.body.dataset.csrfToken || document.querySelector('meta[name="csrf-token"]')?.content || @json(csrf_token())
             },
-            body: JSON.stringify({ html: `<!doctype html>${preview.outerHTML}` })
+            body: JSON.stringify({ html: `<!doctype html>${preview.outerHTML}`, ...(isPhoneView && referralRegistryDownloadFilename ? { filename: referralRegistryDownloadFilename } : {}) })
         })
             .then(response => {
                 if (!response.ok) throw new Error('Unable to prepare the printable PDF.');
@@ -131,6 +214,16 @@
             })
             .then(pdf => {
                 const pdfUrl = URL.createObjectURL(pdf);
+                if (downloadFilename) {
+                    const download = document.createElement('a');
+                    download.href = pdfUrl;
+                    download.download = downloadFilename;
+                    document.body.appendChild(download);
+                    download.click();
+                    download.remove();
+                    window.setTimeout(() => URL.revokeObjectURL(pdfUrl), 60000);
+                    return;
+                }
                 if (printWindow) printWindow.location.replace(pdfUrl);
                 else window.open(pdfUrl, '_blank', 'noopener');
             })

@@ -852,6 +852,10 @@
 const quarterlyPrintButton = document.getElementById('print-quarterly-report');
 if (quarterlyPrintButton) {
     quarterlyPrintButton.addEventListener('click', () => {
+        const phoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
+        const isPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
+            || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneWidth <= 480);
+        if (isPhoneView && window.openQuarterlyReportPreview) return window.openQuarterlyReportPreview(@json(route('desk-officer.quarterly-reports.download', ['id' => $report->id, 'preview' => 1])));
         const openPreview = () => window.open(@json(route('desk-officer.quarterly-reports.download', ['id' => $report->id, 'preview' => 1])), '_blank', 'noopener');
         if (typeof Swal === 'undefined') return openPreview();
         Swal.fire({

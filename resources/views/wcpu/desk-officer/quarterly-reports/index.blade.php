@@ -277,7 +277,12 @@ async function printAllQuarterlyReports() {
         await Swal.fire({ icon: 'info', title: 'No Reports to Print', text: 'There are no quarterly reports to print.' });
         return;
     }
-    window.location.assign(@json(route('desk-officer.quarterly-reports.print-all')) + '?type=' + encodeURIComponent(result.value));
+    const previewUrl = @json(route('desk-officer.quarterly-reports.print-all')) + '?type=' + encodeURIComponent(result.value);
+    const phoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
+    const isPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
+        || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneWidth <= 480);
+    if (isPhoneView && window.openQuarterlyReportPreview) return window.openQuarterlyReportPreview(previewUrl);
+    window.location.assign(previewUrl);
 }
 </script>
 @endif

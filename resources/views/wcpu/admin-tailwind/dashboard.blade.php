@@ -5,6 +5,41 @@
 @push('styles')
 <style>
     @if(auth()->user()?->isDepartmentAdmin())
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #admin-dashboard-overview {
+            display: grid;
+            grid-template-columns: 2.5rem minmax(0, 1fr);
+            margin-bottom: 1rem !important;
+        }
+        html body.portal-ui #admin-dashboard-filters:not([open]) {
+            margin-bottom: 0 !important;
+        }
+        html body.portal-ui #admin-dashboard-overview > button[aria-controls="admin-dashboard-filters"] {
+            grid-column: 1 / -1;
+            width: 100% !important;
+            margin-left: 0 !important;
+            justify-content: center;
+            min-height: 40px;
+        }
+        html body.portal-ui #admin-dashboard-filter-actions {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        html body.portal-ui #admin-dashboard-filter-actions > :is(a, button) {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+            margin: 0 !important;
+            padding: 8px 6px !important;
+        }
+    }
     html body.portal-ui.admin-dashboard-mobile-nav #mainContent > header#admin-dashboard-header .notification-dropdown {
         width: 20rem !important;
         max-width: calc(100vw - 1rem) !important;
@@ -571,16 +606,62 @@
 <!-- Main Dashboard Content -->
 <main id="admin-dashboard-main" class="px-4 pt-4 pb-4 sm:p-6 lg:p-8">
     <!-- Page Title -->
-    <div class="flex items-start gap-3 mb-6">
+    <div id="admin-dashboard-overview" class="flex items-center gap-3 mb-6">
         <span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-600" aria-hidden="true">
             <i class="fas fa-table-columns inline-flex items-center justify-center leading-none"></i>
         </span>
-        <div class="min-w-0">
+        <div class="min-w-0 flex-1">
             <h2 class="text-lg sm:text-xl font-semibold text-gray-700">Overview &amp; Case Statistics</h2>
             <p class="mt-1 text-xs sm:text-sm text-gray-500">Real-time summary of registered cases and active desk officers</p>
         </div>
+        @if(auth()->user()->isBcpcAdmin() || auth()->user()->isVawcAdmin())
+        <button type="button" aria-controls="admin-dashboard-filters" aria-expanded="{{ request()->filled('quarter') || request()->filled('year') || request()->filled('barangay_id') || $errors->any() ? 'true' : 'false' }}"
+            onclick="const panel = document.getElementById('admin-dashboard-filters'); panel.open = !panel.open; this.setAttribute('aria-expanded', String(panel.open));"
+            class="ml-auto inline-flex flex-shrink-0 items-center gap-2 rounded-lg bg-[#C41E3A] px-4 py-2 text-sm font-medium text-white"><i class="fas fa-filter" aria-hidden="true"></i> Filter</button>
+        @endif
     </div>
     
+    @if(auth()->user()->isBcpcAdmin() || auth()->user()->isVawcAdmin())
+    <details id="admin-dashboard-filters" class="mb-6" @if(request()->filled('quarter') || request()->filled('year') || request()->filled('barangay_id') || $errors->any()) open @endif>
+        <summary hidden></summary>
+        <form method="GET" action="{{ route('admin-dashboard') }}" class="mt-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <label class="block text-sm text-gray-700">Quarter
+                    <select name="quarter" class="mt-1 block w-full min-w-0 rounded-lg border border-gray-300 px-3 py-2">
+                        <option value="">All Quarters</option>
+                        @foreach([1 => '1st Quarter', 2 => '2nd Quarter', 3 => '3rd Quarter', 4 => '4th Quarter'] as $quarterValue => $quarterLabel)
+                            <option value="{{ $quarterValue }}" @selected((string) request('quarter') === (string) $quarterValue)>{{ $quarterLabel }}</option>
+                        @endforeach
+                    </select>
+                    @error('quarter')<span class="text-xs text-red-600">{{ $message }}</span>@enderror
+                </label>
+                <label class="block text-sm text-gray-700">Year
+                    <select name="year" class="mt-1 block w-full min-w-0 rounded-lg border border-gray-300 px-3 py-2">
+                        <option value="">All Years</option>
+                        @foreach($dashboardYears ?? [] as $filterYear)
+                            <option value="{{ $filterYear }}" @selected((string) request('year') === (string) $filterYear)>{{ $filterYear }}</option>
+                        @endforeach
+                    </select>
+                    @error('year')<span class="text-xs text-red-600">{{ $message }}</span>@enderror
+                </label>
+                <label class="block text-sm text-gray-700">Barangay
+                    <select name="barangay_id" class="mt-1 block w-full min-w-0 rounded-lg border border-gray-300 px-3 py-2">
+                        <option value="">All Barangays</option>
+                        @foreach($dashboardBarangays ?? [] as $filterBarangay)
+                            <option value="{{ $filterBarangay->id }}" @selected((string) request('barangay_id') === (string) $filterBarangay->id)>{{ $filterBarangay->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('barangay_id')<span class="text-xs text-red-600">{{ $message }}</span>@enderror
+                </label>
+            </div>
+            <p class="mt-3 text-xs text-gray-500">Filters apply to Total Cases, Active Users, Filed Cases, Today's Cases, and Referred Cases. Quarter and year use Date Reported for cases and account creation date for active users.</p>
+            <div id="admin-dashboard-filter-actions" class="mt-4 flex justify-end gap-2">
+                <a href="{{ route('admin-dashboard') }}" style="border-radius:8px !important;" class="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700">Reset</a>
+                <button type="submit" style="border-radius:8px !important;" class="rounded-lg bg-[#C41E3A] px-4 py-2 text-sm font-medium text-white">Apply Filter</button>
+            </div>
+        </form>
+    </details>
+    @endif
     <!-- Summary Statistics -->
     <div class="admin-dashboard-statistics grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <!-- Total Cases -->

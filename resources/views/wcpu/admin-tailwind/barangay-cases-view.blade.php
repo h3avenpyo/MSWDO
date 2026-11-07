@@ -1907,7 +1907,8 @@
                     pointer-events: auto !important;
                 }
 
-                html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) nav :is(a, button) {
+                html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) nav :is(a, button),
+                html body.portal-ui.view-cases-admin-mobile-nav #sidebar:not(.sidebar-collapsed):not(.sidebar-collapsed-init) #logout-button {
                     justify-content: flex-start !important;
                 }
 
@@ -2447,7 +2448,7 @@
                         </div>
                     </div>
                     <div data-case-header-actions class="flex items-center gap-2">
-                        <a :href="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) ? printUrl + (printUrl.includes('?') ? '&' : '?') + 'back_barangay={{ $barangay->id }}' : printUrl" :target="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) ? '_self' : '_blank'"
+                        <a data-case-print-preview :href="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) ? printUrl + (printUrl.includes('?') ? '&' : '?') + 'back_barangay={{ $barangay->id }}' : printUrl" :target="(isDeskOfficer || isBcpcAdmin || isVawcAdmin) ? '_self' : '_blank'"
                             class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                             <i class="fas fa-print"></i>
                             <span class="hidden sm:inline">Print</span>
@@ -3280,6 +3281,17 @@
                 };
 
                 // Print button handler
+                const casePrintLink = document.querySelector('#caseModal [data-case-print-preview]');
+                if (casePrintLink && @json(auth()->user()?->position === 'Desk Officer')) {
+                    casePrintLink.addEventListener('click', event => {
+                        const phoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
+                        const isPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
+                            || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneWidth <= 480);
+                        if (!isPhoneView || !window.openQuarterlyReportPreview) return;
+                        event.preventDefault();
+                        window.openQuarterlyReportPreview(casePrintLink.href);
+                    });
+                }
                 const printButton = document.getElementById('printButton');
                 if (printButton) {
                     printButton.addEventListener('click', async function() {
@@ -3305,6 +3317,12 @@
                                 reverseButtons: true,
                             }).then((result) => {
                                 if (result.isConfirmed) {
+                                    const phoneWidth = Math.min(window.innerWidth || Infinity, window.screen?.width || Infinity);
+                                    const isPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
+                                        || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneWidth <= 480);
+                                    if (isPhoneView && @json(auth()->user()?->position === 'Desk Officer') && window.openQuarterlyReportPreview) {
+                                        return window.openQuarterlyReportPreview(printUrl);
+                                    }
                                     if (@json(auth()->user()->isDepartmentAdmin() || $isBarangayDeskOfficer || $isMultiroleDeskOfficer)) window.location.assign(printUrl);
                                     else window.open(printUrl, '_blank');
                                 }

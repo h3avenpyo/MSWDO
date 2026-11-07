@@ -223,6 +223,12 @@
             color: #666;
             text-align: center;
         }
+        table.report-table th[data-ra-black],
+        table.report-table th[data-ra-black] * {
+            color: #000 !important;
+            -webkit-text-fill-color: #000 !important;
+            text-decoration: none !important;
+        }
     </style>
 </head>
 <body>
@@ -297,7 +303,7 @@
             </tr>
             <tr>
                 @foreach($abuseTypeColumns as $col)
-                    <th class="sub-header">{{ $col['ra'] }}</th>
+                    <th class="sub-header" @if($col['ra'] === 'RA 9208/10364' && auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) data-ra-black style="color: #000 !important; -webkit-text-fill-color: #000 !important;" @endif>{{ $col['ra'] }}</th>
                 @endforeach
                 @foreach($allStatuses as $status)
                     <th class="sub-header">{{ str_replace('Case ', '', $status) }}</th>
