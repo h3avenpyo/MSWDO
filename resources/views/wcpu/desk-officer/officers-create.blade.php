@@ -9,6 +9,38 @@
 @push('styles')
 @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
 <style>
+    @media (max-width: 47.9375rem) {
+        #case-victims-section [data-person-toolbar],
+        #case-perpetrators-section [data-person-toolbar] {
+            display:flex !important;
+            flex-wrap:nowrap !important;
+            gap:8px !important;
+        }
+        #case-victims-section [data-person-toolbar] > button:not([hidden]),
+        #case-perpetrators-section [data-person-toolbar] > button:not([hidden]) {
+            display:flex !important;
+            align-items:center;
+            justify-content:center;
+            flex:1 1 0 !important;
+            width:0 !important;
+            min-width:0 !important;
+            min-height:44px !important;
+            box-sizing:border-box;
+            white-space:normal;
+            text-align:center;
+            overflow-wrap:anywhere;
+        }
+        #case-victims-section [data-person-toolbar] > button[hidden],
+        #case-perpetrators-section [data-person-toolbar] > button[hidden] { display:none !important; }
+    }
+    #case-victims-section > .p-6,
+    #case-perpetrators-section > .p-6 { display:flex; flex-direction:column; gap:24px; }
+    #case-victims-section > .p-6 > *,
+    #case-perpetrators-section > .p-6 > * { margin-top:0 !important; margin-bottom:0 !important; }
+    #case-victims-section [data-person-toolbar] > button,
+    #case-perpetrators-section [data-person-toolbar] > button {
+        min-height:40px; padding:8px 16px !important; border-radius:8px; font-size:14px; line-height:1.4;
+    }
     @media (max-width: 85.375rem) {
         html body.portal-ui #mainContent .mobile-date-time-field {
             display: block !important;
@@ -713,12 +745,13 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
         </div>
 
         <!-- Victim Information Section -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="case-form-section-header bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4">
+        <div id="case-victims-section" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="case-form-section-header bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
                 <h3 class="text-lg font-semibold text-white flex items-center gap-2">
                     <i class="fas fa-user-shield"></i>
                     Victim Information
                 </h3>
+                <button type="button" data-add-case-person="victims" class="rounded-lg border border-white px-3 py-2 text-sm font-medium text-white">Add Victim</button>
             </div>
             <div class="p-6 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -845,8 +878,8 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
         </div>
 
         <!-- Perpetrator Information Section -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="bg-[#C41E3A] px-6 py-4 flex items-center justify-between">
+        <div id="case-perpetrators-section" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="case-form-section-header bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
                 <h3 class="text-lg font-semibold text-white flex items-center gap-2">
                     <i class="fas fa-user-slash"></i>
                     Perpetrator Information
@@ -855,6 +888,7 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
                     class="text-xs text-white/90 font-medium uppercase tracking-wider bg-white/10 px-2.5 py-1 rounded">
                     Mandatory Details
                 </span>
+                <button type="button" data-add-case-person="perpetrators" class="rounded-lg border border-white px-3 py-2 text-sm font-medium text-white">Add Perpetrator</button>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -865,12 +899,6 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
                         <input type="text" id="abuser_name" name="perpetrator_name" required
                             value="{{ old('perpetrator_name') }}" placeholder="Full Name"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
-                        <label for="abuser_address"
-                            class="block text-sm font-medium text-gray-700 mt-3 mb-2">Perpetrator Address <span
-                                class="text-red-500">*</span></label>
-                        <input type="text" id="abuser_address" name="abuser_address" maxlength="2000"
-                            value="{{ old('abuser_address', $case->abuser_address ?? '') }}" placeholder="Full Address"
-                            class="form-control w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -909,6 +937,10 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
                 </div>
 
                 <!-- Guardian of Perpetrator (for minor perpetrators under 18) -->
+                <div>
+                    <label for="abuser_address" class="block text-sm font-medium text-gray-700 mb-2">Perpetrator Address <span class="text-red-500">*</span></label>
+                    <input type="text" id="abuser_address" name="abuser_address" maxlength="2000" value="{{ old('abuser_address', $case->abuser_address ?? '') }}" placeholder="Full Address" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm" required>
+                </div>
                 <div id="guardian-abuser-section" class="hidden mt-6 pt-6 border-t border-gray-200">
                     <h4 class="text-md font-semibold text-gray-800 mb-4 flex items-center gap-2">
                         <i class="fas fa-user-shield text-red-500"></i>
@@ -1111,6 +1143,150 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
     const isBCPCCase = {{ $isBCPCCase ? 'true' : 'false' }};
     const isSwdCase = !isBCPCCase;
     const hasVictimAgeLimit = @json($hasVictimAgeLimit);
+    const previousAdditionalPeople = {
+        victims: @json(old('additional_victims', [])),
+        perpetrators: @json(old('additional_perpetrators', []))
+    };
+    ['victims', 'perpetrators'].forEach(kind => {
+        const section = document.getElementById(`case-${kind}-section`);
+        const primaryEntry = section.querySelector(':scope > .p-6');
+        const template = primaryEntry.cloneNode(true);
+        primaryEntry.dataset.casePersonEntry = kind;
+        const personLabel = kind === 'victims' ? 'Victim' : 'Perpetrator';
+        const navigation = document.createElement('label');
+        navigation.className = 'block px-6 pt-4 pb-4 text-sm font-medium text-gray-700';
+        const personSelect = document.createElement('select');
+        personSelect.className = 'mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm';
+        personSelect.setAttribute('aria-label', `Select ${personLabel.toLowerCase()} entry`);
+        navigation.appendChild(personSelect);
+        section.insertBefore(navigation, primaryEntry);
+        const toolbar = document.createElement('div');
+        toolbar.className = 'px-6 pb-6 flex flex-wrap justify-end gap-2';
+        toolbar.dataset.personToolbar = '';
+        const addButton = section.querySelector('[data-add-case-person]');
+        addButton.style.cssText = 'background:#C41E3A;color:#fff;border-color:#C41E3A;';
+        toolbar.appendChild(addButton);
+        const toolbarDelete = document.createElement('button');
+        toolbarDelete.type = 'button';
+        toolbarDelete.textContent = 'Delete';
+        toolbarDelete.style.cssText = 'background:#C41E3A !important;color:#fff !important;';
+        toolbarDelete.hidden = true;
+        toolbar.insertBefore(toolbarDelete, addButton);
+        section.appendChild(toolbar);
+        let activeEntry = primaryEntry;
+        const entries = () => [primaryEntry, ...section.querySelectorAll('[data-additional-person]')];
+        const showEntry = entry => {
+            activeEntry = entry;
+            entries().forEach(item => {
+                item.hidden = item !== entry;
+                item.style.display = item === entry ? '' : 'none';
+            });
+            personSelect.value = String(entries().indexOf(entry));
+            toolbarDelete.hidden = entry === primaryEntry;
+            toolbarDelete.setAttribute('aria-label', `Delete ${personLabel} ${entries().indexOf(entry) + 1}`);
+        };
+        toolbarDelete.addEventListener('click', () => activeEntry.querySelector('[data-delete-person]')?.click());
+        const refreshNavigation = () => {
+            personSelect.replaceChildren();
+            entries().forEach((entry, position) => {
+                const option = document.createElement('option');
+                option.value = String(position);
+                option.textContent = `${personLabel} ${position + 1}`;
+                personSelect.appendChild(option);
+            });
+            showEntry(entries().includes(activeEntry) ? activeEntry : primaryEntry);
+        };
+        personSelect.addEventListener('change', () => showEntry(entries()[Number(personSelect.value)] || primaryEntry));
+        let invalidEntryRevealed = false;
+        section.addEventListener('invalid', event => {
+            if (invalidEntryRevealed) return;
+            const entry = entries().find(item => item.contains(event.target));
+            if (!entry) return;
+            invalidEntryRevealed = true;
+            showEntry(entry);
+            window.setTimeout(() => { invalidEntryRevealed = false; }, 0);
+        }, true);
+        let nextIndex = 0;
+        const refreshPersonNumbers = () => {
+            section.querySelectorAll('[data-additional-person]').forEach((entry, position) => {
+                const label = `${kind === 'victims' ? 'Victim' : 'Perpetrator'} ${position + 2}`;
+                entry.querySelector('[data-person-title-text]').textContent = label;
+                entry.querySelector('[data-delete-person]').setAttribute('aria-label', `Delete ${label}`);
+            });
+            refreshNavigation();
+        };
+        const addPerson = (values = {}) => {
+            const index = nextIndex++;
+            const block = template.cloneNode(true);
+            block.classList.add('border-t', 'border-gray-200');
+            block.dataset.additionalPerson = kind;
+            const prefix = `additional_${kind}_${index}_`;
+            block.querySelectorAll('[id]').forEach(element => { element.id = prefix + element.id; });
+            block.querySelectorAll('label[for]').forEach(label => { label.htmlFor = prefix + label.htmlFor; });
+            block.querySelectorAll('input, select, textarea').forEach(field => {
+                const key = field.name;
+                field.dataset.additionalField = key;
+                field.name = `additional_${kind}[${index}][${key}]`;
+                field.value = values[key] ?? '';
+                field.setCustomValidity('');
+                if (field.type === 'checkbox' || field.type === 'radio') field.checked = Boolean(values[key]);
+            });
+            const title = document.createElement('h4');
+            title.className = 'text-base font-semibold text-gray-800';
+            title.dataset.personTitle = '';
+            const icon = section.querySelector('h3 i').cloneNode(true);
+            icon.setAttribute('aria-hidden', 'true');
+            const titleText = document.createElement('span');
+            titleText.dataset.personTitleText = '';
+            titleText.textContent = `${kind === 'victims' ? 'Victim' : 'Perpetrator'} ${index + 2}`;
+            title.classList.add('flex', 'items-center', 'gap-2');
+            title.append(icon, titleText);
+            const entryHeader = document.createElement('div');
+            entryHeader.className = 'flex items-center justify-between gap-3 mb-4';
+            entryHeader.hidden = true;
+            entryHeader.style.display = 'none';
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.dataset.deletePerson = '';
+            deleteButton.className = 'rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white';
+            deleteButton.style.setProperty('background-color', '#C41E3A', 'important');
+            deleteButton.style.setProperty('color', '#fff', 'important');
+            deleteButton.textContent = 'Delete';
+            deleteButton.setAttribute('aria-label', `Delete ${title.textContent}`);
+            deleteButton.addEventListener('click', () => {
+                const previousEntry = entries()[Math.max(0, entries().indexOf(block) - 1)];
+                block.remove();
+                activeEntry = previousEntry;
+                refreshPersonNumbers();
+                section.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+            entryHeader.append(title, deleteButton);
+            block.prepend(entryHeader);
+            const age = block.querySelector(`[data-additional-field="${kind === 'victims' ? 'victim_age' : 'abuser_age'}"]`);
+            const guardian = block.querySelector(`[id="${prefix}${kind === 'victims' ? 'guardian-section' : 'guardian-abuser-section'}"]`);
+            const updateGuardian = () => {
+                if (!guardian) return;
+                const ageValue = Number.parseInt(age.value, 10);
+                const needed = (kind === 'victims' && isBCPCCase) || (!Number.isNaN(ageValue) && ageValue < 18);
+                guardian.classList.toggle('hidden', !needed);
+                guardian.querySelectorAll('input, select').forEach(field => { field.required = needed; });
+            };
+            age.addEventListener('input', updateGuardian);
+            updateGuardian();
+            section.insertBefore(block, toolbar);
+            refreshPersonNumbers();
+            showEntry(block);
+            block.dispatchEvent(new Event('input', { bubbles: true }));
+            return block;
+        };
+        addButton.addEventListener('click', () => {
+            const entry = addPerson();
+            entry.querySelector('input, select, textarea')?.focus();
+        });
+        Object.values(previousAdditionalPeople[kind] || {}).forEach(values => addPerson(values));
+        refreshNavigation();
+        showEntry(primaryEntry);
+    });
     const victimAgeInput = document.getElementById('victim_age');
     const victimAgeError = document.getElementById('victim_age_error');
     let hasVictimAgeLimitError = false;
@@ -1286,6 +1462,7 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            if (form.dataset.caseSubmissionBusy === 'true') return;
             
             // Re-validate the victim age limit.
             if (victimAgeInput && hasVictimAgeLimit) {
@@ -1368,6 +1545,22 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
             const statusSelect = document.getElementById('status');
             const statusVal = statusSelect?.selectedOptions?.[0]?.text || statusSelect?.value || 'Case Filed';
             
+            const additionalPeoplePreview = kind => {
+                const labels = kind === 'victims'
+                    ? { victim_name: 'Name', victim_age: 'Age', victim_gender: 'Gender', victim_contact: 'Contact', victim_address: 'Address', guardian: 'Guardian Name', guardian_contact: 'Guardian Contact', guardian_address: 'Guardian Address', relationship_to_victim: 'Guardian Relationship' }
+                    : { perpetrator_name: 'Name', abuser_age: 'Age', abuser_address: 'Address', abuse_relationship: 'Relationship to Victim', guardian_abuser_name: 'Guardian Name', guardian_abuser_contact: 'Guardian Contact', guardian_abuser_address: 'Guardian Address', relationship_to_abuser: 'Guardian Relationship' };
+                const escapeText = value => {
+                    const element = document.createElement('span');
+                    element.textContent = value;
+                    return element.innerHTML;
+                };
+                return [...form.querySelectorAll(`[data-additional-person="${kind}"]`)].map((entry, position) => {
+                    const fields = [...entry.querySelectorAll('[data-additional-field]')].filter(field => field.value !== '' && !field.closest('.hidden'));
+                    return `<hr class="my-2"><p class="font-semibold text-gray-700"><i class="fas ${kind === 'victims' ? 'fa-user-shield' : 'fa-user-slash'}" aria-hidden="true"></i> ${kind === 'victims' ? 'Victim' : 'Perpetrator'} ${position + 2}:</p>`
+                        + fields.map(field => `<p><strong>${labels[field.dataset.additionalField]}:</strong> ${escapeText(field.value)}</p>`).join('');
+                }).join('');
+            };
+            form.dataset.caseSubmissionBusy = 'true';
             Swal.fire({
                 title: 'Confirm Case Submission',
                 html: `
@@ -1379,7 +1572,7 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
                             <p><strong>Case Status:</strong> <span class="font-medium text-gray-900">${statusVal.toLowerCase() === 'case closed' ? 'Case Closed' : statusVal}</span></p>
                             <p><strong>Case Priority:</strong> <span class="font-medium text-gray-900">${priorityVal}</span></p>
                             <hr class="my-2">
-                            <p class="font-semibold text-gray-700">Victim Information:</p>
+                            <p class="font-semibold text-gray-700"><i class="fas fa-user-shield" aria-hidden="true"></i> Victim Information:</p>
                             <p><strong>Name:</strong> ${victimNameVal}</p>
                             <p><strong>Age:</strong> ${victimAgeVal} yrs old</p>
                             <p><strong>Gender:</strong> ${victimGenderVal}</p>
@@ -1387,13 +1580,15 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
                             <p><strong>Address:</strong> ${victimAddressVal}</p>
                             ${guardianNameVal !== 'N/A' ? `<p><strong>Guardian Name:</strong> ${guardianNameVal}</p>` : ''}
                             ${guardianContactVal !== 'N/A' ? `<p><strong>Guardian Contact:</strong> ${guardianContactVal}</p>` : ''}
+                            ${additionalPeoplePreview('victims')}
                             <hr class="my-2">
-                            <p class="font-semibold text-gray-700">Perpetrator Information:</p>
+                            <p class="font-semibold text-gray-700"><i class="fas fa-user-slash" aria-hidden="true"></i> Perpetrator Information:</p>
                             <p><strong>Name:</strong> ${perpetratorNameVal}</p>
                             <p><strong>Age:</strong> ${perpetratorAgeVal} yrs old</p>
                             <p><strong>Relationship to Victim:</strong> ${perpetratorRelationVal}</p>
                             ${guardianAbuserNameVal !== 'N/A' ? `<p><strong>Perpetrator Guardian Name:</strong> ${guardianAbuserNameVal}</p>` : ''}
                             ${guardianAbuserContactVal !== 'N/A' ? `<p><strong>Perpetrator Guardian Contact:</strong> ${guardianAbuserContactVal}</p>` : ''}
+                            ${additionalPeoplePreview('perpetrators')}
                             <hr class="my-2">
                             <p class="font-semibold text-gray-700">Incident Details:</p>
                             <p><strong>Date of Incident:</strong> ${incidentDateVal}</p>
@@ -1453,6 +1648,7 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
                                 window.location.assign(data.case_url || data.redirect);
                             });
                         } else {
+                            form.dataset.caseSubmissionBusy = 'false';
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Submission Error',
@@ -1463,9 +1659,19 @@ $hasVictimAgeLimit = !$isSwdCase && !(Auth::user()->position === 'Desk Officer'
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        // Fallback: submit normally if AJAX fails
-                        form.submit();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Unable to Confirm Submission',
+                            text: 'The response could not be received. Please check View Cases before submitting again to avoid creating a duplicate.',
+                            confirmButtonText: 'View Cases',
+                            confirmButtonColor: '#7c3aed'
+                        }).then(() => {
+                            if (window.portalUnsavedChanges) window.portalUnsavedChanges.reset();
+                            window.location.assign(@json(route('desk-officer.cases.index')));
+                        });
                     });
+                } else {
+                    form.dataset.caseSubmissionBusy = 'false';
                 }
             });
         });

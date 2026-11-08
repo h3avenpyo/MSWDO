@@ -333,7 +333,16 @@
                 }
             @endphp
             <tr data-quarterly-case-row>
-                <td style="text-align: left;">{{ $case['victim_name'] ?? 'N/A' }}</td>
+                <td style="text-align: left;">
+                    {{ $case['victim_name'] ?? 'N/A' }}
+                    @if(auth()->user()?->position === 'Desk Officer')
+                        @foreach($case['additional_victims'] ?? [] as $extraVictim)
+                            @if(filled($extraVictim['victim_name'] ?? null))
+                                <div>{{ $extraVictim['victim_name'] }}</div>
+                            @endif
+                        @endforeach
+                    @endif
+                </td>
                 @foreach($abuseTypeMatches as $match)
                     <td>{{ $match ? '/' : '' }}</td>
                 @endforeach

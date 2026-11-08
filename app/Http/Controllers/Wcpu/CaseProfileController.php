@@ -56,7 +56,29 @@ class CaseProfileController extends Controller
             $perpetrators = $paginate($perpetrators, 'perpetrators_page');
         }
 
-        return view('case-profiles.index', compact('victims', 'perpetrators', 'isAdmin', 'profileDepartment'));
+        $profileGuardians = function ($records, $isVictim) use ($user) {
+            return $records->flatMap(function ($case) use ($isVictim, $user) {
+                $entries = [$isVictim
+                    ? [$case->guardian, $case->relationship_to_victim, $case->guardian_contact, $case->guardian_address, $case->victim_name]
+                    : [$case->guardian_abuser_name, $case->relationship_to_abuser, $case->guardian_abuser_contact, $case->guardian_abuser_address, $case->abuser_name]];
+                if (($user->position === 'Desk Officer' || $user->isBcpcAdmin() || $user->isVawcAdmin())) {
+                    foreach ($case->bcpc_data[$isVictim ? 'additional_victims' : 'additional_perpetrators'] ?? [] as $person) {
+                        $entries[] = $isVictim
+                            ? [$person['guardian'] ?? null, $person['relationship_to_victim'] ?? null, $person['guardian_contact'] ?? null, $person['guardian_address'] ?? null, $person['victim_name'] ?? null]
+                            : [$person['guardian_abuser_name'] ?? null, $person['relationship_to_abuser'] ?? null, $person['guardian_abuser_contact'] ?? null, $person['guardian_abuser_address'] ?? null, $person['perpetrator_name'] ?? null];
+                    }
+                }
+                $showAdditionalVictims = $isVictim
+                    && ($user->isBcpcAdmin() || $user->isVawcAdmin())
+                    && !empty($case->bcpc_data['additional_victims']);
+
+                return collect($entries)->filter(fn ($info) => count(array_filter(array_slice($info, 0, 4))) > 0
+                    || ($showAdditionalVictims && trim((string) ($info[4] ?? '')) !== ''))->values()->all();
+            })
+                ->unique(fn ($info) => json_encode(($user->position === 'Desk Officer' || $user->isBcpcAdmin() || $user->isVawcAdmin()) ? $info : array_slice($info, 0, 4)))->values();
+        };
+
+        return view('case-profiles.index', compact('victims', 'perpetrators', 'isAdmin', 'profileDepartment', 'profileGuardians'));
     }
 
     private function profiles($cases, string $name, string $address)

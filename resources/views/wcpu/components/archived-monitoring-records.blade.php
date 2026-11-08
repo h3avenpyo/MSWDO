@@ -45,7 +45,7 @@
         .archived-monitoring-records .archived-monitoring-cards-view { display: none !important; }
     }
 </style>
-<section class="archived-monitoring-records bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 mb-6">
+<section @if($archivedMonitorings instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && !$isAdminMonitoringArchive) data-ajax-pagination="archived-monitorings" data-ajax-page="{{ $archivedMonitorings->getPageName() }}" @endif class="archived-monitoring-records bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 mb-6">
     <h2 class="px-6 py-4 text-lg font-semibold text-purple-800">Monitoring Reports</h2>
     <div class="archived-monitoring-table-view d-none d-xl-block hidden xl:block overflow-x-auto">
         <table class="w-full text-sm">
@@ -142,4 +142,7 @@
             @endforelse
         </div>
     </div>
+    @if($archivedMonitorings instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && !$isAdminMonitoringArchive && $archivedMonitorings->hasPages())
+        @include('components.archived-pagination', ['paginator' => $archivedMonitorings, 'label' => 'archived monitoring reports'])
+    @endif
 </section>

@@ -48,7 +48,7 @@ class CaseReferral extends WcpuBaseModel
     ];
 
     // Relationships
-    public function scopeForRecipientDepartments($query, array $departments)
+    public function scopeForRecipientDepartments($query, array $departments, bool $includeArchivedCases = false)
     {
         $roles = [];
         foreach ($departments as $department) {
@@ -56,12 +56,15 @@ class CaseReferral extends WcpuBaseModel
             $roles[] = $prefix.' - Focal';
             $roles[] = $prefix.' - Staff';
         }
-        return $query->where(function ($referrals) use ($departments, $roles) {
+        return $query->where(function ($referrals) use ($departments, $roles, $includeArchivedCases) {
             $referrals->whereHas('recipient', fn ($recipients) => $recipients->whereIn('role', $roles))
-                ->orWhere(function ($otherReferrals) use ($departments) {
+                ->orWhere(function ($otherReferrals) use ($departments, $includeArchivedCases) {
                     $otherReferrals->whereDoesntHave('recipient', fn ($recipients) => $recipients
                         ->whereIn('role', ['BCPC - Focal', 'BCPC - Staff', 'SWD - Focal', 'SWD - Staff']))
-                        ->whereHas('case', fn ($cases) => $cases->whereIn('type', $departments));
+                        ->whereHas('case', function ($cases) use ($departments, $includeArchivedCases) {
+                            if ($includeArchivedCases) $cases->withTrashed();
+                            $cases->whereIn('type', $departments);
+                        });
                 });
         });
     }

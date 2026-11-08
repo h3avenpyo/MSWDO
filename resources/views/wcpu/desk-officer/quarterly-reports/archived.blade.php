@@ -3,7 +3,42 @@
 'Archived Quarterly Reports')
 @section('title', $archiveTitle)
 @push('styles')
+<script>
+(() => {
+    const desktop = window.matchMedia('(min-width: 85.4375rem)');
+    const tablet = window.matchMedia('(min-width: 48rem) and (max-width: 85.375rem)');
+    const mobile = window.matchMedia('(max-width: 47.9375rem)');
+    const sync = () => {
+        const url = new URL(location.href);
+        if (url.searchParams.has('desktop_archived_reports') === desktop.matches && url.searchParams.has('mobile_archived_reports') === mobile.matches && url.searchParams.has('tablet_archived_reports') === tablet.matches) return;
+        if (desktop.matches) url.searchParams.set('desktop_archived_reports', '1');
+        else url.searchParams.delete('desktop_archived_reports');
+        if (mobile.matches) url.searchParams.set('mobile_archived_reports', '1');
+        else url.searchParams.delete('mobile_archived_reports');
+        if (tablet.matches) url.searchParams.set('tablet_archived_reports', '1');
+        else url.searchParams.delete('tablet_archived_reports');
+        url.searchParams.delete('bcpc_page');
+        url.searchParams.delete('vawc_page');
+        url.searchParams.delete('monitorings_page');
+        location.replace(url.href);
+    };
+    desktop.addEventListener('change', sync);
+    mobile.addEventListener('change', sync);
+    tablet.addEventListener('change', sync);
+    sync();
+})();
+</script>
+@endpush
+@push('styles')
 <style>
+    @media (max-width: 85.375rem) {
+        body.portal-ui .archived-quarterly-reports-stable :is(.quarterly-mobile-card-actions, .monitoring-mobile-card-actions) > :is(a, button, form) {
+            height: 48px !important; min-height: 48px !important; border-radius: 8px !important;
+        }
+        body.portal-ui .archived-quarterly-reports-stable :is(.quarterly-mobile-card-actions, .monitoring-mobile-card-actions) form > button {
+            height: 100% !important; min-height: 48px !important; border-radius: 8px !important;
+        }
+    }
     .archived-quarterly-reports-stable,
     .archived-quarterly-reports-stable :is(table, button, a) {
         animation: none !important;
@@ -343,6 +378,15 @@ auth()->user()->isMultiCaseDepartment() ? 'Review or restore archived quarterly 
             </a>
             @endif
         </div>
+    @if(request()->boolean('desktop_archived_reports'))
+        <input type="hidden" name="desktop_archived_reports" value="1">
+    @endif
+    @if(request()->boolean('mobile_archived_reports'))
+        <input type="hidden" name="mobile_archived_reports" value="1">
+    @endif
+    @if(request()->boolean('tablet_archived_reports'))
+        <input type="hidden" name="tablet_archived_reports" value="1">
+    @endif
     </form>
 
     @include('desk-officer.quarterly-reports._tables', ['archived' => true])

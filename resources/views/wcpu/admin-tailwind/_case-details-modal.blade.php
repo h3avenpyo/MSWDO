@@ -154,7 +154,7 @@
 
         <!-- Guardian of Perpetrator Information -->
         @if($case->guardian_abuser_name || $case->guardian_abuser_contact || $case->guardian_abuser_address || $case->relationship_to_abuser)
-        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden" @if((auth()->user()?->position === 'Desk Officer' || auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) && !($case->guardian || $case->guardian_contact || $case->guardian_address || $case->relationship_to_victim)) style="grid-column:1 / -1;" @endif>
             <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
                 <h4 class="font-semibold text-gray-800 flex items-center gap-2">
                     <i class="fas fa-user-tie text-orange-600"></i>
@@ -212,6 +212,7 @@
         @endif
 
         <!-- Incident Details -->
+        @include('desk-officer._additional-case-people', ['case' => $case, 'additionalVictimIcon' => 'fa-user text-purple-600'])
         <div class="bg-white border border-gray-200 rounded-lg overflow-hidden md:col-span-2">
             <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
                 <h4 class="font-semibold text-gray-800 flex items-center gap-2">
@@ -295,7 +296,7 @@
                 </div>
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-1">
                     <span class="text-sm font-medium text-gray-500 sm:w-32 flex-shrink-0">Last Updated:</span>
-                    <span class="text-sm text-gray-800">{{ $case->updated_at ? ($case->trashed() && (auth()->user()?->position === 'Desk Officer' || auth()->user()?->isDepartmentAdmin()) ? \Carbon\Carbon::parse($case->getRawOriginal('updated_at'), config('app.timezone', 'UTC'))->timezone('Asia/Manila') : $case->updated_at)->format('F j, Y \a\t g:i A') : 'N/A' }}</span>
+                    <span class="text-sm text-gray-800">{{ auth()->user()?->position === 'Desk Officer' ? ($case->updated_at ? \Carbon\Carbon::parse($case->getRawOriginal('updated_at'), 'Asia/Manila')->format('F j, Y \a\t g:i A') : 'N/A') : ($case->updated_at ? ($case->trashed() && (auth()->user()?->position === 'Desk Officer' || auth()->user()?->isDepartmentAdmin()) ? \Carbon\Carbon::parse($case->getRawOriginal('updated_at'), config('app.timezone', 'UTC'))->timezone('Asia/Manila') : $case->updated_at)->format('F j, Y \a\t g:i A') : 'N/A') }}</span>
                 </div>
                 @if($case->createdBy)
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-1">

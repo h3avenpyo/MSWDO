@@ -165,6 +165,9 @@
 
     <form id="referral-form" action="{{ route('cases.refer.store', $case->id) }}" method="POST" class="space-y-6">
         @csrf
+        @if(auth()->user()?->isBcpcAdmin() && request()->filled('source_referral'))
+            <input type="hidden" name="source_referral" value="{{ request('source_referral') }}">
+        @endif
 
         <!-- Case Information Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -386,6 +389,7 @@
         </div>
 
         <!-- Reason & Services -->
+        @include('desk-officer._additional-case-people-referral', ['case' => $case])
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
                 <h3 class="text-gray-800 font-semibold flex items-center gap-2">

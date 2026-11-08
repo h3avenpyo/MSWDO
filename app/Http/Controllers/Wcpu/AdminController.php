@@ -473,18 +473,6 @@ class AdminController extends Controller
         return $user?->position === 'Desk Officer' && $user->defaultCaseDepartment() === 'VAWC';
     }
 
-    private function excludeArchivedSwdReferrals($query): void
-    {
-        if (!$this->isSwdDeskOfficer() || Auth::user()->isMultiCaseDepartment()) {
-            return;
-        }
-
-        $query->whereNotIn('cases.id', \App\Models\Wcpu\CaseReferral::onlyTrashed()
-            ->select('case_id')
-            ->whereNotNull('case_id')
-            ->whereNotIn('case_id', \App\Models\Wcpu\CaseReferral::query()->select('case_id')->whereNotNull('case_id')));
-    }
-
     private function deskOfficerBarangayId(): ?int
     {
         $user = Auth::user();
@@ -1442,7 +1430,6 @@ class AdminController extends Controller
             $deskOfficerDepartments = $this->deskOfficerBarangayCaseDepartments();
             $casesQuery = CaseModel::where('case_designation', $barangay)
                 ->when($deskOfficerDepartments, fn ($query) => $query->whereIn('type', $deskOfficerDepartments), fn ($query) => $query->when($department, fn ($query) => $query->where('type', $department)));
-            $this->excludeArchivedSwdReferrals($casesQuery);
             
             // Apply status filter
             if ($status) {
@@ -1493,7 +1480,6 @@ class AdminController extends Controller
             }
             $allCases = CaseModel::where('case_designation', $barangay)
                 ->when($deskOfficerDepartments, fn ($query) => $query->whereIn('type', $deskOfficerDepartments), fn ($query) => $query->when($department, fn ($query) => $query->where('type', $department)))
-                ->when($this->isSwdDeskOfficer(), function ($query) { $this->excludeArchivedSwdReferrals($query); })
                 ->get();
             
             return view('admin-tailwind.barangay-cases-view', [
@@ -1681,6 +1667,7 @@ class AdminController extends Controller
                     'case_number',
                     'date_reported',
                     'victim_name',
+                    'bcpc_data',
                     'abuse_type',
                     'status',
                     'created_at',
@@ -1688,6 +1675,16 @@ class AdminController extends Controller
                 ])
                 ->orderBy('date_reported', 'desc')
                 ->get();
+
+            if (Auth::user()?->position === 'Desk Officer' || Auth::user()?->isBcpcAdmin() || Auth::user()?->isVawcAdmin()) {
+                $cases = $cases->sort(function ($first, $second) {
+                    $firstSequence = (int) substr(strrchr((string) $first->case_number, '-') ?: '-0', 1);
+                    $secondSequence = (int) substr(strrchr((string) $second->case_number, '-') ?: '-0', 1);
+
+                    return ($firstSequence <=> $secondSequence)
+                        ?: strnatcmp((string) $first->case_number, (string) $second->case_number);
+                })->values();
+            }
             
             // Calculate statistics using new status system
             $totalCases = $cases->count();
@@ -1779,7 +1776,6 @@ class AdminController extends Controller
             $deskOfficerBarangayId = $this->deskOfficerBarangayId();
             $deskOfficerDepartments = $this->deskOfficerBarangayCaseDepartments();
             $applyFilters = function ($query) use ($status, $dateFrom, $dateTo, $department, $deskOfficerDepartments) {
-                $this->excludeArchivedSwdReferrals($query);
                 if ($deskOfficerDepartments) {
                     $query->whereIn('type', $deskOfficerDepartments);
                 } elseif ($department) {
@@ -2096,6 +2092,7 @@ class AdminController extends Controller
         abort_unless(Auth::user()->isDepartmentAdmin(), 403);
         $department = Auth::user()->defaultCaseDepartment();
         $referrals = \App\Models\Wcpu\CaseReferral::onlyTrashed()
+            ->with(['case' => fn ($query) => $query->withTrashed()])
             ->forRecipientDepartments([$department])
             ->latest('deleted_at')
             ->paginate(request()->boolean('portrait_cards') ? 4 : 5, ['*'], 'referrals_page')
@@ -2151,6 +2148,10 @@ class AdminController extends Controller
     public function getReferralJson($id)
     {
         $referral = \App\Models\Wcpu\CaseReferral::with(['case.barangay', 'referredBy'])->findOrFail($id);
+        $isBcpcAdmin = Auth::user()?->isBcpcAdmin();
+        if ($isBcpcAdmin) {
+            $referral->load(['case' => fn ($query) => $query->withTrashed()->with('barangay')]);
+        }
         $canReferCase = (Auth::user()->isBcpcAdmin() || Auth::user()->isVawcAdmin())
             && $referral->case
             && ! preg_match('/closed|complet/i', trim((string) $referral->case->status))
@@ -2162,9 +2163,12 @@ class AdminController extends Controller
             'referral_number' => $referral->referral_number,
             'date_of_referral' => $referral->date_of_referral ? \Carbon\Carbon::parse($referral->date_of_referral)->format('F d, Y') : null,
             'date_of_referral_input' => $referral->date_of_referral ? \Carbon\Carbon::parse($referral->date_of_referral)->format('Y-m-d') : null,
-            'client_name' => $referral->case ? $referral->case->victim_name : null,
-            'client_age' => $referral->case ? $referral->case->victim_age : null,
-            'client_sex' => $referral->case ? $referral->case->victim_gender : null,
+            'client_name' => $isBcpcAdmin ? ($referral->client_name ?: $referral->case?->victim_name) : $referral->case?->victim_name,
+            'client_age' => $isBcpcAdmin ? ($referral->client_age ?? $referral->case?->victim_age) : $referral->case?->victim_age,
+            'client_sex' => $isBcpcAdmin ? ($referral->client_sex ?: $referral->case?->victim_gender) : $referral->case?->victim_gender,
+            'additional_people_html' => (Auth::user()?->isBcpcAdmin() || Auth::user()?->isVawcAdmin())
+                ? view('admin-tailwind.referrals.additional-people', compact('referral'))->render()
+                : '',
             'specific_services_requested' => $referral->specific_services_requested,
             'recipient_name' => $referral->recipient_name,
             'recipient_email' => $referral->recipient_email,
@@ -2221,6 +2225,9 @@ class AdminController extends Controller
     public function printReferral($id)
     {
         $referral = \App\Models\Wcpu\CaseReferral::with(['case.barangay', 'referredBy'])->findOrFail($id);
+        if (Auth::user()?->isBcpcAdmin()) {
+            $referral->load(['case' => fn ($query) => $query->withTrashed()->with('barangay')]);
+        }
 
         return view('admin-tailwind.referrals.print', compact('referral'));
     }
@@ -2231,6 +2238,9 @@ class AdminController extends Controller
     public function printAllReferrals(Request $request)
     {
         $referrals = $this->adminReferralQuery($request)->get();
+        if (Auth::user()?->isBcpcAdmin()) {
+            $referrals->load(['case' => fn ($query) => $query->withTrashed()->with('barangay')]);
+        }
 
         return view('admin-tailwind.referrals.print-all', compact('referrals'));
     }

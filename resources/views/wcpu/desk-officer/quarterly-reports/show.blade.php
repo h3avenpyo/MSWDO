@@ -791,6 +791,13 @@
                                 <tr class="hover:bg-gray-50/80">
                                     <td class="border border-gray-200 px-4 py-2.5 font-medium text-gray-800">
                                         {{ $case['victim_name'] ?? 'N/A' }}
+                                        @if(auth()->user()?->position === 'Desk Officer' || ((auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) && request()->boolean('archive_report_preview')))
+                                            @foreach($case['additional_victims'] ?? [] as $extraVictim)
+                                                @if(filled($extraVictim['victim_name'] ?? null))
+                                                    <div>{{ $extraVictim['victim_name'] }}</div>
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </td>
                                     <td class="border border-gray-200 px-4 py-2.5 text-gray-700">
                                         {{ $case['abuse_type_name'] ?? $case['abuse_type'] ?? 'N/A' }}
@@ -820,7 +827,16 @@
                         <div class="flex items-start justify-between gap-3 mb-4">
                             <div class="min-w-0">
                                 <p class="text-xs text-gray-500 mb-1">Victim / Complainant</p>
-                                <p class="font-semibold text-gray-800">{{ $case['victim_name'] ?? 'N/A' }}</p>
+                                <p class="font-semibold text-gray-800">
+                                    {{ $case['victim_name'] ?? 'N/A' }}
+                                @if(auth()->user()?->position === 'Desk Officer' || ((auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) && request()->boolean('archive_report_preview')))
+                                    @foreach($case['additional_victims'] ?? [] as $extraVictim)
+                                        @if(filled($extraVictim['victim_name'] ?? null))
+                                            <br>{{ $extraVictim['victim_name'] }}
+                                        @endif
+                                    @endforeach
+                                @endif
+                                </p>
                             </div>
                             <span class="shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
                                 {{ $case['status'] ?? 'N/A' }}

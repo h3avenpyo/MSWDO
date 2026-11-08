@@ -122,9 +122,16 @@
         const isCase = view.title === 'View Case';
         const isMonitoring = view.title === 'View Record' || !!view.closest('.archived-monitoring-card');
         const responsiveMonitoring = isMonitoring && @json(request()->routeIs('desk-officer.quarterly-reports.archived'));
-        const url = isReferral
+        let url = isReferral
             ? @json(url('/desk-officer/referrals')) + '/' + view.dataset.referralId + '/details?archived=1'
             : view.href;
+        if (!isReferral && !isCase && !isMonitoring) {
+            const reportUrl = new URL(url, window.location.href);
+            reportUrl.searchParams.set('archived', '1');
+            reportUrl.searchParams.set('archive_report_preview', '1');
+            reportUrl.searchParams.delete('case_records_page');
+            url = reportUrl.href;
+        }
         Swal.fire({ title, width: isReferral ? 'min(760px, 95vw)' : 'min(1100px, 95vw)',
             customClass: { popup: `archive-view-modal-popup desk-archive-view-popup swd-archive-detail-popup${isReferral ? ' archived-referral-view-popup' : ''}${responsiveMonitoring ? ' archived-monitoring-view-popup' : ''}` },
             html: '<div class="swd-archive-detail" aria-live="polite">Loading details...</div>',
@@ -324,6 +331,7 @@
     document.addEventListener('submit', async event => {
         const form = event.target;
         if (form === filters) {
+            if (@json(request()->routeIs('desk-officer.quarterly-reports.archived'))) return;
             event.preventDefault();
             event.stopImmediatePropagation();
             refresh();

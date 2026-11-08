@@ -2,6 +2,39 @@
 @section('title', 'Archived Referrals')
 @push('styles')
 <style>
+    @media (min-width: 48rem) and (max-width: 85.375rem) and (orientation: portrait) {
+        body.portal-ui [data-live-archived-referrals] > [data-pagination-label] {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 16px !important;
+        }
+        body.portal-ui [data-live-archived-referrals] > [data-pagination-label] > div:last-child {
+            justify-content: flex-start !important;
+            margin-left: auto !important;
+            flex-shrink: 0;
+        }
+    }
+</style>
+<script>
+(() => {
+    const desktop = window.matchMedia('(min-width: 85.4375rem)');
+    const sync = () => {
+        const url = new URL(location.href);
+        if (url.searchParams.has('desktop_archived_referrals') === desktop.matches) return;
+        if (desktop.matches) url.searchParams.set('desktop_archived_referrals', '1');
+        else url.searchParams.delete('desktop_archived_referrals');
+        ['page', 'bcpc_page', 'vawc_page'].forEach(key => url.searchParams.delete(key));
+        location.replace(url.href);
+    };
+    desktop.addEventListener('change', sync);
+    sync();
+})();
+</script>
+
+<style>
     @media (max-width: 80rem) {
         .archived-referrals-table {
             display: none !important;
@@ -449,6 +482,7 @@ case referrals'])
                 @endif
             </div>
         </div>
+    @if(request()->boolean('desktop_archived_referrals'))<input type="hidden" name="desktop_archived_referrals" value="1">@endif
     </form>
     @php($groups = isset($referralGroups) && !empty($referralGroups) ? $referralGroups : ['' => $referrals])
     @foreach($groups as $department => $referralList)

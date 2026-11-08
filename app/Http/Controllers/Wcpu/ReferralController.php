@@ -35,19 +35,25 @@ class ReferralController extends Controller
     public function details(Request $request, $id)
     {
         $user = Auth::user();
+        $includeArchivedSingleDepartmentCase = $user->position === 'Desk Officer' && in_array($user->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !$user->isMultiCaseDepartment();
+        $isArchived = $request->boolean('archived');
         $barangay = Barangay::where('name', $user->barangay)
-            ->when($user->isMultiCaseDepartment(), fn ($q) => $q->orWhere('id', $user->barangay))->firstOrFail();
+            ->orWhere('id', $user->barangay)->firstOrFail();
         
         // Allow viewing referral details for any case in the same barangay
-        $referral = Referral::withTrashed()->with(['referredBy'])
-            ->whereHas('case', function($q) use ($barangay, $user) {
+        $referral = Referral::withTrashed()->with(['referredBy', 'case' => function ($q) use ($isArchived, $includeArchivedSingleDepartmentCase) {
+                if ($isArchived || $includeArchivedSingleDepartmentCase) $q->withTrashed();
+            }])
+            ->whereHas('case', function($q) use ($barangay, $user, $isArchived, $includeArchivedSingleDepartmentCase) {
                 $q->where('case_designation', $barangay->id);
+                if ($includeArchivedSingleDepartmentCase) $q->withTrashed();
+                if ($isArchived) $q->withTrashed()->whereIn('type', $user->caseDepartments());
                 if ($user->isMultiCaseDepartment()) {
                     $q->withTrashed()->whereIn('type', $user->caseDepartments());
                 }
             })
+            ->when($includeArchivedSingleDepartmentCase, fn ($q) => $q->forRecipientDepartments($user->caseDepartments(), true))
             ->findOrFail($id);
-        $isArchived = $request->boolean('archived');
 
         return view('desk-officer.partials.referral-details', compact('referral', 'isArchived'));
     }
@@ -55,13 +61,18 @@ class ReferralController extends Controller
     public function edit($id)
     {
         $user = Auth::user();
-        $barangay = Barangay::where('name', $user->barangay)->first();
+        $includeArchivedSingleDepartmentCase = $user->position === 'Desk Officer' && in_array($user->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !$user->isMultiCaseDepartment();
+        $barangay = Barangay::where('name', $user->barangay)->when($includeArchivedSingleDepartmentCase, fn ($q) => $q->orWhere('id', $user->barangay))->firstOrFail();
 
         // Allow editing referrals for any case in the same barangay.
-        $referral = Referral::with(['case', 'referredBy'])
-            ->whereHas('case', function($q) use ($barangay) {
+        $referral = Referral::with(['case' => function ($q) use ($includeArchivedSingleDepartmentCase) {
+                if ($includeArchivedSingleDepartmentCase) $q->withTrashed();
+            }, 'referredBy'])
+            ->whereHas('case', function($q) use ($barangay, $includeArchivedSingleDepartmentCase) {
+                if ($includeArchivedSingleDepartmentCase) $q->withTrashed();
                 $q->where('case_designation', $barangay->id);
             })
+            ->when($includeArchivedSingleDepartmentCase, fn ($q) => $q->forRecipientDepartments($user->caseDepartments(), true))
             ->findOrFail($id);
 
         $usesRecipientDropdown = $user->position === 'Desk Officer'
@@ -94,15 +105,28 @@ class ReferralController extends Controller
     public function printAll(Request $request)
     {
         $user = Auth::user();
+        $isBcpcDeskOfficer = $user->position === 'Desk Officer'
+            && $user->defaultCaseDepartment() === 'BCPC' && !$user->isMultiCaseDepartment();
+        $isSwdDeskOfficer = $user->position === 'Desk Officer'
+            && $user->defaultCaseDepartment() === 'VAWC' && !$user->isMultiCaseDepartment();
         $barangay = Barangay::where('name', $user->barangay)->orWhere('id', $user->barangay)->firstOrFail();
         $department = $request->input('type');
         if ($user->isMultiCaseDepartment()) {
             abort_unless(in_array($department, $user->caseDepartments(), true), 403);
         }
+        if ($isBcpcDeskOfficer) $department = 'BCPC';
+        if ($isSwdDeskOfficer) $department = 'VAWC';
         
         // Print all referrals for cases in the same barangay
-        $referrals = Referral::with(['case', 'referredBy'])
-            ->whereHas('case', function($q) use ($barangay, $user, $department) {
+        $referrals = Referral::with(['case' => function ($q) use ($isBcpcDeskOfficer, $isSwdDeskOfficer) {
+                if ($isBcpcDeskOfficer || $isSwdDeskOfficer) $q->withTrashed();
+            }, 'referredBy'])
+            ->when($isBcpcDeskOfficer, fn ($q) => $q->where('created_by_department_admin', false)
+                ->forRecipientDepartments(['BCPC'], true))
+            ->when($isSwdDeskOfficer, fn ($q) => $q->where('created_by_department_admin', false)
+                ->forRecipientDepartments(['VAWC'], true))
+            ->whereHas('case', function($q) use ($barangay, $user, $department, $isBcpcDeskOfficer, $isSwdDeskOfficer) {
+                if ($isBcpcDeskOfficer || $isSwdDeskOfficer) $q->withTrashed();
                 $q->where('case_designation', $barangay->id);
                 if ($user->isMultiCaseDepartment()) $q->where('type', $department);
             })
@@ -130,12 +154,14 @@ class ReferralController extends Controller
             ]);
             
             $user = Auth::user();
-            $barangay = Barangay::where('name', $user->barangay)->first();
+            $includeArchivedSingleDepartmentCase = $user->position === 'Desk Officer' && in_array($user->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !$user->isMultiCaseDepartment();
+            $barangay = Barangay::where('name', $user->barangay)->when($includeArchivedSingleDepartmentCase, fn ($q) => $q->orWhere('id', $user->barangay))->firstOrFail();
             
             // Allow updating referrals for any case in the same barangay.
-            $referral = Referral::whereHas('case', function($q) use ($barangay) {
+            $referral = Referral::whereHas('case', function($q) use ($barangay, $includeArchivedSingleDepartmentCase) {
+                if ($includeArchivedSingleDepartmentCase) $q->withTrashed();
                 $q->where('case_designation', $barangay->id);
-            })->findOrFail($id);
+            })->when($includeArchivedSingleDepartmentCase, fn ($q) => $q->forRecipientDepartments($user->caseDepartments(), true))->findOrFail($id);
 
             if ($user->position === 'Desk Officer'
                 && ($user->isMultiCaseDepartment() || in_array($user->defaultCaseDepartment(), ['BCPC', 'VAWC'], true))

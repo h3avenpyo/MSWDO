@@ -29,6 +29,7 @@ class DeskOfficerController extends Controller
             ->orWhere('name', $user->barangay)
             ->firstOrFail();
 
+        $archivedCasesPerPage = request()->boolean('desktop_archived_cases') ? 5 : (request()->boolean('tablet_archived_cases') ? 4 : 2);
         $search = trim((string) request('search'));
         $status = trim((string) request('status'));
 
@@ -53,7 +54,7 @@ class DeskOfficerController extends Controller
             ->where('type', $department);
         $applyFilters($casesQuery);
         $cases = $casesQuery->latest('deleted_at')
-            ->paginate(2)
+            ->paginate($archivedCasesPerPage)
             ->withQueryString();
 
         $caseGroups = [$department => $cases];
@@ -63,7 +64,7 @@ class DeskOfficerController extends Controller
                 $groupQuery = CaseModel::onlyTrashed()->with(['barangay', 'caseType'])
                     ->where('case_designation', $barangay->id)->where('type', $type);
                 $applyFilters($groupQuery);
-                $caseGroups[$type] = $groupQuery->latest('deleted_at')->paginate(2, ['*'], strtolower($type) . '_page')->withQueryString();
+                $caseGroups[$type] = $groupQuery->latest('deleted_at')->paginate($archivedCasesPerPage, ['*'], strtolower($type) . '_page')->withQueryString();
             }
         }
         return view('desk-officer.archived-barangay-cases', compact('cases', 'caseGroups', 'barangay', 'department'));
@@ -93,7 +94,9 @@ class DeskOfficerController extends Controller
             return redirect()->route('cases.edit', $case->id);
         }
 
-        return redirect()->route('desk-officer.archived-barangay-cases.index')
+        return redirect()->route('desk-officer.archived-barangay-cases.index',
+            in_array($department, ['BCPC', 'VAWC'], true) && !$user->isMultiCaseDepartment()
+                ? $request->only(['desktop_archived_cases', 'tablet_archived_cases']) : [])
             ->with('success', 'Barangay case restored successfully.');
     }
 
@@ -165,6 +168,10 @@ class DeskOfficerController extends Controller
 
     public function dashboard(?string $forcedDepartment = null)
     {
+        $dashboardFilters = request()->validate([
+            'quarter' => ['nullable', 'integer', 'between:1,4'],
+            'year' => ['nullable', 'integer', 'between:1900,2100'],
+        ]);
         try {
             // Enable error reporting for debugging
             error_reporting(E_ALL);
@@ -225,6 +232,8 @@ class DeskOfficerController extends Controller
                 'barangayName' => 'Unknown Barangay',
                 'barangayId' => null,
                 'departmentSelected' => $hasSelectedDepartment,
+                'dashboardFilters' => $dashboardFilters,
+                'dashboardYears' => range($yearBlockStart = 2024 + (int) floor((now('Asia/Taipei')->year - 2024) / 3) * 3, $yearBlockStart + 2),
             ];
             
             if ($barangay) {
@@ -235,31 +244,28 @@ class DeskOfficerController extends Controller
             if ($barangay && $hasSelectedDepartment) {
                 // Show all cases in the barangay (shared among desk officers)
                 $userId = Auth::id();
+                $dashboardCases = $this->applyCaseDepartmentScope(CaseModel::where('case_designation', $barangay->id), $dashboardType)
+                    ->when($dashboardFilters['quarter'] ?? null, fn ($query, $quarter) => $query->whereMonth('date_reported', '>=', ($quarter - 1) * 3 + 1)->whereMonth('date_reported', '<=', $quarter * 3))
+                    ->when($dashboardFilters['year'] ?? null, fn ($query, $year) => $query->whereYear('date_reported', $year));
                 
                 // Get cases for this barangay (all officers)
                 $viewData['stats'] = [
-                    'totalCases' => $this->applyCaseDepartmentScope(CaseModel::where('case_designation', $barangay->id), $dashboardType)
+                    'totalCases' => (clone $dashboardCases)
                         ->count(),
-                    'resolvedCases' => $this->applyCaseDepartmentScope(
-                        CaseModel::where(function ($q) use ($barangay) {
-                            $q->where('case_designation', $barangay->id)
-                              ->orWhere('case_designation', $barangay->name);
-                        }),
-                        $dashboardType
-                    )->whereIn('status', ['Case Closed', 'Case closed', 'Closed', 'Complete case', 'Complete Case', 'Complete Cases', 'Completed', 'Resolved'])->count(),
-                    'pendingCases' => $this->applyCaseDepartmentScope(CaseModel::where('case_designation', $barangay->id), $dashboardType)
+                    'resolvedCases' => (clone $dashboardCases)->whereIn('status', ['Case Closed', 'Case closed', 'Closed', 'Complete case', 'Complete Case', 'Complete Cases', 'Completed', 'Resolved'])->count(),
+                    'pendingCases' => (clone $dashboardCases)
                         ->where('status', in_array($dashboardType, ['BCPC', 'VAWC'], true) ? 'Case Filed' : 'Pending')
                         ->count(),
-                    'todayCases' => $this->applyCaseDepartmentScope(CaseModel::where('case_designation', $barangay->id), $dashboardType)
+                    'todayCases' => (clone $dashboardCases)
                         ->whereDate('created_at', today())
                         ->count(),
                     // Count both legacy and current referral status labels
-                    'casesReferred' => $this->applyCaseDepartmentScope(CaseModel::where('case_designation', $barangay->id), $dashboardType)
+                    'casesReferred' => (clone $dashboardCases)
                         ->whereIn('status', ['Case Referred', 'Referred'])
                         ->count(),
                 ];
                 
-                $viewData['caseStatus'] = $this->applyCaseDepartmentScope(CaseModel::where('case_designation', $barangay->id), $dashboardType)
+                $viewData['caseStatus'] = (clone $dashboardCases)
                     ->select('status', DB::raw('count(*) as count'))
                     ->groupBy('status')
                     ->get();
@@ -267,13 +273,11 @@ class DeskOfficerController extends Controller
                 try {
                     // Get case types that have cases in this barangay (all officers)
                     $viewData['caseTypes'] = CaseType::select('id', 'name', 'republic_act')
-                        ->whereHas('cases', function($query) use ($barangay, $dashboardType) {
-                            $query->where('case_designation', $barangay->id);
-                            $this->applyCaseDepartmentScope($query, $dashboardType);
+                        ->whereHas('cases', function($query) use ($dashboardCases) {
+                            $query->whereIn('cases.id', (clone $dashboardCases)->select('cases.id'));
                         })
-                        ->withCount(['cases' => function($query) use ($barangay, $dashboardType) {
-                            $query->where('case_designation', $barangay->id);
-                            $this->applyCaseDepartmentScope($query, $dashboardType);
+                        ->withCount(['cases' => function($query) use ($dashboardCases) {
+                            $query->whereIn('cases.id', (clone $dashboardCases)->select('cases.id'));
                         }])
                         ->orderBy('name')
                         ->get();
@@ -300,9 +304,7 @@ class DeskOfficerController extends Controller
                 $isSwdDeskOfficer = $user->position === 'Desk Officer' && $dashboardType === 'VAWC';
                 $recentCasesLimit = ($isMultiroleDeskOfficer || $isBcpcDeskOfficer || $isSwdDeskOfficer) ? 3 : 5;
 
-                $recentCasesQuery = CaseModel::with(['caseType', 'createdBy'])
-                    ->where('case_designation', $barangay->id)
-                    ->where('type', $dashboardType);
+                $recentCasesQuery = (clone $dashboardCases)->with(['caseType', 'createdBy']);
 
                 if ($isMultiroleDeskOfficer || $isBcpcDeskOfficer) {
                     $recentCasesQuery->orderByDesc('updated_at')->orderByDesc('created_at');
@@ -624,7 +626,7 @@ public function create()
         $removeVictimAgeLimit = Auth::user()?->position === 'Desk Officer'
             && (Auth::user()?->defaultCaseDepartment() === 'BCPC' || Auth::user()?->isMultiCaseDepartment());
         $victimAgeRule = $caseDepartment === 'VAWC' || $removeVictimAgeLimit ? 'required|integer|min:0' : 'required|integer|min:0|max:17';
-        $validated = $request->validate([
+        $caseRules = [
             'victim_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
             'victim_age' => $victimAgeRule,
             'victim_gender' => 'required|string|in:Female,Male,LGBTQIA+,Prefer not to say',
@@ -657,7 +659,19 @@ public function create()
             'case_type' => 'nullable|string|in:vawc,bcpc,VAWC,BCPC',
             'case_priority' => 'required|string|in:Urgent,Emergency,Non-urgent',
             'status' => 'required|string|in:Case Filed,Case Closed,Case Referred',
-        ], [
+        ];
+        $additionalPersonFields = [
+            'additional_victims' => ['victim_name', 'victim_age', 'victim_gender', 'victim_contact', 'victim_address', 'guardian', 'guardian_contact', 'guardian_address', 'relationship_to_victim'],
+            'additional_perpetrators' => ['perpetrator_name', 'abuser_age', 'abuser_address', 'abuse_relationship', 'guardian_abuser_name', 'guardian_abuser_contact', 'guardian_abuser_address', 'relationship_to_abuser'],
+        ];
+        foreach ($additionalPersonFields as $group => $fields) {
+            $caseRules[$group] = ['sometimes', 'array'];
+            $caseRules[$group . '.*'] = ['array:' . implode(',', $fields)];
+            foreach ($fields as $field) {
+                $caseRules[$group . '.*.' . $field] = $caseRules[$field];
+            }
+        }
+        $validated = $request->validate($caseRules, [
             'victim_age.max' => 'Victim age must be 17 or below.',
             'abuser_age.required' => 'Perpetrator age is required.',
             'abuse_relationship.required' => 'Relationship of perpetrator to victim is required.',
@@ -743,6 +757,10 @@ public function create()
             'assigned_to' => Auth::id(),
             'created_by' => Auth::id(),
             'case_details' => $caseDetailsValue,
+            'bcpc_data' => !empty($validated['additional_victims']) || !empty($validated['additional_perpetrators']) ? [
+                'additional_victims' => array_values($validated['additional_victims'] ?? []),
+                'additional_perpetrators' => array_values($validated['additional_perpetrators'] ?? []),
+            ] : null,
         ]);
 
         // Single activity log (no documents)
@@ -1118,6 +1136,7 @@ public function create()
          $case->status = $validated['status'];
          
          $case->updated_at = Carbon::now('Asia/Manila');
+         \App\Services\Wcpu\AdditionalCasePeople::updateFromRequest($request, $case);
          $case->save();
 
          // If status just changed to "Case Referred", log into case_referrals table
@@ -1396,6 +1415,7 @@ public function create()
 
             // Send email notification with PDF attachment
             try {
+            $referral->setRelation('case', $case);
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin-tailwind.referrals.print', ['referral' => $referral])
                     ->setPaper('a4', 'portrait')
                     ->output();
@@ -1434,8 +1454,9 @@ public function create()
      */
     public function referrals(Request $request)
     {
-        $perPage = 2;
+        $perPage = $request->boolean('desktop_referrals') ? 5 : 2;
         $user = Auth::user();
+        $includeArchivedSingleDepartmentCases = in_array($user->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !$user->isMultiCaseDepartment();
         $barangay = Barangay::where('name', $user->barangay)
             ->when($user->isMultiCaseDepartment(), fn ($q) => $q->orWhere('id', $user->barangay))->first();
         
@@ -1449,13 +1470,16 @@ public function create()
         }
 
         // Get referrals for all cases in this barangay (shared among officers)
-        $query = CaseReferral::with(['case', 'referredBy', 'recipient'])
+        $query = CaseReferral::with(['case' => function ($q) use ($includeArchivedSingleDepartmentCases) {
+                if ($includeArchivedSingleDepartmentCases) $q->withTrashed();
+            }, 'referredBy', 'recipient'])
             ->withExists('departmentAdminReferralsForCase')
             ->where('created_by_department_admin', false)
-            ->whereHas('case', function($q) use ($barangay) {
+            ->whereHas('case', function($q) use ($barangay, $includeArchivedSingleDepartmentCases) {
+                if ($includeArchivedSingleDepartmentCases) $q->withTrashed();
                 $q->where('case_designation', $barangay->id);
             })
-            ->forRecipientDepartments($user->caseDepartments())
+            ->forRecipientDepartments($user->caseDepartments(), $includeArchivedSingleDepartmentCases)
             ->orderByDesc('updated_at')
             ->orderByDesc('created_at');
 
@@ -1464,7 +1488,7 @@ public function create()
             $query->where('status', $request->status);
         }
 
-        $referrals = (clone $query)->paginate($perPage);
+        $referrals = (clone $query)->paginate($perPage)->withQueryString();
         if ($user->defaultCaseDepartment() === 'BCPC' && !$user->isMultiCaseDepartment() && $referrals->currentPage() > $referrals->lastPage()) {
             return redirect()->route('desk-officer.referrals', array_merge($request->query(), ['page' => $referrals->lastPage()]));
         }
@@ -1479,9 +1503,10 @@ public function create()
 
         // Calculate stats (all referrals in barangay)
         $baseQuery = CaseReferral::where('created_by_department_admin', false)
-            ->whereHas('case', function($q) use ($barangay) {
+            ->whereHas('case', function($q) use ($barangay, $includeArchivedSingleDepartmentCases) {
+                if ($includeArchivedSingleDepartmentCases) $q->withTrashed();
                 $q->where('case_designation', $barangay->id);
-            })->forRecipientDepartments($user->caseDepartments());
+            })->forRecipientDepartments($user->caseDepartments(), $includeArchivedSingleDepartmentCases);
 
         $stats = [
             'total' => $baseQuery->count(),
@@ -1518,8 +1543,10 @@ public function create()
     public function archivedReferrals()
     {
         $user = Auth::user();
+        $perPage = request()->boolean('desktop_archived_referrals') ? 5 : 2;
         $search = trim((string) request('search'));
-        $query = $this->officerReferralQuery()->onlyTrashed()->latest('deleted_at');
+        $query = $this->officerReferralQuery()->onlyTrashed()
+            ->with(['case' => fn ($q) => $q->withTrashed()])->latest('deleted_at');
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('referral_number', 'like', "%{$search}%")
@@ -1528,13 +1555,13 @@ public function create()
                   ->orWhereHas('case', fn ($cq) => $cq->where('case_number', 'like', "%{$search}%")->orWhere('victim_name', 'like', "%{$search}%"));
             });
         }
-        $referrals = (clone $query)->paginate(2)->withQueryString();
+        $referrals = (clone $query)->paginate($perPage)->withQueryString();
         $referralGroups = ['' => $referrals];
         if ($user && $user->isMultiCaseDepartment()) {
             $referralGroups = [];
             foreach ($user->caseDepartments() as $type) {
                 $referralGroups[$type] = (clone $query)->whereHas('case', fn ($q) => $q->where('type', $type))
-                    ->paginate(2, ['*'], strtolower($type) . '_page')->withQueryString();
+                    ->paginate($perPage, ['*'], strtolower($type) . '_page')->withQueryString();
             }
         }
         return view('desk-officer.archived-referrals', compact('referrals', 'referralGroups'));
@@ -1584,11 +1611,16 @@ public function create()
     public function printReferral($id)
     {
         $user = Auth::user();
+        $includeArchivedSingleDepartmentCase = $user->position === 'Desk Officer'
+            && in_array($user->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !$user->isMultiCaseDepartment();
         $barangay = Barangay::where('name', $user->barangay)->orWhere('id', $user->barangay)->firstOrFail();
 
         // Allow viewing/printing referrals for cases in the same barangay within user department scope
-        $referral = CaseReferral::with(['case', 'referredBy'])
-            ->whereHas('case', function($q) use ($barangay) {
+        $referral = CaseReferral::with(['case' => function ($q) use ($includeArchivedSingleDepartmentCase) {
+                if ($includeArchivedSingleDepartmentCase) $q->withTrashed();
+            }, 'referredBy'])
+            ->whereHas('case', function($q) use ($barangay, $includeArchivedSingleDepartmentCase) {
+                if ($includeArchivedSingleDepartmentCase) $q->withTrashed();
                 $q->where('case_designation', $barangay->id);
                 $this->applyCaseDepartmentScope($q);
             })

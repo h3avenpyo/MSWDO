@@ -35,6 +35,7 @@
             @endif
         </div>
     </div>
+    @include('desk-officer.partials.referral-additional-people', ['additionalReferralEdit' => true])
     <div class="mb-3">
         <label class="form-label">Service/s needed</label>
         <textarea name="specific_services_requested" class="form-control" rows="2">{{ $referral->specific_services_requested }}</textarea>

@@ -34,7 +34,7 @@
         @if($referral->additional_notes)
         <div class="info-row"><span class="label">Additional Notes:</span> {{ $referral->additional_notes }}</div>
         @endif
-        <div class="info-row"><span class="label">Referred By:</span> MSWDO SILANG (Administrator)</div>
+        <div class="info-row"><span class="label">Referred By:</span> {{ $referral->referred_by_name ?: 'Not provided' }}@if(filled($referral->referred_by_designation)) ({{ $referral->referred_by_designation }})@endif</div>
     </div>
     <div class="footer">
         <p>This is an automated notification from the ISERVE SILANG Case Management System.</p>

@@ -211,6 +211,9 @@ body{font-size:13px;line-height:1.22}
 
 	<!-- Victim & Perpetrator -->
 	@php
+		$canViewAdditionalPeople = auth()->user()?->position === 'Desk Officer' || auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin();
+		$extraPrintVictims = $canViewAdditionalPeople ? collect($case->bcpc_data['additional_victims'] ?? [])->values() : collect();
+		$extraPrintPerpetrators = $canViewAdditionalPeople ? collect($case->bcpc_data['additional_perpetrators'] ?? [])->values() : collect();
 		$hasVictimGuardian = $case->guardian || $case->guardian_contact || $case->guardian_address || $case->relationship_to_victim;
 		$hasPerpetratorGuardian = $case->guardian_abuser_name || $case->guardian_abuser_contact || $case->guardian_abuser_address || $case->relationship_to_abuser;
 	@endphp
@@ -376,6 +379,46 @@ body{font-size:13px;line-height:1.22}
 			</tr>
 		</table>
 	@endif
+
+	@foreach(['Victim' => $extraPrintVictims, 'Perpetrator' => $extraPrintPerpetrators] as $extraRole => $extraPeople)
+        @foreach($extraPeople as $extraIndex => $extraPerson)
+            @php
+                $isExtraVictim = $extraRole === 'Victim';
+                $extraRows = $isExtraVictim
+                    ? ['Full Name' => ['victim_name'], 'Age / Gender' => ['victim_age', 'victim_gender'], 'Contact / Email' => ['victim_contact'], 'Address' => ['victim_address']]
+                    : ['Full Name' => ['perpetrator_name'], 'Age' => ['abuser_age'], 'Relationship' => ['abuse_relationship'], 'Address' => ['abuser_address']];
+                $extraGuardianRows = $isExtraVictim
+                    ? ['Guardian Name' => 'guardian', 'Guardian Contact' => 'guardian_contact', 'Guardian Address' => 'guardian_address', 'Relationship to Victim' => 'relationship_to_victim']
+                    : ['Guardian Name' => 'guardian_abuser_name', 'Guardian Contact' => 'guardian_abuser_contact', 'Guardian Address' => 'guardian_abuser_address', 'Relationship to Perpetrator' => 'relationship_to_abuser'];
+                $hasExtraGuardian = collect(array_values($extraGuardianRows))->contains(fn ($field) => !empty($extraPerson[$field]));
+            @endphp
+            <table style="width:100%;border-collapse:collapse;margin-bottom:8px;page-break-inside:avoid;">
+                <tr>
+                    <td style="width:{{ $hasExtraGuardian ? '50%' : '100%' }};vertical-align:top;{{ $hasExtraGuardian ? 'padding-right:6px;' : '' }}">
+                        <div class="section-title">{{ $extraRole }} Information {{ $extraIndex + 2 }}</div>
+                        <table class="data-table table-compact">
+                            @foreach($extraRows as $extraLabel => $extraFields)
+                                @php
+                                    $extraValue = collect($extraFields)->map(fn ($field) => isset($extraPerson[$field]) && (string) $extraPerson[$field] !== '' ? $extraPerson[$field] : 'N/A')->implode(' / ');
+                                @endphp
+                                <tr><th>{{ $extraLabel }}</th><td>{{ $extraLabel === 'Full Name' ? censorLastName($extraValue) : $extraValue }}</td></tr>
+                            @endforeach
+                        </table>
+                    </td>
+                    @if($hasExtraGuardian)
+                        <td style="width:50%;vertical-align:top;padding-left:6px;">
+                            <div class="section-title">Guardian of {{ $extraRole }} Information {{ $extraIndex + 2 }}</div>
+                            <table class="data-table table-compact">
+                                @foreach($extraGuardianRows as $extraLabel => $extraField)
+                                    <tr><th>{{ $extraLabel }}</th><td>{{ $extraLabel === 'Guardian Name' ? censorLastName($extraPerson[$extraField] ?? 'N/A') : ($extraPerson[$extraField] ?? 'N/A') }}</td></tr>
+                                @endforeach
+                            </table>
+                        </td>
+                    @endif
+                </tr>
+            </table>
+        @endforeach
+    @endforeach
 
 	@php
 		$isBCPCCase = $case->type === 'BCPC';

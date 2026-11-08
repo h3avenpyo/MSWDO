@@ -126,7 +126,7 @@
 
     {{-- Guardian of Perpetrator card: show only when any guardian data exists --}}
     @if(!empty($case->guardian_abuser_name) || !empty($case->guardian_abuser_contact) || !empty($case->guardian_abuser_address) || !empty($case->relationship_to_abuser))
-    <div class="card case-modal-perpetrator-guardian mb-4">
+    <div class="card case-modal-perpetrator-guardian mb-4" @if((auth()->user()?->position === 'Desk Officer' || auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) && !($case->guardian || $case->guardian_contact || $case->guardian_address || $case->relationship_to_victim)) style="grid-column:1 / -1;" @endif>
         <div class="card-header" style="background-color: #e9ecef; padding: .5rem 1rem; border-radius: .4rem;">
             <h5 class="mb-0" style="font-weight:700; margin:0; color:#222;">Guardian of Perpetrator Information</h5>
         </div>
@@ -148,6 +148,7 @@
     </div>
     @endif
 
+    @include('desk-officer._additional-case-people', ['case' => $case])
     <div class="card mb-4">
         <div class="card-header" style="background-color: #e9ecef; padding: .5rem 1rem; border-radius: .4rem;">
             <h5 class="mb-0" style="font-weight:700; margin:0; color:#222;">Incident Details</h5>

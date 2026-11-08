@@ -122,6 +122,9 @@
             </div>
         </div>
         <div class="row"><div class="col col-100"><span class="label">To:</span> <span class="value value-full">{{ $recipientName }}</span></div></div>
+        @if(auth()->user()?->position === 'Desk Officer' || auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
+        @include('desk-officer.partials.referral-additional-people-print')
+        @else
         <div class="row"><div class="col col-100"><span class="label">Name of Client:</span> <span class="value value-full">{{ $clientName }}</span></div></div>
         <div class="row">
             <div class="col col-33"><span class="label">Age:</span> <span class="value" style="width:50%;">{{ $clientAge }}</span></div>
@@ -133,6 +136,7 @@
             <div class="col col-50"><span class="label">Contact No.:</span> <span class="value" style="width:60%;">{{ $guardianContact }}</span></div>
         </div>
         <div class="row"><div class="col col-100"><span class="label">Address:</span> <span class="value value-full">{{ $guardianAddress }}</span></div></div>
+        @endif
         <div class="row" style="margin-top:4px;"><div class="col col-100"><span class="label">Reason/s for Referral:</span></div></div>
         <div class="row"><div class="col col-100"><span class="value value-full">{{ $displayValue($referral->reason_for_referral) }}</span></div></div>
         <div class="row" style="margin-top:4px;"><div class="col col-100"><span class="label">Specific Service/s Requested:</span></div></div>

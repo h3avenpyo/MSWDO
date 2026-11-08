@@ -4,6 +4,45 @@
 
 @push('styles')
 <style>
+    @if(Auth::user()?->position === 'Desk Officer' && ((Auth::user()?->defaultCaseDepartment() === 'VAWC' && !Auth::user()?->isMultiCaseDepartment()) || (Auth::user()?->isMultiCaseDepartment() && strtolower((string) ($dashboardType ?? request('type', Auth::user()?->defaultCaseDepartment()))) === 'vawc')))
+    @media (max-width: 47.9375rem) {
+        html body.portal-ui #desk-officer-dashboard-content #desk-dashboard-overview {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap;
+            gap: 1rem !important;
+            margin-bottom: 1.5rem !important;
+        }
+    }
+    @endif
+    @media (max-width: 47.9375rem) {
+        #desk-dashboard-overview { flex-wrap: wrap; }
+        #desk-dashboard-overview > button[aria-controls="desk-dashboard-filters"] {
+            flex-basis: 100%;
+            width: 100% !important;
+            min-height: 40px;
+            margin: 0 !important;
+        }
+        html body.portal-ui #desk-dashboard-filter-actions {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            width: 100%;
+        }
+        html body.portal-ui #desk-dashboard-filter-actions > :is(a, button) {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+            margin: 0 !important;
+            padding: 8px 6px !important;
+        }
+    }
     html,
     body,
     #mainContent {
@@ -1195,12 +1234,12 @@ $chartColors = $isBCPC
     $dashboardUser->canAccessCaseDepartment('VAWC') && ($stats['totalCases'] ?? 0) > 0) data-swd-dashboard-fit @endif class="px-4 pt-4 pb-4 sm:p-6 lg:p-8"
     style="padding-bottom: max(2rem, calc(1rem + env(safe-area-inset-bottom))) !important;">
     <!-- Page Title -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div id="desk-dashboard-overview" class="flex items-center justify-between gap-4 mb-6">
         @php
         $dashboardBarangayName = trim((string) ($barangayName ?? Auth::user()?->barangay ?? 'your barangay'));
         $dashboardBarangayName = preg_replace('/^barangay\s+/i', '', $dashboardBarangayName);
         @endphp
-        <div class="flex items-start gap-3 min-w-0">
+        <div class="flex flex-1 items-start gap-3 min-w-0">
             <span
                 class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-600"
                 aria-hidden="true">
@@ -1212,8 +1251,44 @@ $chartColors = $isBCPC
                     {{ $dashboardBarangayName }}</p>
             </div>
         </div>
+        @if(Auth::user()?->position === 'Desk Officer' && (in_array(Auth::user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || Auth::user()?->isMultiCaseDepartment()))
+        <button type="button" aria-controls="desk-dashboard-filters" aria-expanded="{{ request()->filled('quarter') || request()->filled('year') || $errors->any() ? 'true' : 'false' }}"
+            onclick="const panel = document.getElementById('desk-dashboard-filters'); panel.hidden = !panel.hidden; this.setAttribute('aria-expanded', String(!panel.hidden));"
+            class="inline-flex flex-shrink-0 items-center justify-center gap-2 rounded-lg bg-[#C41E3A] px-4 py-2 text-sm font-medium text-white"><i class="fas fa-filter" aria-hidden="true"></i> Filter</button>
+        @endif
     </div>
-
+    @if(Auth::user()?->position === 'Desk Officer' && (in_array(Auth::user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || Auth::user()?->isMultiCaseDepartment()))
+    <div id="desk-dashboard-filters" @if(!request()->filled('quarter') && !request()->filled('year') && !$errors->any()) hidden @endif>
+        <form method="GET" action="{{ url()->current() }}" class="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <input type="hidden" name="type" value="{{ $dashboardType }}">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label class="block text-sm text-gray-700">Quarter
+                    <select name="quarter" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2">
+                        <option value="">All Quarters</option>
+                        @foreach([1 => '1st Quarter', 2 => '2nd Quarter', 3 => '3rd Quarter', 4 => '4th Quarter'] as $value => $label)
+                        <option value="{{ $value }}" @selected((string) request('quarter') === (string) $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    @error('quarter')<span class="text-xs text-red-600">{{ $message }}</span>@enderror
+                </label>
+                <label class="block text-sm text-gray-700">Year
+                    <select name="year" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2">
+                        <option value="">All Years</option>
+                        @foreach($dashboardYears ?? [] as $value)
+                        <option value="{{ $value }}" @selected((string) request('year') === (string) $value)>{{ $value }}</option>
+                        @endforeach
+                    </select>
+                    @error('year')<span class="text-xs text-red-600">{{ $message }}</span>@enderror
+                </label>
+            </div>
+            <p class="mt-3 text-xs text-gray-500">Filters use Date Reported for case counts, case distribution, and recent cases in the selected department.</p>
+            <div id="desk-dashboard-filter-actions" class="mt-4 grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+                <a href="{{ url()->current() . '?type=' . urlencode($dashboardType) }}" style="border-radius:8px !important;" class="inline-flex min-h-10 items-center justify-center border border-gray-300 px-4 py-2 text-sm text-gray-700">Reset</a>
+                <button type="submit" style="border-radius:8px !important;" class="inline-flex min-h-10 items-center justify-center bg-[#C41E3A] px-4 py-2 text-sm font-medium text-white">Apply Filter</button>
+            </div>
+        </form>
+    </div>
+    @endif
     <!-- Summary Statistics Grid -->
     <div class="dashboard-statistics grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <!-- Total Cases -->

@@ -167,6 +167,7 @@
                     </div>
                 </div>
                 <!-- Incident Details -->
+                @include('desk-officer._additional-case-people-edit', ['case' => $case])
                 <hr class="section-divider">
                 <h3 class="section-title">Incident Details</h3>
                 <div class="form-row">

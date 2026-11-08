@@ -67,10 +67,20 @@ class QuarterlyReportController extends Controller
 
         if ($caseIds->isNotEmpty()) {
             $currentStatuses = CaseModel::withTrashed()->whereIn('id', $caseIds)->pluck('status', 'id');
-            $reportData['cases'] = $caseRows->map(function ($caseRow) use ($currentStatuses) {
+            $additionalPeopleCases = Auth::user()?->position === 'Desk Officer'
+                ? CaseModel::withTrashed()->whereIn('id', $caseIds)
+                    ->where('case_designation', $report->barangay_id)
+                    ->where('type', $report->type ?? 'VAWC')
+                    ->get(['id', 'bcpc_data'])->keyBy('id')
+                : collect();
+            $reportData['cases'] = $caseRows->map(function ($caseRow) use ($currentStatuses, $additionalPeopleCases) {
                 $caseRow = (array) $caseRow;
                 if (isset($caseRow['id']) && $currentStatuses->has($caseRow['id'])) {
                     $caseRow['status'] = $currentStatuses->get($caseRow['id']);
+                }
+                if (Auth::user()?->position === 'Desk Officer') {
+                    $caseRow['additional_victims'] = $caseRow['additional_victims']
+                        ?? ($additionalPeopleCases->get($caseRow['id'] ?? null)?->bcpc_data['additional_victims'] ?? []);
                 }
                 return $caseRow;
             })->values()->all();
@@ -246,7 +256,7 @@ class QuarterlyReportController extends Controller
         if (!$isAdmin) {
             $reportGroups = [];
             foreach ($user->caseDepartments() as $department) {
-                $reportGroups[$department] = (clone $query)->where('type', $department)->paginate(2, ['*'], strtolower($department).'_page')->withQueryString();
+                $reportGroups[$department] = (clone $query)->where('type', $department)->paginate($request->boolean('desktop_reports') ? 5 : 2, ['*'], strtolower($department).'_page')->withQueryString();
             }
             return view('desk-officer.quarterly-reports.index', compact('reportGroups', 'isMultiCaseDepartment'));
         }
@@ -670,7 +680,21 @@ class QuarterlyReportController extends Controller
         }
 
         $allCaseRecords = collect($report->report_data['cases'] ?? [])->values();
-        $perPage = $isAdmin && $request->boolean('archive_report_preview') ? max(1, $allCaseRecords->count()) : 5;
+        if ($user->position === 'Desk Officer' || (($user->isBcpcAdmin() || $user->isVawcAdmin()) && $request->boolean('archive_report_preview'))) {
+            $additionalPeopleCases = CaseModel::withTrashed()
+                ->whereIn('id', $allCaseRecords->pluck('id')->filter())
+                ->where('case_designation', $report->barangay_id)
+                ->where('type', $report->type ?? 'VAWC')
+                ->get(['id', 'bcpc_data'])->keyBy('id');
+            $allCaseRecords = $allCaseRecords->map(function ($record) use ($additionalPeopleCases) {
+                $record['additional_victims'] = $record['additional_victims']
+                    ?? ($additionalPeopleCases->get($record['id'] ?? null)?->bcpc_data['additional_victims'] ?? []);
+                return $record;
+            });
+        }
+        $showAllArchivedRecords = $request->boolean('archive_report_preview')
+            && ($isAdmin || ($user->position === 'Desk Officer' && $request->boolean('archived')));
+        $perPage = $showAllArchivedRecords ? max(1, $allCaseRecords->count()) : 5;
         $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage('case_records_page');
         $caseRecords = new \Illuminate\Pagination\LengthAwarePaginator(
             $allCaseRecords->forPage($currentPage, $perPage)->values(),
@@ -1159,7 +1183,7 @@ class QuarterlyReportController extends Controller
             $search = trim((string) $request->input('search'));
             $quarter = $request->input('quarter');
             $year = $request->input('year');
-            $instantArchiveSearch = in_array($user->defaultCaseDepartment(), ['VAWC', 'BCPC'], true);
+            $instantArchiveSearch = in_array($user->defaultCaseDepartment(), ['VAWC', 'BCPC'], true) && !$request->boolean('desktop_archived_reports') && !$request->boolean('mobile_archived_reports') && !$request->boolean('tablet_archived_reports');
             foreach ($user->caseDepartments() as $department) {
                 $q = QuarterlyReport::with(['barangay', 'user'])->where('barangay_id', $barangay->id)->where('type', $department)->whereNotNull('archived_at');
                 if ($quarter && !$instantArchiveSearch) {
@@ -1182,7 +1206,7 @@ class QuarterlyReportController extends Controller
                             ->orWhereHas('barangay', fn($b) => $b->where('name', 'like', "%{$search}%"));
                     });
                 }
-                $reportGroups[$department] = $q->latest('archived_at')->paginate($instantArchiveSearch ? PHP_INT_MAX : 5, ['*'], strtolower($department).'_page', $instantArchiveSearch ? 1 : null)->withQueryString();
+                $reportGroups[$department] = $q->latest('archived_at')->paginate($request->boolean('mobile_archived_reports') ? 2 : ($request->boolean('tablet_archived_reports') ? 4 : ($instantArchiveSearch ? PHP_INT_MAX : 5)), ['*'], strtolower($department).'_page', $instantArchiveSearch ? 1 : null)->withQueryString();
                 $activeReportPeriods[$department] = QuarterlyReport::where('barangay_id', $barangay->id)
                     ->where('type', $department)
                     ->whereNull('archived_at')
@@ -1193,8 +1217,11 @@ class QuarterlyReportController extends Controller
             $archivedMonitorings = null;
             $activeMonitoringPeriods = [];
             if ($user->canAccessCaseDepartment('BCPC')) {
-                $archivedMonitorings = BcpcCaseMonitoring::with(['barangay', 'creator'])
-                    ->where('barangay_id', $barangay->id)->whereNotNull('archived_at')->latest('archived_at')->get();
+                $archivedMonitoringsQuery = BcpcCaseMonitoring::with(['barangay', 'creator'])
+                    ->where('barangay_id', $barangay->id)->whereNotNull('archived_at')->latest('archived_at');
+                $archivedMonitorings = ($request->boolean('desktop_archived_reports') || $request->boolean('mobile_archived_reports') || $request->boolean('tablet_archived_reports'))
+                    ? $archivedMonitoringsQuery->paginate($request->boolean('mobile_archived_reports') ? 2 : ($request->boolean('tablet_archived_reports') ? 4 : 5), ['*'], 'monitorings_page')->withQueryString()
+                    : $archivedMonitoringsQuery->get();
                 $activeMonitoringPeriods = BcpcCaseMonitoring::where('barangay_id', $barangay->id)
                     ->whereNull('archived_at')->get(['quarter', 'year'])
                     ->mapWithKeys(fn ($monitoring) => ["{$monitoring->quarter}-{$monitoring->year}" => true])->all();

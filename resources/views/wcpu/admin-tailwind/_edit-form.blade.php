@@ -248,6 +248,7 @@
             </div>
 
             <!-- Incident Details -->
+            @include('desk-officer._additional-case-people-edit', ['case' => $case])
             <div>
                 <h3 class="text-lg font-semibold text-gray-800 pb-2 border-b-2 border-gray-200 mb-4">
                     Incident Details

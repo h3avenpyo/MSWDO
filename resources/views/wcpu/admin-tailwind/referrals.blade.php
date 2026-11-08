@@ -1220,7 +1220,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div>
                             <p class="text-xs text-gray-500">Age</p>
-                            <p class="text-sm font-medium text-gray-800">${data.client_age || 'N/A'}</p>
+                            <p class="text-sm font-medium text-gray-800">${data.client_age ?? 'N/A'}</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500">Sex</p>
@@ -1229,6 +1229,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 
+                ${data.additional_people_html || ''}
                 <!-- Referral Details -->
                 <div>
                     <h4 class="text-sm font-semibold text-gray-800 uppercase tracking-wide mb-3 flex items-center gap-2">

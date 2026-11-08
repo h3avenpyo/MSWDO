@@ -137,6 +137,7 @@
         @endif
     </div>
 
+    @include('desk-officer._additional-case-people', ['case' => $case, 'additionalPeopleFullPage' => true])
     <div class="card mb-4">
         <div class="card-header bg-light">
             <h5 class="mb-0">Incident Details</h5>

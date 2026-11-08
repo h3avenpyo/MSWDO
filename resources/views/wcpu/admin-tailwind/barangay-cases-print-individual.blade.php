@@ -117,7 +117,16 @@
                         <tr>
                             <td class="case-number">{{ $case->case_number ?? 'N/A' }}</td>
                             <td>{{ $case->date_reported ? \Carbon\Carbon::parse($case->date_reported)->format('M d, Y') : 'N/A' }}</td>
-                            <td>{{ $case->victim_name ?? 'N/A' }}</td>
+                            <td>
+                                {{ $case->victim_name ?? 'N/A' }}
+                                @if(auth()->user()?->position === 'Desk Officer' || auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin())
+                                    @foreach($case->bcpc_data['additional_victims'] ?? [] as $extraVictim)
+                                        @if(!empty($extraVictim['victim_name']))
+                                            <br>{{ $extraVictim['victim_name'] }}
+                                        @endif
+                                    @endforeach
+                                @endif
+                            </td>
                             <td>{{ $case->abuse_type ? ucfirst($case->abuse_type) : 'N/A' }}</td>
                             <td>{{ $case->status ?? 'Pending' }}</td>
                             <td>{{ $case->created_at ? $case->created_at->format('M d, Y') : 'N/A' }}</td>

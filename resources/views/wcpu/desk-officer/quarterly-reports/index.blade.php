@@ -1,5 +1,21 @@
 @extends('layouts.desk-officer')
 @section('title', 'Quarterly Reports')
+@if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
+@push('scripts')
+<script>
+(() => {
+    const desktopReports = window.matchMedia('(min-width: 85.4375rem)').matches;
+    const url = new URL(window.location.href);
+    if (desktopReports === (url.searchParams.get('desktop_reports') === '1')) return;
+    if (desktopReports) url.searchParams.set('desktop_reports', '1');
+    else url.searchParams.delete('desktop_reports');
+    url.searchParams.delete('bcpc_page');
+    url.searchParams.delete('vawc_page');
+    window.location.replace(url.toString());
+})();
+</script>
+@endpush
+@endif
 @php
     $isSingleDepartmentDeskOfficer = auth()->user()?->position === 'Desk Officer'
         && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)
@@ -13,11 +29,19 @@
         .quarterly-generate-report-button {
             display: inline-flex;
             width: 100%;
-            height: 2.5rem;
+            height: auto !important;
+            min-height: 2.5rem;
             align-items: center;
             justify-content: center;
+            box-sizing: border-box;
+            padding-top: .625rem;
+            padding-bottom: .625rem;
             padding-right: .75rem;
             padding-left: .75rem;
+            text-align: center;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            line-height: 1.4;
         }
     }
     @media (max-width: 47.9375rem) {
@@ -135,12 +159,19 @@
         .quarterly-print-all-button {
             display: inline-flex;
             width: 100%;
-            height: 2.5rem;
+            height: auto !important;
             min-height: 2.5rem;
             align-items: center;
             justify-content: center;
             padding-right: .75rem;
             padding-left: .75rem;
+            padding-top: .625rem;
+            padding-bottom: .625rem;
+            box-sizing: border-box;
+            text-align: center;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            line-height: 1.4;
         }
     }
     @endif
@@ -199,7 +230,7 @@
         <div class="quarterly-report-actions-container ml-auto flex flex-wrap items-center justify-end gap-4">
             <div class="quarterly-report-actions flex flex-wrap items-center justify-end gap-2">
             @unless(auth()->user()->isMultiCaseDepartment() || (auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)))
-            <a href="{{ route('desk-officer.quarterly-reports.archived') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm {{ auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'border border-[#C41E3A] bg-[#C41E3A] text-white hover:bg-[#A01830]' : 'border border-purple-200 text-purple-700 hover:bg-purple-50' }}">
+            <a href="{{ route('desk-officer.quarterly-reports.archived') }}" onclick="const u=new URL(this.href);if(window.matchMedia('(min-width: 85.4375rem)').matches)u.searchParams.set('desktop_archived_reports','1');if(window.matchMedia('(min-width: 48rem) and (max-width: 85.375rem)').matches)u.searchParams.set('tablet_archived_reports','1');if(window.matchMedia('(max-width: 47.9375rem)').matches)u.searchParams.set('mobile_archived_reports','1');this.href=u.href;" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm {{ auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) ? 'border border-[#C41E3A] bg-[#C41E3A] text-white hover:bg-[#A01830]' : 'border border-purple-200 text-purple-700 hover:bg-purple-50' }}">
                 @unless(auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true))
                 <i class="fas fa-archive text-amber-500"></i>
                 @endunless
@@ -219,20 +250,10 @@
     @if(session('error'))<p class="p-4 mb-4 bg-red-50 text-red-700 rounded-lg">{{ session('error') }}</p>@endif
 
     <div class="bg-white border border-gray-100 rounded-xl shadow-md p-4 mb-6">
-        <form id="desk-quarterly-reports-filter-form" action="{{ route('desk-officer.quarterly-reports.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:items-start gap-3">
+        <form id="desk-quarterly-reports-filter-form" action="{{ route('desk-officer.quarterly-reports.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:items-start gap-3">
             @if(request()->filled('type'))
                 <input type="hidden" name="type" value="{{ request('type') }}">
             @endif
-            <div class="min-w-0">
-                <label for="desk-quarterly-barangay-search" class="block text-sm font-medium text-gray-600 mb-1 lg:hidden">Barangay</label>
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" aria-hidden="true"></i>
-                    <input type="search" id="desk-quarterly-barangay-search" name="barangay_name" aria-label="Search Barangay" maxlength="255" placeholder="Search Barangay" autocomplete="off"
-                           value="{{ old('barangay_name', request('barangay_name')) }}"
-                           class="w-full h-10 pl-9 pr-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm">
-                </div>
-                @error('barangay_name')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
-            </div>
             <div class="min-w-0">
                 <label class="block text-sm font-medium text-gray-600 mb-1 lg:hidden">Quarter</label>
                 <select name="quarter" aria-label="Quarter" class="w-full h-10 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm">

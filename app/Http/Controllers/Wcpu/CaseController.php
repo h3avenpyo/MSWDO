@@ -168,6 +168,11 @@ class CaseController extends Controller
                 'guardian_contact' => $validated['guardian_contact'] ?? null,
                 'guardian_address' => $validated['guardian_address'] ?? null,
                 'relationship_to_victim' => $validated['relationship_to_victim'] ?? null,
+                ...(!$isDepartmentAdminReferral && !$multiroleReferral ? [
+                    'family_guardian_name' => $validated['guardian_name'] ?? null,
+                    'family_guardian_contact' => $validated['guardian_contact'] ?? null,
+                    'family_guardian_address' => $validated['guardian_address'] ?? null,
+                ] : []),
                 // Abuser fields
                 'abuser_name' => $validated['perpetrator_name'],
                 'abuser_address' => $validated['abuser_address'] ?? null,
@@ -418,6 +423,7 @@ class CaseController extends Controller
             $case->status = $validated['status'];
 
             // Keep the View Cases "Last Updated" value current for every Admin or Desk Officer update.
+            \App\Services\Wcpu\AdditionalCasePeople::updateFromRequest($request, $case);
             if (auth()->user()?->isDepartmentAdmin() || auth()->user()?->position === 'Desk Officer') {
                 $case->updated_at = Carbon::now('Asia/Manila');
             }
@@ -828,9 +834,22 @@ class CaseController extends Controller
     /**
      * Show referral form for a case
      */
+    private function caseForReferral($id): CaseModel
+    {
+        if (Auth::user()?->isBcpcAdmin() && request()->filled('source_referral')) {
+            CaseReferral::where('case_id', $id)
+                ->forRecipientDepartments(['BCPC'], true)
+                ->findOrFail(request('source_referral'));
+
+            return CaseModel::withTrashed()->where('type', 'BCPC')->findOrFail($id);
+        }
+
+        return CaseModel::findOrFail($id);
+    }
+
     public function showReferralForm($id)
     {
-        $case = CaseModel::findOrFail($id);
+        $case = $this->caseForReferral($id);
         $caseStatus = trim((string) $case->status);
         $alreadyReferred = Auth::user()?->isDepartmentAdmin()
             ? CaseReferral::withTrashed()
@@ -890,6 +909,13 @@ class CaseController extends Controller
                 unset($lockedFields['referred_by_contact']);
                 $request->merge($lockedFields);
             }
+            if (Auth::user()?->position === 'Desk Officer') {
+                $request->merge([
+                    'referred_by_name' => trim(Auth::user()->first_name . ' ' . Auth::user()->last_name),
+                    'referred_by_designation' => Auth::user()->position,
+                    'referred_by_email' => Auth::user()->email,
+                ]);
+            }
             $rules = [
                 'date_of_referral' => 'required|date',
                 'referred_by_name' => ['required', 'string', 'max:255', "regex:/^[\\p{L}\\p{M} '’-]+$/u"],
@@ -919,7 +945,7 @@ class CaseController extends Controller
 
             $validated = $request->validate($rules);
 
-            $case = CaseModel::findOrFail($id);
+            $case = $this->caseForReferral($id);
             $caseStatus = trim((string) $case->status);
             $alreadyReferred = $isDepartmentAdminReferral
                 ? CaseReferral::withTrashed()
@@ -1007,7 +1033,10 @@ class CaseController extends Controller
             \Log::info('Referral created successfully', ['referral_id' => $referral->id]);
 
             // Update case status
-            $case->update(['status' => 'Case Referred']);
+            $case->update([
+                'status' => 'Case Referred',
+                ...(Auth::user()?->position === 'Desk Officer' ? ['updated_at' => Carbon::now('Asia/Manila')] : []),
+            ]);
             session()->forget('referral_restriction');
             session()->flash('referral_success', true);
 
@@ -1034,6 +1063,7 @@ class CaseController extends Controller
             
             try {
                 \Log::info('Generating PDF for referral email');
+                $referral->setRelation('case', $case);
                 
                 // Check if view exists
                 if (!\View::exists('admin-tailwind.referrals.print')) {

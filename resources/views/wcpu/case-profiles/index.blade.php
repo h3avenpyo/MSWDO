@@ -3,6 +3,7 @@
 @section('title', 'Victim and Perpetrator Profiles')
 
 @php
+    $hasGuardianNavigation = auth()->user()?->position === 'Desk Officer' || auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin();
     $isSwdDeskOfficer = auth()->user()?->position === 'Desk Officer' && (auth()->user()?->defaultCaseDepartment() === 'VAWC' || auth()->user()?->isMultiCaseDepartment());
     $isSingleDepartmentDeskOfficer = auth()->user()?->position === 'Desk Officer'
         && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true)
@@ -1143,15 +1144,12 @@
                                 <td class="px-5 py-4 break-words">{{ ($isVictim ? $person->victim_address : $person->abuser_address) ?: 'Not recorded' }}</td>
                                 <td class="px-5 py-4 align-middle text-center">
                                     @php
-                                        $guardians = $records->map(fn($case) => $isVictim
-                                            ? [$case->guardian, $case->relationship_to_victim, $case->guardian_contact, $case->guardian_address]
-                                            : [$case->guardian_abuser_name, $case->relationship_to_abuser, $case->guardian_abuser_contact, $case->guardian_abuser_address]
-                                        )->filter(fn($info) => count(array_filter($info)) > 0)->unique(fn($info) => json_encode($info));
+                                        $guardians = $profileGuardians($records, $isVictim);
                                     @endphp
                                     @if($guardians->isNotEmpty())
                                         @php $guardianDialogId = 'guardian-' . ($isVictim ? 'victim-' : 'perpetrator-') . $person->id; @endphp
                                         <div class="flex min-h-10 items-center justify-center">
-                                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-purple-700 text-white hover:bg-purple-800 text-xs font-medium shadow-xs transition" @if(auth()->user()?->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))) style="background: #2563EB !important;" @endif aria-haspopup="dialog" aria-controls="{{ $guardianDialogId }}" onclick="document.getElementById('{{ $guardianDialogId }}').showModal()">
+                                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-purple-700 text-white hover:bg-purple-800 text-xs font-medium shadow-xs transition" @if(auth()->user()?->isDepartmentAdmin() || (auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))) style="background: #2563EB !important;" @endif aria-haspopup="dialog" aria-controls="{{ $guardianDialogId }}" onclick="const d=document.getElementById('{{ $guardianDialogId }}'); if(d && !d.open){ document.body.appendChild(d); d.showModal(); }">
                                                 <i class="fas fa-eye flex h-4 w-4 shrink-0 items-center justify-center leading-none text-xs" aria-hidden="true"></i>
                                                 <span class="sr-only">View</span>
                                             </button>
@@ -1165,7 +1163,7 @@
                                                     </div>
                                                     <div>
                                                         <h3 id="{{ $guardianDialogId }}-title" class="text-base font-bold text-white leading-tight">Guardian Information</h3>
-                                                        <p class="text-xs text-purple-200 mt-0.5">{{ $isVictim ? 'Victim' : 'Perpetrator' }}: <span class="text-white font-semibold">{{ $isVictim ? $person->victim_name : $person->abuser_name }}</span></p>
+                                                        <p class="text-xs text-purple-200 mt-0.5">{{ $isVictim ? 'Victim' : 'Perpetrator' }}: <span data-guardian-person class="text-white font-semibold">{{ $guardians->first()[4] ?: ($isVictim ? $person->victim_name : $person->abuser_name) }}</span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1173,8 +1171,8 @@
                                             {{-- Modal Content --}}
                                             <div class="p-6 space-y-4 max-h-[65vh] overflow-y-auto">
                                                 @foreach($guardians as $gIndex => $info)
-                                                    <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-4">
-                                                        @if($guardians->count() > 1)
+                                                    <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-4" @if($hasGuardianNavigation) data-guardian-page data-person="{{ $info[4] }}" @if($gIndex !== 0) hidden @endif @endif>
+                                                        @if($guardians->count() > 1 && !$hasGuardianNavigation)
                                                             <div class="text-xs font-bold uppercase tracking-wider text-purple-700 mb-3 flex items-center gap-1.5">
                                                                 <i class="fas fa-id-card"></i> Guardian #{{ $gIndex + 1 }}
                                                             </div>
@@ -1203,6 +1201,11 @@
 
                                             {{-- Modal Footer --}}
                                             <div class="px-6 py-3.5 bg-gray-50 border-t border-gray-200 flex justify-end">
+                                                @if($hasGuardianNavigation && $guardians->count() > 1)
+                                                    @foreach(['Back' => -1, 'Next' => 1] as $navLabel => $navStep)
+                                                        <button type="button" data-guardian-step="{{ $navStep }}" @if($navStep === -1) hidden @endif style="margin-right:8px;" class="px-4 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold hover:bg-purple-800 transition shadow-xs disabled:opacity-40" onclick="const d=this.closest('dialog'),p=[...d.querySelectorAll('[data-guardian-page]')],n=Math.max(0,Math.min(p.length-1,Number(d.dataset.page||0)+{{ $navStep }}));d.dataset.page=n;p.forEach((e,i)=>e.hidden=i!==n);d.querySelector('[data-guardian-person]').textContent=p[n].dataset.person;d.querySelector('[data-guardian-step=\'-1\']').hidden=n===0;d.querySelector('[data-guardian-step=\'1\']').disabled=n===p.length-1;">{{ $navLabel }}</button>
+                                                    @endforeach
+                                                @endif
                                                 <button type="button" class="px-4 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold hover:bg-purple-800 transition shadow-xs" onclick="this.closest('dialog').close()">
                                                     Close
                                                 </button>
@@ -1267,10 +1270,7 @@
                     @php
                         $person = $records->first();
                         $profileAge = ($isVictim ? $person->victim_age : $person->abuser_age) ?? 'Not recorded';
-                        $guardians = $records->map(fn($case) => $isVictim
-                            ? [$case->guardian, $case->relationship_to_victim, $case->guardian_contact, $case->guardian_address]
-                            : [$case->guardian_abuser_name, $case->relationship_to_abuser, $case->guardian_abuser_contact, $case->guardian_abuser_address]
-                        )->filter(fn($info) => count(array_filter($info)) > 0)->unique(fn($info) => json_encode($info));
+                        $guardians = $profileGuardians($records, $isVictim);
                         $guardianDialogId = 'guardian-' . ($isVictim ? 'victim-' : 'perpetrator-') . $person->id;
                     @endphp
                     <article class="case-profile-card bg-white rounded-xl border border-gray-200 shadow-sm w-full max-w-full min-w-0 box-border overflow-hidden p-4" data-profile-age="{{ $profileAge }}">
@@ -1316,6 +1316,44 @@
 <style>
     .guardian-dialog { margin: auto; max-width: min(32rem, calc(100vw - 2rem)); max-height: 85vh; overflow-y: auto; }
     .guardian-dialog::backdrop { background: rgba(0, 0, 0, .5); }
+    @if($hasGuardianNavigation)
+    body.portal-ui dialog.guardian-dialog[open] {
+        position: fixed !important;
+        inset: 0 !important;
+        margin: auto !important;
+        display: block !important;
+        height: fit-content !important;
+        max-height: calc(100dvh - 32px) !important;
+        overflow-y: auto !important;
+    }
+    body.portal-ui dialog.guardian-dialog :is([data-guardian-page], [data-guardian-step])[hidden] { display: none !important; }
+    body.portal-ui dialog.guardian-dialog > div:last-child > button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 77px !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        padding: 8px 20px !important;
+        box-sizing: border-box;
+        line-height: 20px !important;
+    }
+    @media (max-width: 47.9375rem) {
+        body.portal-ui dialog.guardian-dialog > div:last-child {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            gap: 8px !important;
+        }
+        body.portal-ui dialog.guardian-dialog > div:last-child > button {
+            flex: 1 1 0 !important;
+            width: 0 !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+            padding-inline: 8px !important;
+        }
+    }
+    @endif
+
 </style>
 @if(auth()->user()?->defaultCaseDepartment() === 'BCPC' || (auth()->user()?->position === 'Desk Officer' && auth()->user()?->defaultCaseDepartment() === 'VAWC'))
 @push('scripts')

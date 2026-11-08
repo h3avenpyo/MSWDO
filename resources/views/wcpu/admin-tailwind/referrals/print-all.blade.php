@@ -1,4 +1,4 @@
-@php $isBcpcReferralRegistry = strtoupper((string) ((auth()->user()?->isDepartmentAdmin() ? auth()->user()->defaultCaseDepartment() : null) ?? $referrals->first()?->case?->type ?? $department ?? auth()->user()?->defaultCaseDepartment() ?? (auth()->user()?->isBcpcAdmin() ? 'BCPC' : 'VAWC'))) === 'BCPC'; @endphp
+@php $isBcpcReferralRegistry = strtoupper((string) ((auth()->user()?->isDepartmentAdmin() ? auth()->user()->defaultCaseDepartment() : null) ?? $department ?? $referrals->first()?->case?->type ?? auth()->user()?->defaultCaseDepartment() ?? (auth()->user()?->isBcpcAdmin() ? 'BCPC' : 'VAWC'))) === 'BCPC'; @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -195,7 +195,13 @@
         </tr>
     </table>
 
-    <div class="report-meta">Referral Registry | Generated {{ now()->format('F d, Y') }} | Total Referrals: {{ $referrals->count() }}</div>
+    @php
+        $registryTotal = $referrals->count();
+        if (auth()->user()?->position === 'Desk Officer' || auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) {
+            $registryTotal = $referrals->sum(fn ($referral) => 1 + count($referral->case?->bcpc_data['additional_victims'] ?? []));
+        }
+    @endphp
+    <div class="report-meta">Referral Registry | Generated {{ now()->format('F d, Y') }} | Total Referrals: {{ $registryTotal }}</div>
 
     @if($referrals->count())
         <table class="referrals-table">
@@ -216,10 +222,18 @@
             </thead>
             <tbody>
                 @foreach($referrals as $referral)
+                    @php
+                        $registryClients = collect([['name' => $referral->client_name, 'age' => $referral->client_age, 'sex' => $referral->client_sex]]);
+                        if (auth()->user()?->position === 'Desk Officer' || auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) {
+                            foreach ($referral->case?->bcpc_data['additional_victims'] ?? [] as $extraClient) {
+                                $registryClients->push(['name' => $extraClient['victim_name'] ?? '', 'age' => $extraClient['victim_age'] ?? '', 'sex' => $extraClient['victim_gender'] ?? '']);
+                            }
+                        }
+                    @endphp
                     <tr>
-                        <td>{{ $referral->client_name }}</td>
-                        <td class="center">{{ $referral->client_age }}</td>
-                        <td class="center sex-column">{{ $referral->client_sex }}</td>
+                        <td>@foreach($registryClients as $registryClient)<div>{{ $registryClient['name'] }}</div>@endforeach</td>
+                        <td class="center">@foreach($registryClients as $registryClient)<div>{{ $registryClient['age'] !== '' && $registryClient['age'] !== null ? $registryClient['age'] : 'N/A' }}</div>@endforeach</td>
+                        <td class="center sex-column">@foreach($registryClients as $registryClient)<div>{{ $registryClient['sex'] ?: 'N/A' }}</div>@endforeach</td>
                         <td>{{ $referral->specific_services_requested }}</td>
                         <td>{{ $referral->recipient_name }}</td>
                         <td>{{ $referral->referred_by_name }}</td>

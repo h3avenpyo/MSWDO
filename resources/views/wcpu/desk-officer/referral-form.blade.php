@@ -128,6 +128,7 @@
                     </div>
                 </div>
 
+                @include('desk-officer._additional-case-people-referral', ['case' => $case])
                 <div class="border-t pt-6">
                     <div class="space-y-4">
                         <div>

@@ -656,7 +656,7 @@
             </div>
             <p class="mt-3 text-xs text-gray-500">Filters apply to Total Cases, Active Users, Filed Cases, Today's Cases, and Referred Cases. Quarter and year use Date Reported for cases and account creation date for active users.</p>
             <div id="admin-dashboard-filter-actions" class="mt-4 flex justify-end gap-2">
-                <a href="{{ route('admin-dashboard') }}" style="border-radius:8px !important;" class="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700">Reset</a>
+                <a href="{{ route('admin-dashboard') }}" data-icon-action="labelled" style="border-radius:8px !important;" class="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700">Reset</a>
                 <button type="submit" style="border-radius:8px !important;" class="rounded-lg bg-[#C41E3A] px-4 py-2 text-sm font-medium text-white">Apply Filter</button>
             </div>
         </form>

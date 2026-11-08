@@ -750,6 +750,7 @@
     
 
     <!-- Incident Details -->
+    @include('desk-officer._additional-case-people', ['case' => $case, 'additionalPeopleFullPage' => true])
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
             <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">

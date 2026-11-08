@@ -100,7 +100,12 @@
             event.stopPropagation();
             if (!isCase && new URL(link.href).searchParams.has('case_records_page')) load(link.href);
         };
-        await load(view.href);
+        const previewUrl = new URL(view.href, window.location.href);
+        if (view.dataset.swdArchiveView === 'report') {
+            previewUrl.searchParams.set('archive_report_preview', '1');
+            previewUrl.searchParams.delete('case_records_page');
+        }
+        await load(previewUrl.href);
     }, true);
 })();
 </script>

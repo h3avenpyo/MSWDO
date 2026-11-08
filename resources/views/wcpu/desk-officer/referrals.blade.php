@@ -1,5 +1,23 @@
 {{-- filepath: c:\Users\USER\WCPU_WEB\resources\views\desk-officer\referrals.blade.php --}}
 @extends('layouts.desk-officer')
+@push('styles')
+<script>
+(() => {
+    const desktop = window.matchMedia('(min-width: 85.4375rem)');
+    const sync = () => {
+        const url = new URL(location.href);
+        if (url.searchParams.has('desktop_referrals') === desktop.matches) return;
+        if (desktop.matches) url.searchParams.set('desktop_referrals', '1');
+        else url.searchParams.delete('desktop_referrals');
+        ['page', 'bcpc_page', 'vawc_page'].forEach(key => url.searchParams.delete(key));
+        location.replace(url.href);
+    };
+    desktop.addEventListener('change', sync);
+    sync();
+})();
+</script>
+@endpush
+
 
 @section('content')
 @php

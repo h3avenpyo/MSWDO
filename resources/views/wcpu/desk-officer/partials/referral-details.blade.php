@@ -13,6 +13,7 @@
             <div class="min-w-0 rounded-lg border border-gray-100 bg-gray-50 p-3"><dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Sex</dt><dd class="mt-1 break-words text-sm text-gray-900">{{ $referral->client_sex ?: '—' }}</dd></div>
         </dl>
     </section>
+    @include('desk-officer.partials.referral-additional-people')
     <section class="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <h3 class="border-b border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-800">Referral Information</h3>
         <dl class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
@@ -57,6 +58,7 @@
             <label class="form-label font-medium text-gray-700">Sex</label>
             <input type="text" class="form-control" name="client_sex" value="{{ $referral->client_sex }}" readonly>
         </div></div></section>
+@include('desk-officer.partials.referral-additional-people')
 <section class="referral-detail-section"><h3>Referral Information</h3><div class="referral-detail-grid"><div class="referral-detail-field referral-detail-wide">
             <label class="form-label font-medium text-gray-700">Service/s Needed</label>
             <textarea class="form-control" name="specific_services_requested" rows="3" readonly>{{ $referral->specific_services_requested }}</textarea>

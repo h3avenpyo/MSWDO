@@ -3,6 +3,25 @@
 @section('title', 'Archived Barangay Cases')
 
 @push('styles')
+<script>
+(() => {
+    const tablet = window.matchMedia('(min-width: 48rem) and (max-width: 85.375rem)');
+    const desktop = window.matchMedia('(min-width: 85.4375rem)');
+    const sync = () => {
+        const url = new URL(location.href);
+        if (url.searchParams.has('tablet_archived_cases') === tablet.matches && url.searchParams.has('desktop_archived_cases') === desktop.matches) return;
+        if (tablet.matches) url.searchParams.set('tablet_archived_cases', '1');
+        else url.searchParams.delete('tablet_archived_cases');
+        if (desktop.matches) url.searchParams.set('desktop_archived_cases', '1');
+        else url.searchParams.delete('desktop_archived_cases');
+        ['page', 'bcpc_page', 'vawc_page'].forEach(key => url.searchParams.delete(key));
+        location.replace(url.href);
+    };
+    tablet.addEventListener('change', sync);
+    desktop.addEventListener('change', sync);
+    sync();
+})();
+</script>
 <style>
     .archived-barangay-cases-page table tbody :is(a, button) {
         background-color: #C41E3A !important;
@@ -420,6 +439,8 @@ BCPC cases'])
                 @endif
             </div>
         </div>
+    @if(request()->boolean('desktop_archived_cases'))<input type="hidden" name="desktop_archived_cases" value="1">@endif
+    @if(request()->boolean('tablet_archived_cases'))<input type="hidden" name="tablet_archived_cases" value="1">@endif
     </form>
 
     @foreach($caseGroups as $department => $cases)
@@ -460,7 +481,7 @@ BCPC cases'])
                                     <i class="fas fa-eye" aria-hidden="true"></i><span class="sr-only">View</span>
                                 </a>
                                 <form method="POST"
-                                    action="{{ route('desk-officer.archived-barangay-cases.restore', $case->id) }}"
+                                    action="{{ route('desk-officer.archived-barangay-cases.restore', array_merge(['id' => $case->id], request()->only(['desktop_archived_cases', 'tablet_archived_cases']))) }}"
                                     class="restore-case-form" data-case-number="{{ $case->case_number }}">
                                     @csrf
                                     <button @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @endif type="submit" title="Restore Case"
@@ -519,7 +540,7 @@ BCPC cases'])
                     <a @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #2563EB !important; border-color: #2563EB !important; color: #fff !important;" @endif href="{{ ($department ?? 'VAWC') === 'BCPC' ? route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'archived' => 1]) : route('cases.show', ['id' => $case->id, 'archived' => 1]) }}"
                         title="View Case" class="rounded-lg bg-[#C41E3A] text-white"><i class="fas fa-eye"></i><span
                             class="sr-only">View</span></a>
-                    <form method="POST" action="{{ route('desk-officer.archived-barangay-cases.restore', $case->id) }}"
+                    <form method="POST" action="{{ route('desk-officer.archived-barangay-cases.restore', array_merge(['id' => $case->id], request()->only(['desktop_archived_cases', 'tablet_archived_cases']))) }}"
                         class="restore-case-form" data-case-number="{{ $case->case_number }}">@csrf<button @if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) style="background: #059669 !important; border-color: #059669 !important; color: #fff !important;" @endif type="submit"
                             title="Restore Case" class="rounded-lg bg-[#C41E3A] text-white"><i
                                 class="fas fa-undo"></i><span class="sr-only">Restore</span></button></form>
