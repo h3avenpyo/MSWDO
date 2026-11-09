@@ -1,5 +1,13 @@
 /* Beneficiary Intake Details & Print Styles */
 
+.intake-section-icon {
+    color: #b11116;
+}
+
+.intake-client-type-badge {
+    background-color: #b11116;
+}
+
 .detail-card {
     background: #ffffff;
     border-radius: 12px;
@@ -34,8 +42,8 @@
 }
 
 .badge-status {
-    background-color: #EEF2FF;
-    color: #1A237E;
+    background-color: #FEF2F2;
+    color: #b11116;
     padding: 0.4rem 0.85rem;
     border-radius: 20px;
     font-weight: 700;

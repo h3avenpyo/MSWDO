@@ -4,7 +4,7 @@
 @section('page-title', 'Financial Assistance Module')
 
 @section('page-styles')
-<link href="{{ asset('css/financialstep1statistics.css') }}" rel="stylesheet">
+<link href="{{ asset('css/financialstep1statistics.css') }}?v={{ filemtime(public_path('css/financialstep1statistics.css')) }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -322,7 +322,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                     </td>
                     <td class="report-meta-cell" style="width: 35%;">
                         <div class="report-meta-title">Period Covered:</div>
-                        <div class="report-meta-val" style="font-weight: 800; color: #1A237E;">
+                        <div class="report-meta-val" style="font-weight: 800; color: #b11116;">
                             @if($isAll)
                             All Records / Overall Historical Data
                             @else
@@ -332,7 +332,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                     </td>
                     <td class="report-meta-cell" style="width: 20%;">
                         <div class="report-meta-title">Total Intake Cases:</div>
-                        <div class="report-meta-val" style="font-weight: 800; color: #1A237E;">{{
+                        <div class="report-meta-val" style="font-weight: 800; color: #b11116;">{{
                             number_format($totalIntakes) }} Cases</div>
                     </td>
                     <td class="report-meta-cell text-end" style="width: 20%;">
@@ -727,5 +727,5 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
 </script>
 
 <!-- External Module Script -->
-<script src="{{ asset('js/financialstep1statistics.js') }}"></script>
+<script src="{{ asset('js/financialstep1statistics.js') }}?v={{ filemtime(public_path('js/financialstep1statistics.js')) }}"></script>
 @endsection

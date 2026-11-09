@@ -123,8 +123,8 @@
 
 .filter-card .form-control-sm:focus,
 .filter-card .form-select-sm:focus {
-    border-color: #1A237E;
-    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.12);
+    border-color: #b11116;
+    box-shadow: 0 0 0 2px rgba(177, 17, 22, 0.12);
 }
 
 .filter-actions-group {
@@ -227,7 +227,7 @@
 }
 
 .text-brand-color {
-    color: #1A237E !important;
+    color: #b11116 !important;
 }
 
 .font-text-xs {
@@ -425,8 +425,8 @@
 
 #smsMessageBody:focus,
 #smsRecipientNumber:focus {
-    border-color: #1A237E !important;
-    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.12) !important;
+    border-color: #b11116 !important;
+    box-shadow: 0 0 0 2px rgba(177, 17, 22, 0.12) !important;
 }
 
 /* ============================================================

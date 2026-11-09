@@ -21,8 +21,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #1A237E;
-    background-color: #EEF2FF;
+    color: #b11116;
+    background-color: #FEF2F2;
     padding: 0.35rem 0.75rem;
     border-radius: 6px;
     display: inline-block;
@@ -52,8 +52,8 @@
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #1A237E;
-    box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.15);
+    border-color: #b11116;
+    box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.15);
 }
 
 .form-control[readonly] {

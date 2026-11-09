@@ -71,30 +71,14 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
-.stat-metric-card {
-    background: #FFFFFF;
-    border: 1px solid var(--color-border-subtle);
-    border-radius: 14px;
-    padding: 16px 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+.liquidation-summary-icon {
+    width: 48px;
+    height: 48px;
 }
 
-.stat-metric-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-.stat-metric-card.card-remaining {
-    border-left: 4px solid var(--color-warning) !important;
-    background: linear-gradient(135deg, #FFFDF5 0%, #FFFFFF 100%);
-}
-
-.stat-metric-card.card-claimed {
-    border-left: 4px solid var(--color-success) !important;
-}
-
-.stat-metric-card.card-allocated {
-    border-left: 4px solid var(--color-brand) !important;
+.liquidation-summary-details {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .payroll-liquidation-card {
@@ -173,13 +157,6 @@
     }
     .liquidation-hero-banner h2 {
         font-size: 1.15rem;
-    }
-    .stat-metric-card {
-        padding: 12px 14px;
-        border-radius: 10px;
-    }
-    .stat-metric-card h3 {
-        font-size: 1.3rem;
     }
     .filter-card {
         padding: 10px 14px;

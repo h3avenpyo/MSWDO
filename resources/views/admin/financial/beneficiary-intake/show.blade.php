@@ -4,7 +4,7 @@
 @section('page-title', 'General Intake Sheet Overview')
 
 @section('page-styles')
-<link href="{{ asset('css/beneficiary-intake/show.css') }}" rel="stylesheet">
+<link href="{{ asset('css/beneficiary-intake/show.css') }}?v={{ filemtime(public_path('css/beneficiary-intake/show.css')) }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -65,7 +65,7 @@
             <div class="row g-4">
                 <div class="col-md-2">
                     <div class="info-label">Client Type</div>
-                    <div class="info-value"><span class="badge bg-primary text-white px-3 py-1 rounded-pill">{{
+                    <div class="info-value"><span class="badge intake-client-type-badge text-white px-3 py-1 rounded-pill">{{
                             $intake->client_type ?? 'New' }}</span></div>
                 </div>
                 <div class="col-md-3">
@@ -91,7 +91,7 @@
     <div class="detail-card">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-4 pb-2 border-bottom text-dark">
-                <i class="fas fa-user me-2 text-primary"></i> IMPORMASYON NG BENEPISYARYO <span
+                <i class="fas fa-user me-2 intake-section-icon"></i> IMPORMASYON NG BENEPISYARYO <span
                     class="text-muted fs-6">(Beneficiary Info)</span>
             </h5>
 
@@ -143,7 +143,7 @@
     <div class="detail-card">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-4 pb-2 border-bottom text-dark">
-                <i class="fas fa-user-friends me-2 text-primary"></i> IMPORMASYON NG KINATAWAN <span
+                <i class="fas fa-user-friends me-2 intake-section-icon"></i> IMPORMASYON NG KINATAWAN <span
                     class="text-muted fs-6">(Representative Info)</span>
             </h5>
 
@@ -196,7 +196,7 @@
     <div class="detail-card">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-4 pb-2 border-bottom text-dark">
-                <i class="fas fa-list-check me-2 text-primary"></i> DSWD CATEGORY &amp; SOCIAL WORKER ASSESSMENT
+                <i class="fas fa-list-check me-2 intake-section-icon"></i> DSWD CATEGORY &amp; SOCIAL WORKER ASSESSMENT
             </h5>
 
             <div class="row g-4 mb-4">
@@ -230,7 +230,7 @@
     <div class="detail-card">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-3 pb-2 border-bottom text-dark">
-                <i class="fas fa-users me-2 text-primary"></i> KOMPOSISYON NG PAMILYA <span
+                <i class="fas fa-users me-2 intake-section-icon"></i> KOMPOSISYON NG PAMILYA <span
                     class="text-muted fs-6">(Family Composition)</span>
             </h5>
 
@@ -269,7 +269,7 @@
     <div class="detail-card">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-3 pb-2 border-bottom text-dark">
-                <i class="fas fa-hand-holding-heart me-2 text-primary"></i> ASSISTANCE PURPOSE / MEDICAL CONDITION &amp;
+                <i class="fas fa-hand-holding-heart me-2 intake-section-icon"></i> ASSISTANCE PURPOSE / MEDICAL CONDITION &amp;
                 INTERVIEW DETAILS
             </h5>
 

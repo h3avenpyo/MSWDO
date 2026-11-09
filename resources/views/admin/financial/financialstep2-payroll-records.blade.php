@@ -4,7 +4,7 @@
 @section('page-title', 'Step 2: Payroll Records')
 
 @section('page-styles')
-<link href="{{ asset('css/financialstep2-payroll-records.css') }}" rel="stylesheet">
+<link href="{{ asset('css/financialstep2-payroll-records.css') }}?v={{ filemtime(public_path('css/financialstep2-payroll-records.css')) }}" rel="stylesheet">
 <style>
     @media (max-width: 575.98px) {
 
@@ -931,8 +931,8 @@
 <script
     src="{{ asset('js/financialstep2-payroll-records.js') }}?v={{ file_exists(public_path('js/financialstep2-payroll-records.js')) ? filemtime(public_path('js/financialstep2-payroll-records.js')) : time() }}">
 </script>
-<script src="{{ asset('js/financialstep2-sms.js') }}"></script>
-<script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}"></script>
+<script src="{{ asset('js/financialstep2-sms.js') }}?v={{ filemtime(public_path('js/financialstep2-sms.js')) }}"></script>
+<script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}?v={{ filemtime(public_path('js/financialstep2-monthly-unclaimed.js')) }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     // Automatic filtering for payroll records
@@ -1008,7 +1008,7 @@
                     maxlength: '500'
                 },
                 showCancelButton: true,
-                confirmButtonColor: '#DC2626',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#6B7280',
                 confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
                 cancelButtonText: 'Kanselahin',

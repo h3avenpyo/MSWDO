@@ -4,7 +4,7 @@
 @section('page-title', 'Step 2: Monthly Payroll Liquidation')
 
 @section('page-styles')
-<link href="{{ asset('css/financialstep2-liquidation.css') }}" rel="stylesheet">
+<link href="{{ asset('css/financialstep2-liquidation.css') }}?v={{ filemtime(public_path('css/financialstep2-liquidation.css')) }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -51,72 +51,80 @@
     <!-- Quick Summary Metric Cards (Global Overview) -->
     <div class="row g-3 mb-4">
         <!-- Total Allocated Amount -->
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card card-allocated d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-primary-subtle text-primary">
-                    <i class="fas fa-coins fs-4"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <div class="text-muted small fw-semibold text-uppercase">Total Allocated Funds</div>
-                    <h4 class="fw-bold mb-0 text-dark" id="global-total-allocated"
-                        data-raw-amount="{{ $globalTotalAllocated }}">{{ $formattedGlobalAllocated }}</h4>
-                    <div class="text-muted text-2xs mt-0.5">
-                        Across {{ $totalMonthsCount }} {{ Str::plural('month', $totalMonthsCount) }} ({{
-                        $globalTotalBeneficiaries }} clients)
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100 liquidation-summary-card">
+                <div class="d-flex align-items-center justify-content-between gap-3 h-100">
+                    <div class="liquidation-summary-details flex-grow-1">
+                        <div class="text-muted small fw-bold mb-1 text-uppercase">Total Allocated Funds</div>
+                        <h4 class="fw-bold mb-0 text-dark" id="global-total-allocated"
+                            data-raw-amount="{{ $globalTotalAllocated }}">{{ $formattedGlobalAllocated }}</h4>
+                        <div class="text-muted text-2xs mt-0.5">
+                            Across {{ $totalMonthsCount }} {{ Str::plural('month', $totalMonthsCount) }} ({{
+                            $globalTotalBeneficiaries }} clients)
+                        </div>
+                    </div>
+                    <div class="liquidation-summary-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 bg-primary-subtle text-primary">
+                        <i class="fas fa-coins fa-lg"></i>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Total Claimed / Disbursed Amount -->
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card card-claimed d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-success-subtle text-success">
-                    <i class="fas fa-check-circle fs-4"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <div class="text-muted small fw-semibold text-uppercase">Total Claimed Amount</div>
-                    <h4 class="fw-bold mb-0 text-success" id="global-total-claimed"
-                        data-raw-amount="{{ $globalTotalClaimed }}">{{ $formattedGlobalClaimed }}</h4>
-                    <div class="text-muted text-2xs mt-0.5">
-                        <span id="global-claimed-count">{{ $globalClaimedCount }}</span> {{ Str::plural('beneficiary',
-                        $globalClaimedCount) }} released
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100 liquidation-summary-card">
+                <div class="d-flex align-items-center justify-content-between gap-3 h-100">
+                    <div class="liquidation-summary-details flex-grow-1">
+                        <div class="text-muted small fw-bold mb-1 text-uppercase">Total Claimed Amount</div>
+                        <h4 class="fw-bold mb-0 text-success" id="global-total-claimed"
+                            data-raw-amount="{{ $globalTotalClaimed }}">{{ $formattedGlobalClaimed }}</h4>
+                        <div class="text-muted text-2xs mt-0.5">
+                            <span id="global-claimed-count">{{ $globalClaimedCount }}</span> {{ Str::plural('beneficiary',
+                            $globalClaimedCount) }} released
+                        </div>
+                    </div>
+                    <div class="liquidation-summary-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 bg-success-subtle text-success">
+                        <i class="fas fa-check-circle fa-lg"></i>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Total Unclaimed Amount -->
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card card-remaining d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-warning-subtle text-warning">
-                    <i class="fas fa-clock fs-4"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <div class="text-muted small fw-semibold text-uppercase">Total Unclaimed Amount</div>
-                    <h4 class="fw-bold mb-0 text-warning-emphasis" id="global-total-unclaimed"
-                        data-raw-amount="{{ $globalTotalUnclaimed }}">{{ $formattedGlobalUnclaimed }}</h4>
-                    <div class="text-muted text-2xs mt-0.5">
-                        <span id="global-unclaimed-count">{{ $globalUnclaimedCount }}</span> {{
-                        Str::plural('beneficiary', $globalUnclaimedCount) }} pending
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100 liquidation-summary-card">
+                <div class="d-flex align-items-center justify-content-between gap-3 h-100">
+                    <div class="liquidation-summary-details flex-grow-1">
+                        <div class="text-muted small fw-bold mb-1 text-uppercase">Total Unclaimed Amount</div>
+                        <h4 class="fw-bold mb-0 text-warning-emphasis" id="global-total-unclaimed"
+                            data-raw-amount="{{ $globalTotalUnclaimed }}">{{ $formattedGlobalUnclaimed }}</h4>
+                        <div class="text-muted text-2xs mt-0.5">
+                            <span id="global-unclaimed-count">{{ $globalUnclaimedCount }}</span> {{
+                            Str::plural('beneficiary', $globalUnclaimedCount) }} pending
+                        </div>
+                    </div>
+                    <div class="liquidation-summary-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 bg-warning-subtle text-warning">
+                        <i class="fas fa-clock fa-lg"></i>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Remaining Balance -->
-        <div class="col-sm-6 col-lg-3">
-            <div class="stat-metric-card card-remaining d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle bg-warning-subtle text-warning-emphasis">
-                    <i class="fas fa-wallet fs-4"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <div class="text-muted small fw-semibold text-uppercase">Remaining Balance</div>
-                    <h4 class="fw-bold mb-0 text-dark" id="global-remaining-balance"
-                        data-raw-amount="{{ $globalRemainingBalance }}">{{ $formattedGlobalRemaining }}</h4>
-                    <div class="text-muted text-2xs mt-0.5">
-                        Rate: <strong class="text-success" id="global-liquidation-rate">{{ $globalLiquidationRate
-                            }}%</strong> liquidated
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-xs rounded-4 p-3 bg-white h-100 liquidation-summary-card">
+                <div class="d-flex align-items-center justify-content-between gap-3 h-100">
+                    <div class="liquidation-summary-details flex-grow-1">
+                        <div class="text-muted small fw-bold mb-1 text-uppercase">Remaining Balance</div>
+                        <h4 class="fw-bold mb-0 text-dark" id="global-remaining-balance"
+                            data-raw-amount="{{ $globalRemainingBalance }}">{{ $formattedGlobalRemaining }}</h4>
+                        <div class="text-muted text-2xs mt-0.5">
+                            Rate: <strong class="text-success" id="global-liquidation-rate">{{ $globalLiquidationRate
+                                }}%</strong> liquidated
+                        </div>
+                    </div>
+                    <div class="liquidation-summary-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 bg-warning-subtle text-warning-emphasis">
+                        <i class="fas fa-wallet fa-lg"></i>
                     </div>
                 </div>
             </div>

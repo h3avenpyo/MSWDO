@@ -1,7 +1,7 @@
 @extends('layouts.financial')
 
-@section('title', 'Financial Assistance: Step 1 - MSWDO Admin')
-@section('page-title', 'Financial Assistance Module')
+@section('title', 'Financial Assistance Step 1 - MSWDO Admin')
+@section('page-title', 'Financial Assistance Step 1')
 
 @section('content')
 @php
@@ -89,7 +89,7 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
             <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">
-                <span><i class="fas fa-clipboard-list me-2"></i>General Intake Form &amp; Assessment (Step 1)</span>
+                <span><i class="fas fa-clipboard-list me-2"></i>Financial Assistance Step 1</span>
                 <span class="badge step-1-badge rounded-pill px-2.5 py-1">Step 1</span>
             </h2>
             <p class="mb-0 hero-subtitle">Collect beneficiary identifying information, documentary requirements, and
@@ -289,7 +289,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                     maxlength: '500'
                 },
                 showCancelButton: true,
-                confirmButtonColor: '#DC2626',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#6B7280',
                 confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
                 cancelButtonText: 'Kanselahin',

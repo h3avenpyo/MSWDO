@@ -632,7 +632,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                     </td>
                     <td class="report-meta-cell" style="width: 28%;">
                         <div class="report-meta-title">Period Covered:</div>
-                        <div class="report-meta-val" style="font-weight: 800; color: #1A237E;">
+                        <div class="report-meta-val" style="font-weight: 800; color: #b11116;">
                             @if($isAll)
                             All Records / Overall Historical Data
                             @else
@@ -647,7 +647,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
                     </td>
                     <td class="report-meta-cell text-end" style="width: 25%;">
                         <div class="report-meta-title">Total Beneficiaries:</div>
-                        <div class="report-meta-val" style="font-weight: 800; color: #1A237E;">{{
+                        <div class="report-meta-val" style="font-weight: 800; color: #b11116;">{{
                             number_format($totalBeneficiaries) }} Recipients</div>
                     </td>
                 </tr>
@@ -1133,5 +1133,5 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
 </script>
 
 <!-- Step 2 Statistics Script -->
-<script src="{{ asset('js/financialstep2-statistics.js') }}"></script>
+<script src="{{ asset('js/financialstep2-statistics.js') }}?v={{ filemtime(public_path('js/financialstep2-statistics.js')) }}"></script>
 @endsection

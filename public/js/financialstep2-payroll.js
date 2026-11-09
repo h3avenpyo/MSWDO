@@ -70,7 +70,7 @@ function saveSingleAmount(intakeId) {
                 icon: 'warning',
                 title: 'Invalid Amount',
                 text: 'Please enter a valid non-negative financial assistance amount.',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#b11116'
             });
         }
         return;
@@ -147,7 +147,7 @@ function saveSingleAmount(intakeId) {
                     icon: 'error',
                     title: 'Error Saving Amount',
                     text: data.message || 'Could not save financial assistance amount.',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#b11116'
                 });
             }
         }
@@ -163,7 +163,7 @@ function saveSingleAmount(intakeId) {
                 icon: 'error',
                 title: 'Connection Error',
                 text: 'An error occurred while saving the amount. Please try again.',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#b11116'
             });
         }
     });
@@ -241,7 +241,7 @@ function handleGeneratePayrollClick() {
                 icon: 'info',
                 title: 'No Pending Intakes',
                 text: 'There are no pending intake records to generate a payroll for this date. All intakes may have already been generated.',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#b11116'
             });
         }
         return;
@@ -255,7 +255,7 @@ function handleGeneratePayrollClick() {
                 icon: 'warning',
                 title: 'Unencoded Amounts Detected',
                 text: 'Please encode and save the financial assistance amount for all ' + pendingIntakesCount + ' remaining intake(s) before generating the official payroll.',
-                confirmButtonColor: '#1A237E'
+                confirmButtonColor: '#b11116'
             });
         }
         return;
@@ -270,7 +270,7 @@ function handleGeneratePayrollClick() {
                   '</div>',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#1A237E',
+            confirmButtonColor: '#b11116',
             cancelButtonColor: '#64748B',
             confirmButtonText: '<i class="fas fa-check-circle me-1"></i> Generate Payroll',
             cancelButtonText: 'Review First'
@@ -304,7 +304,7 @@ function handleGeneratePayrollClick() {
                             icon: 'success',
                             title: 'Payroll Successfully Generated!',
                             text: data.message || 'Intakes have been processed and moved to Payroll Records.',
-                            confirmButtonColor: '#1A237E',
+                            confirmButtonColor: '#b11116',
                             confirmButtonText: '<i class="fas fa-arrow-right me-1"></i> View All Generated Payrolls'
                         }).then(() => {
                             window.location.href = data.redirect_url || config.payrollRecordsUrl;
@@ -314,7 +314,7 @@ function handleGeneratePayrollClick() {
                             icon: 'error',
                             title: 'Generation Error',
                             text: data.message || 'Failed to generate payroll. Please try again.',
-                            confirmButtonColor: '#1A237E'
+                            confirmButtonColor: '#b11116'
                         });
                     }
                 })
@@ -324,7 +324,7 @@ function handleGeneratePayrollClick() {
                         icon: 'error',
                         title: 'System Error',
                         text: 'An unexpected error occurred while generating the payroll.',
-                        confirmButtonColor: '#1A237E'
+                        confirmButtonColor: '#b11116'
                     });
                 });
             }

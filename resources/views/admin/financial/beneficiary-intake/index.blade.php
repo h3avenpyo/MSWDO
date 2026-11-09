@@ -4,7 +4,7 @@
 @section('page-title', 'Beneficiary Intake Masterlist')
 
 @section('page-styles')
-<link href="{{ asset('css/beneficiary-intake/index.css') }}" rel="stylesheet">
+<link href="{{ asset('css/beneficiary-intake/index.css') }}?v={{ filemtime(public_path('css/beneficiary-intake/index.css')) }}" rel="stylesheet">
 <style>
     @media (max-width: 575.98px) {
         .filter-card .row.g-3>[class*="col-"] {
@@ -322,7 +322,7 @@
 @endsection
 
 @section('page-scripts')
-<script src="{{ asset('js/beneficiary-intake/index.js') }}"></script>
+<script src="{{ asset('js/beneficiary-intake/index.js') }}?v={{ filemtime(public_path('js/beneficiary-intake/index.js')) }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     // Smooth Transmittal Report Generation & Window Management
@@ -359,7 +359,7 @@
                 input: 'text',
                 inputPlaceholder: 'Reason for archiving (optional)',
                 showCancelButton: true,
-                confirmButtonColor: '#DC2626',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#6B7280',
                 confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
                 cancelButtonText: 'Kanselahin',

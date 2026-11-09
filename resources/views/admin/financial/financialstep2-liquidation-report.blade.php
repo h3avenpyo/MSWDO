@@ -27,7 +27,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <!-- External Liquidation Report Stylesheet -->
-    <link href="{{ asset('css/financialstep2-liquidation-report.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/financialstep2-liquidation-report.css') }}?v={{ filemtime(public_path('css/financialstep2-liquidation-report.css')) }}" rel="stylesheet">
 </head>
 
 <body>
@@ -42,7 +42,7 @@
                 </a>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <button type="button" onclick="window.print()" class="btn btn-warning fw-bold text-dark px-4 rounded-pill shadow-sm">
+                <button type="button" onclick="window.print()" class="btn btn-report-print fw-bold px-4 rounded-pill shadow-sm">
                     <i class="fas fa-print me-1"></i> Print Liquidation Report
                 </button>
             </div>

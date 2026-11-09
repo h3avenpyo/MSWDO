@@ -1,7 +1,7 @@
 @extends('layouts.financial')
 
-@section('title', 'Financial Assistance Dashboard - MSWDO Admin')
-@section('page-title', 'Financial Assistance Dashboard')
+@section('title', 'Financial Assistance Step 1 - MSWDO Admin')
+@section('page-title', 'Financial Assistance Step 1')
 
 @section('content')
 @php
@@ -12,7 +12,7 @@ $userName = session('admin_user_name') ?? 'Officer';
 <div class="step-wizard-card financial-step-header animate-fade-in mb-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
-            <h2 class="wizard-heading mb-1"><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance Dashboard</h2>
+            <h2 class="wizard-heading mb-1"><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance Step 1</h2>
             <p class="mb-0 hero-subtitle">General Intake Assessment &amp; Assistance Management System</p>
         </div>
         <div class="d-flex align-items-center">

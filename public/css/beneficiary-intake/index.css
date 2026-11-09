@@ -44,8 +44,8 @@
 }
 
 .badge-cat {
-    background-color: #EEF2FF;
-    color: #1A237E;
+    background-color: #FEF2F2;
+    color: #b11116;
     font-weight: 600;
     border-radius: 6px;
     padding: 0.35rem 0.65rem;
@@ -126,16 +126,16 @@
 }
 
 .mswdo-page-link:hover {
-    color: #1A237E;
-    background-color: #EEF2FF;
-    border-color: #C7D2FE;
+    color: #b11116;
+    background-color: #FEF2F2;
+    border-color: #FECACA;
 }
 
 .mswdo-page-item.active .mswdo-page-link {
     color: #FFFFFF !important;
-    background-color: #1A237E !important;
-    border-color: #1A237E !important;
-    box-shadow: 0 2px 4px rgba(26, 35, 126, 0.25);
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    box-shadow: 0 2px 4px rgba(177, 17, 22, 0.25);
     cursor: default;
 }
 
@@ -184,16 +184,16 @@
 }
 
 .pagination .page-item.active .page-link {
-    background-color: #1A237E !important;
-    border-color: #1A237E !important;
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
     color: #FFFFFF !important;
-    box-shadow: 0 2px 4px rgba(26, 35, 126, 0.25);
+    box-shadow: 0 2px 4px rgba(177, 17, 22, 0.25);
 }
 
 .pagination .page-item .page-link:hover:not(.active) {
-    background-color: #EEF2FF;
-    color: #1A237E;
-    border-color: #C7D2FE;
+    background-color: #FEF2F2;
+    color: #b11116;
+    border-color: #FECACA;
 }
 
 .pagination .page-item.disabled .page-link {

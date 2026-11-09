@@ -243,7 +243,7 @@ function performDuplicateCheck() {
                     data.matches.forEach(match => {
                         html += `
                         <tr style="border-bottom: 1px solid #F1F5F9;">
-                            <td class="ps-3 fw-bold" style="color: #1A237E;">${match.control_number}</td>
+                            <td class="ps-3 fw-bold" style="color: #b11116;">${match.control_number}</td>
                             <td class="text-secondary">${match.date_processed}</td>
                             <td>
                                 <span class="px-2.5 py-0.5 rounded-pill fw-semibold" style="background: #FEF2F2; border: 1px solid #F87171; color: #991B1B; font-size: 0.75rem;">
@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             icon: 'warning',
                             title: 'Invalid Contact Number',
                             text: 'Beneficiary contact number must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).',
-                            confirmButtonColor: '#1A237E'
+                            confirmButtonColor: '#b11116'
                         });
                     } else {
                         alert('Beneficiary contact number must be strictly 11 digits starting with 09.');
@@ -551,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             icon: 'warning',
                             title: 'Invalid Representative Contact',
                             text: 'Representative contact number must be strictly 11 digits starting with 09 (e.g., 09XXXXXXXXX).',
-                            confirmButtonColor: '#1A237E'
+                            confirmButtonColor: '#b11116'
                         });
                     } else {
                         alert('Representative contact number must be strictly 11 digits starting with 09.');
@@ -582,7 +582,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             icon: 'warning',
                             title: 'Invalid Name',
                             text: `${item.label} must contain valid letters and cannot be purely numbers or symbols.`,
-                            confirmButtonColor: '#1A237E'
+                            confirmButtonColor: '#b11116'
                         });
                     } else {
                         alert(`${item.label} must contain valid letters.`);
@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             icon: 'warning',
                             title: 'Assistance Purpose Required',
                             text: 'Please select a valid medical condition or assistance purpose.',
-                            confirmButtonColor: '#1A237E'
+                            confirmButtonColor: '#b11116'
                         });
                     } else {
                         alert('Please select a valid medical condition or assistance purpose.');
@@ -678,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         title: 'Maling Uri ng Impormasyon',
                         html: `<div class="text-start">${firstErr.message}</div>`,
                         icon: 'warning',
-                        confirmButtonColor: '#1A237E'
+                        confirmButtonColor: '#b11116'
                     });
                 } else {
                     alert(firstErr.message);
@@ -703,7 +703,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     `,
                     icon: 'error',
-                    confirmButtonColor: '#1A237E',
+                    confirmButtonColor: '#b11116',
                     confirmButtonText: 'I Understand',
                     customClass: {
                         popup: 'rounded-4 shadow-lg'
@@ -719,8 +719,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 title: `${actionText} General Intake Sheet?`,
                 text: `Are you sure you want to ${actionText.toLowerCase()} this General Intake Sheet record?`,
                 icon: 'question',
+                iconColor: '#b11116',
                 showCancelButton: true,
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#64748B',
                 confirmButtonText: `<i class="fas fa-save me-1"></i> Yes, ${actionText} Record`,
                 cancelButtonText: 'Cancel',

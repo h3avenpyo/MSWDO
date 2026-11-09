@@ -1,0 +1,82 @@
+/* Step 1 content palette. Keep the shared sidebar and Step 2 independent. */
+/* SweetAlert dialogs are mounted under body, outside the main content. */
+.financial-step1 .swal2-container .swal2-title {
+    color: #b11116 !important;
+}
+
+.financial-step1 .swal2-container .swal2-confirm {
+    background-color: #b11116 !important;
+    border-color: #b11116 !important;
+    color: #fff !important;
+}
+
+.financial-step1 .swal2-container .swal2-confirm:hover {
+    background-color: #8e0d11 !important;
+    border-color: #8e0d11 !important;
+}
+
+.financial-step1 .swal2-container .swal2-confirm:active {
+    background-color: #7a0b0e !important;
+    border-color: #7a0b0e !important;
+}
+
+.financial-step1 .swal2-container .swal2-confirm:focus {
+    box-shadow: 0 0 0 3px rgba(177, 17, 22, 0.25) !important;
+}
+
+.financial-step1 .swal2-container .swal2-confirm:focus-visible {
+    outline: 2px solid #b11116;
+    outline-offset: 3px;
+}
+
+.financial-step1 .main-content,
+.financial-step1 .swal2-container {
+    --color-brand: #b11116;
+    --color-brand-light: #fef2f2;
+    --color-brand-dark: #8e0d11;
+    --bs-primary: #b11116;
+    --bs-primary-rgb: 177, 17, 22;
+    --bs-primary-text-emphasis: #8e0d11;
+    --bs-primary-bg-subtle: #fef2f2;
+    --bs-primary-border-subtle: #fecaca;
+    --bs-link-color: #b11116;
+    --bs-link-color-rgb: 177, 17, 22;
+    --bs-link-hover-color: #8e0d11;
+    --bs-link-hover-color-rgb: 142, 13, 17;
+}
+
+.financial-step1 .main-content :is(.btn-primary, .btn-outline-primary):not(.action-btn):not(.btn-table-action):not(.btn-send-sms):not(.btn-message-beneficiary):not(.btn-mark-claim) {
+    --bs-btn-border-color: #b11116;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #8e0d11;
+    --bs-btn-hover-border-color: #8e0d11;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #7a0b0e;
+    --bs-btn-active-border-color: #7a0b0e;
+    --bs-btn-focus-shadow-rgb: 177, 17, 22;
+    --bs-btn-disabled-border-color: #b11116;
+}
+
+.financial-step1 .main-content .btn-primary:not(.action-btn):not(.btn-table-action):not(.btn-send-sms):not(.btn-message-beneficiary):not(.btn-mark-claim) {
+    --bs-btn-bg: #b11116;
+    --bs-btn-disabled-bg: #b11116;
+}
+
+.financial-step1 .main-content .btn-outline-primary:not(.action-btn):not(.btn-table-action):not(.btn-send-sms):not(.btn-message-beneficiary):not(.btn-mark-claim) {
+    --bs-btn-color: #b11116;
+    --bs-btn-disabled-color: #b11116;
+}
+
+.financial-step1 .main-content :is(.stat-icon.primary, .stat-icon.info) {
+    background-color: #fef2f2;
+    border-color: #fecaca;
+    color: #b11116;
+}
+
+.financial-step1 .main-content .action-tile .text-info {
+    color: #b11116 !important;
+}
+
+.financial-step1 .main-content .action-tile .bg-info {
+    background-color: #b11116 !important;
+}

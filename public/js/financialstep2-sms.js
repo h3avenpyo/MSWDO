@@ -452,7 +452,7 @@
                     icon: 'warning',
                     title: 'Action Not Allowed',
                     text: 'SMS messaging is disabled for beneficiaries who have already claimed their financial assistance.',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#b11116'
                 });
             } else {
                 alert('SMS messaging is disabled for beneficiaries who have already claimed their financial assistance.');
@@ -467,7 +467,7 @@
                     icon: 'error',
                     title: 'Invalid Contact Number',
                     text: 'Please provide a valid Philippine mobile number (e.g. 09XXXXXXXXX or +63XXXXXXXXXX). Message cannot be sent.',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#b11116'
                 });
             } else {
                 alert('Please provide a valid Philippine mobile number (e.g. 09XXXXXXXXX or +63XXXXXXXXXX).');
@@ -482,7 +482,7 @@
                     icon: 'warning',
                     title: 'Empty Message',
                     text: 'Please write a message before sending.',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#b11116'
                 });
             }
             return;
@@ -510,7 +510,7 @@
                 showCancelButton: true,
                 confirmButtonText: '<i class="fas fa-paper-plane me-1"></i> Send Message',
                 cancelButtonText: 'Cancel',
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#6B7280',
                 reverseButtons: true,
                 focusConfirm: true,
@@ -604,7 +604,7 @@
                             icon: 'error',
                             title: 'Failed to send message.',
                             text: errorMsg,
-                            confirmButtonColor: '#1A237E'
+                            confirmButtonColor: '#b11116'
                         });
                     } else {
                         alert('Failed to send message: ' + errorMsg);
@@ -624,7 +624,7 @@
                         icon: 'error',
                         title: 'Failed to send message.',
                         text: 'A network error occurred while connecting to the server. Please try again.',
-                        confirmButtonColor: '#1A237E'
+                        confirmButtonColor: '#b11116'
                     });
                 } else {
                     alert('Failed to send message. Please check your network connection.');

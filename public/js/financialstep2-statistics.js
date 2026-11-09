@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Curated high-contrast color palette for clear category discrimination
     const colorPalette = [
-        '#1A237E', '#059669', '#2563EB', '#D97706',
+        '#b11116', '#059669', '#2563EB', '#D97706',
         '#E11D48', '#7C3AED', '#0284C7', '#EA580C',
         '#0D9488', '#DC2626', '#4F46E5', '#9333EA',
         '#16A34A', '#CA8A04', '#475569', '#0891B2',
@@ -580,7 +580,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const medicalData = Array.isArray(data.medicalData) ? data.medicalData : [];
         const dahilanPalette = [
             '#EF4444', '#F59E0B', '#8B5CF6', '#2563EB',
-            '#1A237E', '#10B981', '#EC4899', '#14B8A6',
+            '#b11116', '#10B981', '#EC4899', '#14B8A6',
             '#F97316', '#06B6D4', '#84CC16', '#6366F1'
         ];
 
@@ -633,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const assistanceLabels = Array.isArray(data.assistanceTypeLabels) ? data.assistanceTypeLabels : [];
         const assistanceData = Array.isArray(data.assistanceTypeData) ? data.assistanceTypeData : [];
         const assistancePalette = [
-            '#1A237E', '#10B981', '#F59E0B', '#2563EB',
+            '#b11116', '#10B981', '#F59E0B', '#2563EB',
             '#8B5CF6', '#EF4444', '#EC4899', '#14B8A6'
         ];
 

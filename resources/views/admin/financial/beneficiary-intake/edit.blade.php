@@ -4,7 +4,7 @@
 @section('page-title', 'Edit General Intake Sheet')
 
 @section('page-styles')
-<link href="{{ asset('css/beneficiary-intake/form.css') }}" rel="stylesheet">
+<link href="{{ asset('css/beneficiary-intake/form.css') }}?v={{ filemtime(public_path('css/beneficiary-intake/form.css')) }}" rel="stylesheet">
 <style>
     :is(input[type="text"], input:not([type]), textarea):not([readonly]) {
         text-transform: uppercase !important;
@@ -182,7 +182,7 @@
                                     @if(session('duplicate_matches'))
                                     @foreach(session('duplicate_matches') as $match)
                                     <tr style="border-bottom: 1px solid #F1F5F9;">
-                                        <td class="ps-3 fw-bold" style="color: #1A237E;">{{ $match['control_number'] }}
+                                        <td class="ps-3 fw-bold" style="color: #b11116;">{{ $match['control_number'] }}
                                         </td>
                                         <td class="text-secondary">{{ $match['date_processed'] }}</td>
                                         <td>
@@ -782,7 +782,7 @@
 @endsection
 
 @section('page-scripts')
-<script src="{{ asset('js/beneficiary-intake/form.js') }}"></script>
+<script src="{{ asset('js/beneficiary-intake/form.js') }}?v={{ filemtime(public_path('js/beneficiary-intake/form.js')) }}"></script>
 <script>
     document.addEventListener('input', function (e) {
         const el = e.target;

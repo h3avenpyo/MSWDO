@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const data = window.statisticsData;
 
     // Chart Color Palette Tokens
-    const brandPrimary = '#1A237E';
+    const brandPrimary = '#b11116';
     const accentAmber = '#F59E0B';
     const infoBlue = '#2563EB';
     const purpleAccent = '#8B5CF6';
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     label: 'Intake Cases',
                     data: data.monthlyData || [],
                     borderColor: brandPrimary,
-                    backgroundColor: 'rgba(26, 35, 126, 0.08)',
+                    backgroundColor: 'rgba(177, 17, 22, 0.08)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.35,
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     legend: { display: false },
                     tooltip: {
                         padding: 12,
-                        backgroundColor: '#0F1746',
+                        backgroundColor: '#7a0b0e',
                         titleFont: { size: 13, weight: 'bold' },
                         bodyFont: { size: 12 }
                     }
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const barangayLabels = data.barangayLabels || [];
         const barangayData = data.barangayData || [];
         const barangayColors = [
-            '#1A237E', '#10B981', '#2563EB', '#F59E0B',
+            '#b11116', '#10B981', '#2563EB', '#F59E0B',
             '#EC4899', '#8B5CF6', '#0EA5E9', '#F97316',
             '#14B8A6', '#EF4444', '#6366F1', '#A855F7'
         ];

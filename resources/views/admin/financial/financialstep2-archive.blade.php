@@ -246,7 +246,7 @@
 <div class="modal fade" id="financialPreviewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow rounded-3">
-            <div class="modal-header py-3 px-4 text-white" style="background: #1A237E;">
+            <div class="modal-header py-3 px-4 text-white" style="background: #b11116;">
                 <h5 class="modal-title fw-bold m-0" style="font-size: 1.05rem;">
                     <i class="fas fa-file-invoice-dollar me-2"></i>Archived Financial Record Details
                 </h5>
@@ -428,7 +428,7 @@
                 html: `Are you sure you want to restore the financial assistance record for <strong>${name}</strong> (${controlNumber}) to the active Step 2 masterlist?`,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#10B981',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#6B7280',
                 confirmButtonText: 'Yes, Restore',
                 cancelButtonText: 'Cancel'

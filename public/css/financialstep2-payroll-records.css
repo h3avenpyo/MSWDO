@@ -4,9 +4,9 @@
 
 /* Policy 2.0 Unified Styling Tokens */
 :root {
-    --color-brand: #1A237E;
-    --color-brand-light: #EEF2FF;
-    --color-brand-dark: #0D1642;
+    --color-brand: #b11116;
+    --color-brand-light: #FEF2F2;
+    --color-brand-dark: #8e0d11;
     --color-success: #059669;
     --color-success-light: #ECFDF5;
     --color-warning: #D97706;
@@ -126,7 +126,7 @@
     color: var(--color-brand);
     padding: 4px 10px;
     border-radius: 6px;
-    border: 1px solid #C7D2FE;
+    border: 1px solid #FECACA;
     display: inline-flex;
     align-items: center;
     gap: 4px;

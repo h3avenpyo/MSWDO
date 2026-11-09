@@ -4,7 +4,7 @@
 @section('page-title', 'Step 2: Payroll Generation')
 
 @section('page-styles')
-<link href="{{ asset('css/financialstep2-payroll.css') }}" rel="stylesheet">
+<link href="{{ asset('css/financialstep2-payroll.css') }}?v={{ filemtime(public_path('css/financialstep2-payroll.css')) }}" rel="stylesheet">
 <style>
     @media (max-width: 575.98px) {
         .filter-card .row.g-2>[class*="col-md-"] {
@@ -601,7 +601,7 @@ $userName = session('financial_step2_authorized_user') ?? session('admin_user_na
 @endsection
 
 @section('page-scripts')
-<script src="{{ asset('js/financialstep2-payroll.js') }}"></script>
-<script src="{{ asset('js/financialstep2-sms.js') }}"></script>
-<script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}"></script>
+<script src="{{ asset('js/financialstep2-payroll.js') }}?v={{ filemtime(public_path('js/financialstep2-payroll.js')) }}"></script>
+<script src="{{ asset('js/financialstep2-sms.js') }}?v={{ filemtime(public_path('js/financialstep2-sms.js')) }}"></script>
+<script src="{{ asset('js/financialstep2-monthly-unclaimed.js') }}?v={{ filemtime(public_path('js/financialstep2-monthly-unclaimed.js')) }}"></script>
 @endsection

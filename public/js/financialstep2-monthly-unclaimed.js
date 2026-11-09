@@ -331,7 +331,7 @@
                     icon: 'warning',
                     title: 'No Beneficiaries Selected',
                     text: 'Please select at least one beneficiary to send SMS messages.',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#b11116'
                 });
             } else {
                 alert('Please select at least one beneficiary.');
@@ -346,7 +346,7 @@
                     icon: 'warning',
                     title: 'Claiming Date Required',
                     text: 'Please select a Claiming Date that will be included in the message for the beneficiaries.',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#b11116'
                 });
             } else {
                 alert('Please select a Claiming Date.');
@@ -362,7 +362,7 @@
                     icon: 'warning',
                     title: 'Message Body Required',
                     text: 'Please enter or customize the SMS message before sending.',
-                    confirmButtonColor: '#1A237E'
+                    confirmButtonColor: '#b11116'
                 });
             } else {
                 alert('Please enter an SMS message body.');
@@ -401,7 +401,7 @@
                 showCancelButton: true,
                 confirmButtonText: confirmButtonText,
                 cancelButtonText: 'Cancel',
-                confirmButtonColor: '#1A237E',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#6c757d',
                 reverseButtons: true,
                 focusConfirm: true,
@@ -497,7 +497,7 @@
                                 </div>
                             </div>
                         `,
-                            confirmButtonColor: '#1A237E',
+                            confirmButtonColor: '#b11116',
                             confirmButtonText: 'OK'
                         });
                     }
@@ -511,7 +511,7 @@
                             icon: 'error',
                             title: 'Bulk Messaging Failed',
                             text: body.message || 'An error occurred during bulk messaging.',
-                            confirmButtonColor: '#1A237E'
+                            confirmButtonColor: '#b11116'
                         });
                     } else {
                         alert('Bulk messaging failed: ' + (body.message || 'Unknown error'));
@@ -531,7 +531,7 @@
                         icon: 'error',
                         title: 'Network Error',
                         text: 'A network error occurred while sending messages. Please try again.',
-                        confirmButtonColor: '#1A237E'
+                        confirmButtonColor: '#b11116'
                     });
                 } else {
                     alert('A network error occurred.');

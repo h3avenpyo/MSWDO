@@ -1,10 +1,10 @@
 @extends('layouts.financial')
 
-@section('title', 'Financial Assistance: Step 2 Masterlist - MSWDO Admin')
-@section('page-title', 'Financial Assistance Step 2 Masterlist')
+@section('title', 'Financial Assistance Step 2 - MSWDO Admin')
+@section('page-title', 'Financial Assistance Step 2')
 
 @section('page-styles')
-<link href="{{ asset('css/financialstep2.css') }}" rel="stylesheet">
+<link href="{{ asset('css/financialstep2.css') }}?v={{ filemtime(public_path('css/financialstep2.css')) }}" rel="stylesheet">
 <style>
     .step-wizard-card {
         background: linear-gradient(135deg, #b11116 0%, #c4181e 50%, #8e0d11 100%) !important;
@@ -66,7 +66,7 @@ $userName = session('admin_user_name') ?? 'Officer';
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
             <h2 class="wizard-heading mb-1 d-flex align-items-center flex-wrap gap-2">
-                <span><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance: Step 2 Masterlist</span>
+                <span><i class="fas fa-hand-holding-usd me-2"></i>Financial Assistance Step 2</span>
                 <span class="badge step-2-badge rounded-pill px-2.5 py-1">Step 2</span>
             </h2>
             <p class="mb-0 hero-subtitle">Today's Client General Intake Masterlist &bull; Step 2 Financial
@@ -614,7 +614,7 @@ $userName = session('admin_user_name') ?? 'Officer';
 @endsection
 
 @section('page-scripts')
-<script src="{{ asset('js/financialstep2.js') }}"></script>
+<script src="{{ asset('js/financialstep2.js') }}?v={{ filemtime(public_path('js/financialstep2.js')) }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.btn-archive-step2').forEach(btn => {
@@ -633,7 +633,7 @@ $userName = session('admin_user_name') ?? 'Officer';
                     maxlength: '500'
                 },
                 showCancelButton: true,
-                confirmButtonColor: '#DC2626',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#6B7280',
                 confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
                 cancelButtonText: 'Kanselahin',

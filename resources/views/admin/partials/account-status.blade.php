@@ -121,7 +121,8 @@
                 title: 'Success',
                 text: '{{ session('success') }}',
                 icon: 'success',
-                confirmButtonColor: '#16A34A',
+                iconColor: @json($successConfirmationColor ?? '#16A34A'),
+                confirmButtonColor: @json($successConfirmationColor ?? '#16A34A'),
                 confirmButtonText: 'OK',
                 background: '#ffffff',
                 customClass: { popup: 'rounded-4 shadow-lg' }

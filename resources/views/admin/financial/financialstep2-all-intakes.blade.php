@@ -4,7 +4,7 @@
 @section('page-title', 'Step 2: All General Intakes')
 
 @section('page-styles')
-<link href="{{ asset('css/financialstep2-all-intakes.css') }}" rel="stylesheet">
+<link href="{{ asset('css/financialstep2-all-intakes.css') }}?v={{ filemtime(public_path('css/financialstep2-all-intakes.css')) }}" rel="stylesheet">
 <style>
 @media (max-width: 575.98px) {
     .filter-card .row.g-2 > [class*="col-md-"] {
@@ -514,7 +514,7 @@
 @endsection
 
 @section('page-scripts')
-<script src="{{ asset('js/financialstep2-all-intakes.js') }}"></script>
+<script src="{{ asset('js/financialstep2-all-intakes.js') }}?v={{ filemtime(public_path('js/financialstep2-all-intakes.js')) }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.btn-archive-step2').forEach(btn => {
@@ -533,7 +533,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     maxlength: '500'
                 },
                 showCancelButton: true,
-                confirmButtonColor: '#DC2626',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#6B7280',
                 confirmButtonText: '<i class="fas fa-box-archive me-1"></i> I-archive Record',
                 cancelButtonText: 'Kanselahin',

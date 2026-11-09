@@ -25,6 +25,15 @@
     <link href="{{ asset('css/financialstep1.css') }}?v={{ filemtime(public_path('css/financialstep1.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/responsive.css') }}" rel="stylesheet">
     @yield('page-styles')
+    @php
+        $isFinancialStep1 = !request()->is('admin/financial/financialstep2*')
+            && session('admin_user_role') !== 'financialstep2';
+    @endphp
+    @if($isFinancialStep1)
+    <link href="{{ asset('css/financial-step1-theme.css') }}?v={{ filemtime(public_path('css/financial-step1-theme.css')) }}" rel="stylesheet">
+    @else
+    <link href="{{ asset('css/financial-step2-theme.css') }}?v={{ filemtime(public_path('css/financial-step2-theme.css')) }}" rel="stylesheet">
+    @endif
 
     <!-- Anti-flicker pre-render script for collapsed sidebar -->
     <script>
@@ -41,7 +50,7 @@
     <link rel="stylesheet" href="{{ asset('css/financial-step-header-desktop.css') }}?v={{ filemtime(public_path('css/financial-step-header-desktop.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/financial-action-desktop.css') }}?v={{ filemtime(public_path('css/financial-action-desktop.css')) }}">
 </head>
-<body class="financial-module">
+<body class="financial-module{{ $isFinancialStep1 ? ' financial-step1' : ' financial-step2' }}">
     <!-- Reusable Sidebar Component -->
     @include('partials.financial-sidebar')
 
@@ -90,7 +99,9 @@
     <script src="{{ asset('js/financialstep1.js') }}"></script>
     @yield('page-scripts')
 
-    @include('admin.partials.account-status')
+    @include('admin.partials.account-status', [
+        'successConfirmationColor' => '#b11116',
+    ])
 <script src="{{ asset('js/contact-number-validation.js') }}?v={{ filemtime(public_path('js/contact-number-validation.js')) }}"></script>
 </body>
 </html>

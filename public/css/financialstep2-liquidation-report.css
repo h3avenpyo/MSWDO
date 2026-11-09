@@ -9,8 +9,8 @@
 }
 
 :root {
-    --color-brand: #1A237E;
-    --color-brand-dark: #0D1642;
+    --color-brand: #b11116;
+    --color-brand-dark: #8e0d11;
     --font-main: 'Public Sans', Arial, Helvetica, sans-serif;
 }
 
@@ -26,6 +26,19 @@ body {
 }
 
 /* Screen Action Bar (Hidden when printing) */
+.btn-report-print {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #b11116;
+    --bs-btn-border-color: #b11116;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #8e0d11;
+    --bs-btn-hover-border-color: #8e0d11;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #7a0b0e;
+    --bs-btn-active-border-color: #7a0b0e;
+    --bs-btn-focus-shadow-rgb: 177, 17, 22;
+}
+
 .no-print-bar {
     background-color: #1F2937;
     color: #F9FAFB;

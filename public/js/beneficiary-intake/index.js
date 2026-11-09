@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 text: "This action will permanently delete this intake record.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#DC2626',
+                confirmButtonColor: '#b11116',
                 cancelButtonColor: '#64748B',
                 confirmButtonText: 'Yes, Delete It',
                 cancelButtonText: 'Cancel',
