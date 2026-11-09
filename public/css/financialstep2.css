@@ -92,6 +92,25 @@
 /* ============================================================
    FILTER CARD & SEARCH CONTROLS
    ============================================================ */
+@media screen and (min-width: 768px) {
+    #step2FilterForm > [class*="col-"]:not(.col-12):not(.filter-actions-group) {
+        flex: 1 1 0;
+        width: 0;
+        min-width: 0;
+    }
+
+    #step2FilterForm > .filter-actions-group {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 0;
+    }
+
+    #step2FilterForm .form-label {
+        display: block;
+        max-width: 100%;
+    }
+}
+
 .filter-card {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;

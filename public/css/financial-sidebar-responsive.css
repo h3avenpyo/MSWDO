@@ -1,0 +1,199 @@
+/* Drawer behavior only; retain the financial module's sidebar palette. */
+.financial-module .top-navbar .financial-menu-toggle {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    margin-right: 0.5rem !important;
+    color: #334155;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    box-shadow: none;
+    line-height: 1;
+    touch-action: manipulation;
+}
+
+.financial-module .financial-menu-toggle svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.financial-module .top-navbar .financial-menu-toggle:is(:hover, :active) {
+    color: #b11116;
+    background: #fef2f2;
+    border-color: transparent;
+}
+
+.financial-module .top-navbar .financial-menu-toggle:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+}
+
+.financial-module .top-navbar .financial-menu-toggle:focus-visible {
+    outline: 2px solid #b11116;
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+@media screen and (max-width: 767.98px) {
+    body.financial-module.financial-sidebar-open {
+        overflow: hidden;
+    }
+
+    .financial-module .top-navbar button.d-lg-none {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        flex-shrink: 0;
+    }
+
+    .financial-module #sidebar {
+        width: 260px !important;
+        transform: translateX(-100%);
+        z-index: 1001;
+        height: 100vh;
+        height: 100dvh;
+        max-width: calc(100vw - 3rem);
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .financial-module #sidebar.show {
+        transform: translateX(0);
+    }
+
+    body.financial-module .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .financial-module #sidebar .sidebar-brand {
+        flex-shrink: 0;
+    }
+
+    .financial-module #sidebar .sidebar-toggle-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .financial-module #sidebar .sidebar-menu {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+
+    .financial-module #sidebar .sidebar-menu a {
+        min-height: 44px;
+    }
+
+    .financial-module .sidebar-overlay {
+        z-index: 1000;
+    }
+
+    .financial-module .sidebar-overlay.active {
+        display: block !important;
+    }
+}
+
+/* Match Social Case: persistent sidebar from 768px, collapsed to a 72px rail. */
+@media screen and (min-width: 768px) {
+    .financial-module .top-navbar button.financial-menu-toggle,
+    .financial-module .sidebar-overlay {
+        display: none !important;
+    }
+
+    .financial-module #sidebar {
+        width: var(--sidebar-width) !important;
+        transform: translateX(0) !important;
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    body.financial-module .main-content {
+        margin-left: var(--sidebar-width) !important;
+        width: calc(100% - var(--sidebar-width)) !important;
+    }
+
+    .financial-module #sidebar.collapsed {
+        width: 72px !important;
+    }
+
+    body.financial-module.sidebar-collapsed .main-content,
+    html.sidebar-collapsed body.financial-module .main-content {
+        margin-left: 72px !important;
+        width: calc(100% - 72px) !important;
+    }
+
+    .financial-module #sidebar.collapsed .sidebar-brand {
+        height: 76px !important;
+        padding: 0.5rem 0 !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 0.35rem !important;
+        flex-shrink: 0;
+    }
+
+    .financial-module #sidebar.collapsed :is(.sidebar-brand-text, .menu-label, .submenu-arrow, .sidebar-submenu) {
+        display: none !important;
+    }
+
+    .financial-module #sidebar.collapsed .sidebar-brand-logo {
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+    .financial-module #sidebar.collapsed .sidebar-toggle-btn {
+        width: 28px;
+        height: 24px;
+        min-width: 28px;
+        border-radius: 6px;
+    }
+
+    .financial-module #sidebar.collapsed .sidebar-menu {
+        padding: 0.75rem 0;
+    }
+
+    .financial-module #sidebar.collapsed .sidebar-menu a {
+        padding: 0.85rem 0 !important;
+        justify-content: center !important;
+        gap: 0;
+    }
+
+    .financial-module #sidebar.collapsed .sidebar-menu a i {
+        margin: 0 auto;
+        font-size: 1.2rem;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1199.98px) {
+    body.financial-module {
+        --sidebar-width: 280px;
+    }
+
+    .financial-module #sidebar {
+        --sidebar-bg: #c41e3a;
+        --sidebar-dark: #99172e;
+        background: #c41e3a !important;
+        color: #fff !important;
+    }
+
+    .financial-module #sidebar :is(a, button, .menu-label, .sidebar-brand-text, i, svg) {
+        color: #fff !important;
+    }
+
+    .financial-module #sidebar .sidebar-menu a {
+        background: #c41e3a !important;
+    }
+
+    .financial-module #sidebar .sidebar-menu a:hover {
+        background: #99172e !important;
+    }
+
+    .financial-module #sidebar .sidebar-menu a.active {
+        background: #99172e !important;
+        box-shadow: inset 3px 0 0 #fff;
+    }
+}

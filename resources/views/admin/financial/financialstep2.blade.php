@@ -197,14 +197,14 @@ $userName = session('admin_user_name') ?? 'Officer';
                 </option>
             </select>
         </div>
+        @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'date', 'period']))
         <div class="col-md-1 col-lg-1 filter-actions-group">
-            @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'date', 'period']))
             <a href="{{ route('admin.financial.financialstep2') }}"
                 class="btn btn-sm btn-outline-secondary rounded-3 w-100" title="Reset Filters">
                 <i class="fas fa-redo"></i>
             </a>
-            @endif
         </div>
+        @endif
 
         @if(request()->hasAny(['search', 'barangay', 'category', 'status', 'sort', 'period']))
         <div class="d-flex align-items-center gap-2 flex-wrap mt-2 pt-2 border-top col-12">

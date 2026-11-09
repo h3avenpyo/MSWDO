@@ -39,7 +39,9 @@
     <script>
         (function() {
             try {
-                if (localStorage.getItem('mswdo_financial_sidebar_collapsed') === 'true' && window.innerWidth >= 1024) {
+                const stored = localStorage.getItem('mswdo_financial_sidebar_collapsed');
+                const tabletLayout = window.innerWidth >= 768 && window.innerWidth < 1200;
+                if (window.innerWidth >= 768 && (stored === 'true' || (stored === null && tabletLayout))) {
                     document.documentElement.classList.add('sidebar-collapsed');
                 }
             } catch (e) {}
@@ -49,6 +51,10 @@
     <link rel="stylesheet" href="{{ asset('css/financial-sidebar-desktop-theme.css') }}?v={{ filemtime(public_path('css/financial-sidebar-desktop-theme.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/financial-step-header-desktop.css') }}?v={{ filemtime(public_path('css/financial-step-header-desktop.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/financial-action-desktop.css') }}?v={{ filemtime(public_path('css/financial-action-desktop.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/financial-sidebar-responsive.css') }}?v={{ filemtime(public_path('css/financial-sidebar-responsive.css')) }}">
+    @if($isFinancialStep1)
+    <link rel="stylesheet" href="{{ asset('css/financial-step1-responsive.css') }}?v={{ filemtime(public_path('css/financial-step1-responsive.css')) }}">
+    @endif
 </head>
 <body class="financial-module{{ $isFinancialStep1 ? ' financial-step1' : ' financial-step2' }}">
     <!-- Reusable Sidebar Component -->
@@ -60,8 +66,10 @@
         <nav class="top-navbar">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-lg-none me-3 p-0 text-dark" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-                        <i class="fas fa-bars fa-lg"></i>
+                    <button type="button" class="btn financial-menu-toggle d-lg-none me-3 p-0" onclick="toggleSidebar()" aria-label="Open sidebar" aria-controls="sidebar" aria-expanded="false">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+                            <path d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
                     </button>
                     <h1 class="navbar-title">@yield('page-title', 'Financial Assistance Module')</h1>
                 </div>
@@ -96,7 +104,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- External Module Script -->
-    <script src="{{ asset('js/financialstep1.js') }}"></script>
+    <script src="{{ asset('js/financialstep1.js') }}?v={{ filemtime(public_path('js/financialstep1.js')) }}"></script>
     @yield('page-scripts')
 
     @include('admin.partials.account-status', [

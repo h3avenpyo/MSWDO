@@ -76,7 +76,7 @@ $mswdoLogoSrc = file_exists(public_path('images/mswdo-logo.png'))
         </div>
 
         <!-- Quick Metric Summary Cards -->
-        <div class="row g-3 mb-4">
+        <div class="row g-3 mb-4 step1-metrics-grid">
             <div class="col-md-3">
                 <div class="kpi-card shadow-sm">
                     <div class="kpi-icon bg-primary bg-opacity-10 text-primary">

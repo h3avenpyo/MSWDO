@@ -1,0 +1,223 @@
+/* Screen-only Step 1 layout; keep official print forms and Step 2 intact. */
+@media screen and (max-width: 1199.98px) {
+    .financial-step1 .main-content,
+    .financial-step1 .financial-content-wrapper,
+    .financial-step1 .main-content .row > *,
+    .financial-step1 .top-navbar .d-flex > * {
+        min-width: 0;
+    }
+
+    .financial-step1 .top-navbar > .d-flex {
+        gap: 0.75rem;
+    }
+
+    .financial-step1 .navbar-title {
+        overflow-wrap: anywhere;
+        line-height: 1.35;
+    }
+
+    .financial-step1 .navbar-avatar,
+    .financial-step1 .stat-icon {
+        flex-shrink: 0;
+    }
+
+    .financial-step1 #currentDateTime {
+        max-width: 15rem;
+        text-align: right;
+        font-size: 0.75rem;
+    }
+
+    .financial-step1 .stat-cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .financial-step1 .kpi-card > div {
+        min-width: 0;
+    }
+
+    .financial-step1 :is(.card-header-clean, .chart-card-header) {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .financial-step1 :is(.wizard-heading, .card-title-clean, .info-value, .stat-value) {
+        overflow-wrap: anywhere;
+    }
+
+    .financial-step1 .table-responsive {
+        max-width: 100%;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .financial-step1 .table-responsive > table {
+        display: table;
+        overflow: visible;
+    }
+
+    .financial-step1 .table-responsive > .table-clean {
+        min-width: 680px;
+    }
+
+    .financial-step1 #familyTable {
+        min-width: 900px;
+    }
+
+    .financial-step1 .fam-table .form-control {
+        min-width: 90px;
+    }
+
+    .financial-step1 .main-content .action-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .financial-step1 .modal-dialog {
+        width: auto;
+        max-width: min(960px, calc(100% - 2rem));
+        margin: 1rem auto;
+    }
+
+    .financial-step1 .modal-content {
+        max-height: calc(100vh - 2rem);
+        max-height: calc(100dvh - 2rem);
+        overflow: hidden;
+    }
+
+    .financial-step1 .modal-body {
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .financial-step1 :is(.modal-header, .modal-footer) {
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .financial-step1 .modal-header .btn-close {
+        margin-left: auto;
+    }
+
+    .financial-step1 .swal2-popup {
+        max-height: calc(100vh - 2rem);
+        max-height: calc(100dvh - 2rem);
+        overflow-y: auto;
+    }
+
+    .financial-step1 .swal2-html-container {
+        max-height: none;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 1199.98px) {
+    .financial-step1 .step1-metrics-grid > * {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1199.98px) {
+    .financial-step1 .form-card .row > :is(.col-md-2, .col-md-3, .col-md-4) {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media screen and (max-width: 767.98px) {
+    /* The financial drawer is reserved for phone-sized screens. */
+    .financial-step1 .top-navbar button.d-lg-none {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        flex-shrink: 0;
+    }
+}
+
+@media screen and (max-width: 767.98px) {
+    .financial-step1 .top-navbar {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .financial-step1 #currentDateTime {
+        display: none !important;
+    }
+
+    .financial-step1 .financial-content-wrapper {
+        padding: 0.75rem !important;
+    }
+
+    .financial-step1 .financial-content-wrapper > .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .financial-step1 .container-fluid > .d-flex.flex-wrap > div {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .financial-step1 .container-fluid > .d-flex.flex-wrap > .d-flex {
+        flex-wrap: wrap;
+    }
+
+    .financial-step1 :is(.step-wizard-card, .form-header-bar, .detail-header-bar,
+        .filter-card, .kpi-card, .tagalog-section-card) {
+        padding: 1rem;
+    }
+
+    .financial-step1 :is(.form-card, .detail-card) .card-body,
+    .financial-step1 .modal-body {
+        padding: 1rem !important;
+    }
+
+    .financial-step1 :is(.wizard-heading, .form-header-bar h4) {
+        font-size: 1.1rem;
+    }
+
+    .financial-step1 :is(.form-control, .form-select) {
+        font-size: 1rem;
+        min-height: 44px;
+    }
+
+    .financial-step1 :is(.modal-footer, .swal2-actions) .btn,
+    .financial-step1 .swal2-actions button {
+        min-height: 44px;
+    }
+
+    .financial-step1 .chart-box {
+        padding: 0.75rem;
+    }
+}
+
+@media screen and (max-width: 575.98px) {
+    .financial-step1 .stat-cards-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .financial-step1 .main-content form > .d-flex.justify-content-end {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .financial-step1 .main-content form > .d-flex.justify-content-end > :is(.btn, a) {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .financial-step1 .card-header-clean {
+        padding: 1rem;
+    }
+
+    .financial-step1 .modal-dialog {
+        max-width: calc(100% - 1rem);
+        margin: 0.5rem auto;
+    }
+
+    .financial-step1 .modal-content {
+        max-height: calc(100vh - 1rem);
+        max-height: calc(100dvh - 1rem);
+    }
+}
