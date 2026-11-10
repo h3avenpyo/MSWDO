@@ -340,15 +340,19 @@
 
 
 @push('styles')
-@if(auth()->user()?->position === 'Desk Officer' && in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) && !auth()->user()?->isMultiCaseDepartment())
+@if(auth()->user()?->position === 'Desk Officer' && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment()))
 <style>
 @media (max-width: 47.9375rem) {
+    html body.portal-ui #mobileTopBar #mobileMenuToggle,
     html body.portal-ui #mainContent > header#case-details-page-header #dashboardMenuToggle {
-        flex: 0 0 2.25rem !important;
-        width: 2.25rem !important; min-width: 2.25rem !important; max-width: 2.25rem !important;
-        height: 2.25rem !important; min-height: 2.25rem !important; max-height: 2.25rem !important;
-        padding: 0 !important; border-radius: .375rem !important; font-size: 1.125rem !important;
+        flex: 0 0 2.875rem !important;
+        width: 2.875rem !important; min-width: 2.875rem !important; max-width: 2.875rem !important;
+        height: 2.875rem !important; min-height: 2.875rem !important; max-height: 2.875rem !important;
+        display: inline-flex !important; align-items: center !important; justify-content: center !important;
+        color: #fff !important; background: transparent !important; border: 0 !important; box-shadow: none !important;
+        padding: 0 !important; border-radius: 0 !important; font-size: 1.125rem !important;
     }
+    html body.portal-ui #mobileTopBar #mobileMenuToggle > i,
     html body.portal-ui #mainContent > header#case-details-page-header #dashboardMenuToggle > i {
         font-size: 1.125rem !important; line-height: 1 !important;
     }
@@ -550,7 +554,7 @@
                 <span>Print</span>
             </button>
             @else
-            <a href="{{ route('admin.case.print', $case->id) }}" target="_blank" class="case-details-action-print inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+            <a href="{{ route('admin.case.print', ['case' => $case->id] + (auth()->user()?->position === 'Desk Officer' ? ['back_case' => 1, 'from' => request('from') === 'case-profiles' ? 'case-profiles' : null] : [])) }}" data-case-print-preview class="case-details-action-print inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                 <i class="fas fa-print"></i>
                 <span>Print</span>
             </a>
@@ -819,8 +823,26 @@
     @endunless
 </main>
 
+<dialog id="case-print-preview-modal" aria-labelledby="case-print-preview-title" style="position:fixed;inset:0;margin:auto;width:calc(100vw - 16px);max-width:100%;height:calc(100dvh - 24px);max-height:100%;padding:0;border:1px solid #d1d5db;border-radius:12px;background:#fff;overflow:hidden;">
+    <div style="height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #e5e7eb;">
+        <h3 id="case-print-preview-title" style="font-size:16px;font-weight:600;">Print Preview</h3>
+        <button type="button" onclick="this.closest('dialog').close()" aria-label="Close print preview" style="padding:10px 14px;background:#C41E3A;color:#fff;border-radius:8px;font-weight:600;">Close</button>
+    </div>
+    <iframe title="Case report print preview" style="display:block;width:100%;height:calc(100% - 52px);border:0;background:#fff;"></iframe>
+</dialog>
 @push('scripts')
 <script>
+document.querySelector('[data-case-print-preview]')?.addEventListener('click', function (event) {
+    if (!window.matchMedia('(max-width: 47.9375rem)').matches) return;
+    const dialog = document.getElementById('case-print-preview-modal');
+    if (!dialog || typeof dialog.showModal !== 'function') return;
+    event.preventDefault();
+    const previewUrl = new URL(this.href);
+    previewUrl.searchParams.set('print_modal', '1');
+    const frame = dialog.querySelector('iframe');
+    if (frame.getAttribute('src') !== previewUrl.href) frame.src = previewUrl.href;
+    dialog.showModal();
+});
 document.getElementById('referCaseBtn')?.addEventListener('click', function() {
     Swal.fire({
         title: 'Refer Case',

@@ -1139,7 +1139,17 @@
                         @forelse($profiles as $records)
                             @php $person = $records->first(); @endphp
                             <tr class="align-top hover:bg-purple-50" data-profile-name="{{ $isVictim ? $person->victim_name : $person->abuser_name }}" data-profile-age="{{ ($isVictim ? $person->victim_age : $person->abuser_age) ?? 'Not recorded' }}">
-                                <td class="px-5 py-4 font-semibold text-gray-800 break-words">{{ $isVictim ? $person->victim_name : $person->abuser_name }}</td>
+                                <td class="px-5 py-4 font-semibold text-gray-800 break-words">
+                                    @php
+                                        $profileNames = collect([$isVictim ? $person->victim_name : $person->abuser_name])
+                                            ->merge($records->flatMap(fn ($record) => collect($record->bcpc_data[$isVictim ? 'additional_victims' : 'additional_perpetrators'] ?? [])
+                                                ->pluck($isVictim ? 'victim_name' : 'perpetrator_name')))
+                                            ->map(fn ($name) => trim((string) $name))->filter()->unique()->values();
+                                    @endphp
+                                    @foreach($profileNames as $profileName)
+                                        <div>{{ $profileName }}</div>
+                                    @endforeach
+                                </td>
                                 <td class="px-5 py-4">
                                     <details>
                                         <summary class="cursor-pointer text-purple-700">{{ $records->count() }} {{ $records->count() === 1 ? 'case' : 'cases' }}</summary>
@@ -1286,7 +1296,15 @@
                         <div class="case-profile-card-heading flex items-start justify-between gap-3 mb-4 min-w-0">
                             <div class="case-profile-card-identity flex-1 min-w-0">
                                 <p class="text-xs text-gray-500 mb-1">{{ $isVictim ? 'Victim' : 'Perpetrator' }}</p>
-                                <p class="font-semibold text-gray-800 break-words">{{ $isVictim ? $person->victim_name : $person->abuser_name }}</p>
+                                @php
+                                    $cardProfileNames = collect([$isVictim ? $person->victim_name : $person->abuser_name])
+                                        ->merge($records->flatMap(fn ($record) => collect($record->bcpc_data[$isVictim ? 'additional_victims' : 'additional_perpetrators'] ?? [])
+                                            ->pluck($isVictim ? 'victim_name' : 'perpetrator_name')))
+                                        ->map(fn ($name) => trim((string) $name))->filter()->unique()->values();
+                                @endphp
+                                @foreach($cardProfileNames as $cardProfileName)
+                                    <p class="font-semibold text-gray-800 break-words">{{ $cardProfileName }}</p>
+                                @endforeach
                             </div>
                             <span class="case-profile-card-count shrink-0 rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700 whitespace-nowrap">{{ $records->count() }} {{ $records->count() === 1 ? 'case' : 'cases' }}</span>
                         </div>

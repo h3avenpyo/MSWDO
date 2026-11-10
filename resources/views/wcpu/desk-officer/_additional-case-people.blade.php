@@ -94,6 +94,14 @@
         .additional-admin-case-person .additional-person-fields { grid-template-columns:minmax(0, 1fr) !important; }
         .additional-admin-case-person .additional-person-fields > .detail-row { flex-direction:column; align-items:flex-start !important; gap:4px !important; min-width:0; }
         .additional-admin-case-person .additional-person-fields > .detail-row > span { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+        .additional-full-page-person > .additional-person-header { padding:16px 24px !important; gap:12px !important; }
+        .additional-full-page-person .additional-person-icon { width:40px !important; height:40px !important; min-width:40px; border-radius:8px; background:var(--person-card-background) !important; color:var(--person-card-color) !important; font-size:16px; }
+        .additional-full-page-person .additional-person-desktop-icon { display:inline-block; }
+        .additional-full-page-person .additional-person-mobile-icon { display:none; }
+        .additional-full-page-person .additional-person-header h3 { font-size:18px !important; line-height:1.5 !important; }
+        .additional-full-page-person > .additional-person-body { padding:24px !important; }
+        .additional-full-page-person .additional-person-fields { row-gap:16px !important; }
+        .additional-full-page-person .additional-person-fields > .detail-row { flex-direction:column; align-items:flex-start !important; padding-top:8px !important; padding-bottom:8px !important; gap:4px !important; }
     }
 </style>
 @endonce
@@ -129,9 +137,9 @@
             }
         @endphp
         @foreach($personCards as $personCard)
-            <section class="additional-case-person {{ auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin() ? 'additional-admin-case-person' : '' }} bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6 md:col-span-2">
+            <section class="additional-case-person {{ ($additionalPeopleFullPage ?? false) ? 'additional-full-page-person' : '' }} {{ auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin() ? 'additional-admin-case-person' : '' }} bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6 md:col-span-2">
                 <div class="additional-person-header px-6 py-4 border-b border-gray-100 flex items-center gap-3" @if((auth()->user()?->isBcpcAdmin() || auth()->user()?->isVawcAdmin()) && !($additionalPeopleFullPage ?? false)) style="background:#f8fafc !important;color:#111827 !important;" @endif>
-                    <div class="additional-person-icon w-10 h-10 rounded-lg flex items-center justify-center" style="background:{{ $personCard['background'] }};color:{{ $personCard['color'] }};--person-mobile-icon-color:{{ $personCard['mobile-color'] }};flex-shrink:0;">
+                    <div class="additional-person-icon w-10 h-10 rounded-lg flex items-center justify-center" style="background:{{ $personCard['background'] }};color:{{ $personCard['color'] }};--person-mobile-icon-color:{{ $personCard['mobile-color'] }};--person-card-background:{{ $personCard['background'] }};--person-card-color:{{ $personCard['color'] }};flex-shrink:0;">
                         <i class="additional-person-desktop-icon fas {{ $personCard['icon'] }}" aria-hidden="true"></i>
                         <i class="additional-person-mobile-icon fas {{ $personCard['mobile-icon'] }}" aria-hidden="true"></i>
                     </div>

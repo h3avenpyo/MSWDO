@@ -25,7 +25,7 @@
             && auth()->user()?->position === 'Desk Officer'
             && (in_array(auth()->user()?->defaultCaseDepartment(), ['BCPC', 'VAWC'], true) || auth()->user()?->isMultiCaseDepartment())) {
             $caseDownloadFilename = str_replace('VAWC', 'SWD', strtoupper((string) $case->type))
-                . '_Case_Report_' . \Illuminate\Support\Str::slug((string) $case->case_number, '_') . '.pdf';
+                . '_Case_Report_' . preg_replace('/[^A-Za-z0-9_-]+/', '_', trim((string) $case->case_number)) . '.pdf';
         }
         if (request()->routeIs('desk-officer.referrals.print-all')
             && auth()->user()?->position === 'Desk Officer'
@@ -78,6 +78,9 @@
     @if(auth()->user()?->position === 'Desk Officer' && request()->routeIs('desk-officer.cases.print', 'admin.case.print'))
     backButton.href = @json(request()->filled('back_barangay') && ctype_digit((string) request('back_barangay')) ? route('admin.barangay-cases.show', ['barangay' => request('back_barangay')]) : route('desk-officer.cases.index'));
     @endif
+    @if(auth()->user()?->position === 'Desk Officer' && request()->routeIs('desk-officer.cases.print', 'admin.case.print') && request()->boolean('back_case'))
+    backButton.href = @json(route('desk-officer.cases.show', ['hash' => encrypt($case->id), 'from' => request('from') === 'case-profiles' ? 'case-profiles' : null]));
+    @endif
     @if(auth()->user()?->position === 'Desk Officer' && auth()->user()->isMultiCaseDepartment() && request()->routeIs('desk-officer.cases.print-all'))
     @php($casePrintBackUrl = route('desk-officer.cases.index', request()->only(['type', 'status', 'date_from', 'date_to'])))
     backButton.href = @json($casePrintBackUrl);
@@ -89,6 +92,35 @@
     backButton.style.cssText = 'padding:7px 10px;border-radius:5px;background:#C41E3A;color:#fff;text-decoration:none;';
     controls.prepend(backButton);
     @endif
+
+    const isCasePhoneModal = Boolean(@json(request()->boolean('print_modal')))
+        && Boolean(@json($caseDownloadFilename))
+        && window.matchMedia('(max-width: 47.9375rem)').matches;
+    if (isCasePhoneModal) {
+        const previewStyle = document.createElement('style');
+        previewStyle.dataset.previewOnly = '';
+        const fitReport = () => {
+            const scale = Math.min(1, (window.innerWidth - 24) / 718);
+            previewStyle.textContent = `
+                @media screen {
+                    body { padding-top:112px !important; background:#fff; }
+                    .print-edit-controls { top:8px; left:8px; right:8px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; padding:8px; }
+                    .print-edit-controls > span { grid-column:1 / -1; grid-row:1; font-size:12px; }
+                    .print-edit-controls > :is(a,button) { grid-row:2; min-width:0; width:auto; box-sizing:border-box; white-space:nowrap; text-align:center; padding:12px 4px !important; font-size:12px; }
+                    .container { width:718px !important; max-width:none !important; box-sizing:border-box; zoom:${scale}; }
+                    footer.footer { display:none; }
+                }
+            `;
+        };
+        document.head.appendChild(previewStyle);
+        fitReport();
+        window.addEventListener('resize', fitReport);
+        const modalBack = controls.querySelector('a');
+        if (modalBack) modalBack.addEventListener('click', (event) => {
+            const dialog = window.frameElement?.closest('dialog');
+            if (dialog) { event.preventDefault(); dialog.close(); }
+        });
+    }
 
     const originals = new Map();
     let active = null;
@@ -169,7 +201,7 @@
         const downloadFilename = (isSwdDesktopPrint ? null : quarterlyDownloadFilename) || (isPhoneView ? (quarterlyAllDownloadFilename || referralDownloadFilename || referralRegistryDownloadFilename || caseDownloadFilename || barangayDownloadFilename) : null);
         const printWindow = downloadFilename ? null : window.open('', '_blank');
         const preview = document.documentElement.cloneNode(true);
-        preview.querySelectorAll('script, .print-edit-controls, .report-back-button').forEach(element => element.remove());
+        preview.querySelectorAll('script, .print-edit-controls, .report-back-button, [data-preview-only]').forEach(element => element.remove());
         preview.querySelectorAll('[contenteditable], [data-print-editing], [spellcheck]').forEach(element => {
             element.removeAttribute('contenteditable');
             element.removeAttribute('data-print-editing');
