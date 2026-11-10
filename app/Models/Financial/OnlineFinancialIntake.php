@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OnlineFinancialIntake extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     public const DOCUMENT_LABELS = [
         'request_letter' => 'Liham para kay Hon. Mayor Edward E. Carranza (Ret.)',
         'medical_certificate' => 'Medical Certificate o Medical Abstract',

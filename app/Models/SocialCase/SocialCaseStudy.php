@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SocialCaseStudy extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $fillable = [
         'main_client_id',
         'officer_id',

@@ -29,6 +29,8 @@ Route::post('/admin/reset-password', [AuthController::class, 'resetPassword'])->
 // Authenticated Admin Dashboard & Management Routes
 Route::middleware(['admin.auth', 'check.account.status'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity-logs.index');
+    Route::get('/admin/activity-logs/{activityLog}', [\App\Http\Controllers\Admin\ActivityLogController::class, 'show'])->name('admin.activity-logs.show');
     Route::get('/admin/dashboard/reports/data', [AdminReportController::class, 'getReportData'])->name('admin.dashboard.reports.data');
     Route::get('/admin/dashboard/reports/pdf', [AdminReportController::class, 'exportPdf'])->name('admin.dashboard.reports.pdf');
     Route::get('/admin/dashboard/reports/print', [AdminReportController::class, 'printView'])->name('admin.dashboard.reports.print');

@@ -50,6 +50,8 @@ class CheckAccountStatus
      */
     protected function invalidateSession(Request $request): void
     {
+        app(\App\Services\MswdoActivityLogger::class)->record('logout', 'Authentication', 'Session ended because the account is no longer active');
+
         $request->session()->forget([
             'admin_user_id',
             'admin_user_name',

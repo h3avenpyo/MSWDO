@@ -1250,6 +1250,15 @@ $initials = count($words) >= 2
 @endif
 
 {{-- Top Executive KPI Strip --}}
+@if(session('auth_source') === 'mswdo' && session('admin_user_role') === 'admin')
+<section aria-labelledby="dashboard-activity-heading" style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+    <div>
+        <h2 id="dashboard-activity-heading" style="margin:0 0 .35rem;font-size:1.1rem;color:#0f172a;">User Logs</h2>
+        <p style="margin:0;color:#64748b;font-size:.9rem;">Review MSWDO user activities and record changes.</p>
+    </div>
+    <a href="{{ route('admin.activity-logs.index') }}" style="background:#b11116;color:#fff;border-radius:8px;padding:.75rem 1rem;text-decoration:none;">View user logs</a>
+</section>
+@endif
 <section class="kpi-strip">
     <!-- Card 1: Total Beneficiaries -->
     <div class="kpi-card kpi-indigo">

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CaseRejection extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     use HasFactory;
 
     protected $fillable = [

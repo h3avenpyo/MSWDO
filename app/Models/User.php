@@ -13,6 +13,8 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 

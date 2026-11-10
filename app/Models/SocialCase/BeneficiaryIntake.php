@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BeneficiaryIntake extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $fillable = [
         'client_id',
         'social_case_study_id',

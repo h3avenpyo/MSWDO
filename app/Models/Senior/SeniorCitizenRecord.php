@@ -10,6 +10,8 @@ use Carbon\Carbon;
 
 class SeniorCitizenRecord extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $table = 'senior_citizen_records';
 
     protected $fillable = [

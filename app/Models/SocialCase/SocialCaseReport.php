@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SocialCaseReport extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $fillable = [
         'social_case_study_id',
         'case_number',

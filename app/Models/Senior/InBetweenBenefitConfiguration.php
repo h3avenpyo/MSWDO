@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InBetweenBenefitConfiguration extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $table = 'in_between_benefit_configurations';
 
     protected $fillable = [
