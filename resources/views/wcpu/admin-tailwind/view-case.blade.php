@@ -361,8 +361,9 @@
 
 @php
     use App\Models\Barangay;
-    $createdAt = $case->created_at ?? null;
-    $updatedAt = $case->updated_at ?? null;
+    // Stored timestamps use UTC; display case audit times in Philippine time.
+    $createdAt = $case->created_at?->copy()->timezone('Asia/Manila');
+    $updatedAt = $case->updated_at?->copy()->timezone('Asia/Manila');
     if ($case->trashed() && auth()->user()?->isDepartmentAdmin() && request()->boolean('bcpc_modal_preview')) {
         $updatedAt = $case->getRawOriginal('updated_at')
             ? \Carbon\Carbon::parse($case->getRawOriginal('updated_at'), config('app.timezone', 'UTC'))->timezone('Asia/Manila')

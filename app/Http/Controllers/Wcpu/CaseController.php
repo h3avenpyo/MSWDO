@@ -888,6 +888,13 @@ class CaseController extends Controller
         
         // Only recipients who are currently active can be selected for a referral.
         $recipients = \App\Models\Wcpu\ReportRecipient::active()
+            ->when(Auth::user()?->position === 'Desk Officer', function ($query) {
+                $roles = collect(Auth::user()->caseDepartments())->flatMap(function ($department) {
+                    $prefix = $department === 'BCPC' ? 'BCPC' : 'SWD';
+                    return [$prefix . ' - Staff', $prefix . ' - Focal'];
+                })->all();
+                $query->whereIn('role', $roles);
+            })
             ->select('id', 'name', 'email', 'role')
             ->orderBy('name')
             ->get();
@@ -970,6 +977,13 @@ class CaseController extends Controller
                 $recipientEmail = $validated['recipient_email'];
             } else {
                 $recipient = \App\Models\Wcpu\ReportRecipient::active()
+                ->when(Auth::user()?->position === 'Desk Officer', function ($query) {
+                    $roles = collect(Auth::user()->caseDepartments())->flatMap(function ($department) {
+                        $prefix = $department === 'BCPC' ? 'BCPC' : 'SWD';
+                        return [$prefix . ' - Staff', $prefix . ' - Focal'];
+                    })->all();
+                    $query->whereIn('role', $roles);
+                })
                     ->findOrFail($validated['recipient_id']);
                 $recipientName = $recipient->name;
                 $recipientContact = null;

@@ -165,7 +165,8 @@
         const isPhoneView = window.matchMedia('(max-width: 47.9375rem)').matches
             || (window.frameElement && window.frameElement.getBoundingClientRect().width < 768)
             || (/Android|iPhone|iPod/i.test(navigator.userAgent) && phoneWidth <= 480);
-        const downloadFilename = quarterlyDownloadFilename || (isPhoneView ? (quarterlyAllDownloadFilename || referralDownloadFilename || referralRegistryDownloadFilename || caseDownloadFilename || barangayDownloadFilename) : null);
+        const isSwdDesktopPrint = document.body.hasAttribute('data-swd-quarterly-print') && !isPhoneView;
+        const downloadFilename = (isSwdDesktopPrint ? null : quarterlyDownloadFilename) || (isPhoneView ? (quarterlyAllDownloadFilename || referralDownloadFilename || referralRegistryDownloadFilename || caseDownloadFilename || barangayDownloadFilename) : null);
         const printWindow = downloadFilename ? null : window.open('', '_blank');
         const preview = document.documentElement.cloneNode(true);
         preview.querySelectorAll('script, .print-edit-controls, .report-back-button').forEach(element => element.remove());
@@ -225,6 +226,7 @@
                     return;
                 }
                 if (printWindow) printWindow.location.replace(pdfUrl);
+                else if (isSwdDesktopPrint) window.location.assign(pdfUrl);
                 else window.open(pdfUrl, '_blank', 'noopener');
             })
             .catch(() => {

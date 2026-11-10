@@ -1,3 +1,9 @@
+@php
+    $isSwdOfficerReport = auth()->user()?->position === 'Desk Officer'
+        && (auth()->user()?->defaultCaseDepartment() === 'VAWC'
+            || auth()->user()?->isMultiCaseDepartment())
+        && empty($reportData['is_bcpc_report']);
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -229,9 +235,27 @@
             -webkit-text-fill-color: #000 !important;
             text-decoration: none !important;
         }
+        @if($isSwdOfficerReport)
+        .swd-letterhead { width:100%; margin-bottom:14px; border-bottom:1px solid #ccc; }
+        .swd-letterhead td { border:0; padding:6px 0 12px; text-align:center; vertical-align:middle; }
+        .swd-seal { width:90px; }
+        .swd-seal img { width:76px; height:76px; object-fit:contain; }
+        .swd-government { font-size:11pt; font-weight:bold; line-height:1.15; }
+        .swd-barangay { margin-top:4px; font-size:17pt; letter-spacing:4px; color:#b78251; font-weight:bold; text-transform:uppercase; }
+        .swd-office { font-size:14pt; font-weight:bold; font-style:italic; }
+        .swd-report-title { text-align:center; font:12pt Arial,sans-serif; color:#555; margin-bottom:5px; }
+        .swd-period { text-align:center; font:9pt/1.35 Arial,sans-serif; }
+        .swd-location { margin:7px 0 3px; font:10pt Arial,sans-serif; }
+        .swd-signatures { width:100%; margin-top:30px; page-break-inside:avoid; }
+        .swd-signatures td { width:50%; border:0; vertical-align:top; text-align:left; padding:0 8px; }
+        .swd-signatures .approval { text-align:right; }
+        .swd-sign-label { font:italic bold 9pt Arial,sans-serif; margin-bottom:42px; }
+        .swd-sign-name { font:bold 10pt Arial,sans-serif; text-transform:uppercase; }
+        .swd-sign-role { font:9pt Arial,sans-serif; }
+        @endif
     </style>
 </head>
-<body>
+<body @if($isSwdOfficerReport) data-swd-quarterly-print @endif>
 @php
     $silangLogoPath = public_path('images/silang.png');
     $mswdoLogoPath = public_path('images/mswdo_logo.jpg');
@@ -239,6 +263,22 @@
     $mswdoLogoBase64 = file_exists($mswdoLogoPath) ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($mswdoLogoPath)) : '';
 @endphp
     <div class="page-content">
+    @if($isSwdOfficerReport)
+    <table class="swd-letterhead" data-print-locked><tr>
+        <td class="swd-seal">@if($mswdoLogoBase64)<img src="{{ $mswdoLogoBase64 }}" alt="MSWDO Logo">@endif</td>
+        <td>
+            <div class="swd-government">REPUBLIC OF THE PHILIPPINES<br>PROVINCE OF CAVITE<br>MUNICIPALITY OF SILANG</div>
+            <div class="swd-barangay">BARANGAY {{ $barangay->name }}</div>
+            <div class="swd-office">Office of the Sangguniang Barangay</div>
+        </td>
+        <td class="swd-seal">@if($silangLogoBase64)<img src="{{ $silangLogoBase64 }}" alt="Silang Logo">@endif</td>
+    </tr></table>
+    <div data-print-locked>
+        <div class="swd-report-title">BARANGAY QUARTERLY COMPLIANCE MONITORING REPORT (VAWC)</div>
+        <div class="swd-period">Period Covered: <strong><u>{{ $period }}</u></strong><br>Region IV-A</div>
+        <div class="swd-location">Barangay: <span style="letter-spacing:3px; text-transform:uppercase;">{{ $barangay->name }}</span></div>
+    </div>
+    @else
     <!-- Header -->
     <table class="header-table" data-print-locked>
         <tr>
@@ -276,6 +316,7 @@
         </tr>
     </table>
     
+    @endif
     @php
         // Build the list of abuse type columns (descriptive names from case_types)
         $abuseTypeColumns = collect($caseTypes)->map(function($name, $ra) {
@@ -298,7 +339,7 @@
             <thead data-print-locked>
             <tr>
                 <th rowspan="2" style="background: #d4a574; width: 18%; text-align: left;">NAME</th>
-                <th colspan="{{ $abuseTypeColCount }}" class="section-header">{{ !empty($reportData['is_bcpc_report']) ? 'BCPC' : 'SWD' }} CASES</th>
+                <th colspan="{{ $abuseTypeColCount }}" class="section-header">{{ !empty($reportData['is_bcpc_report']) ? 'BCPC' : ($isSwdOfficerReport ? 'VAWC' : 'SWD') }} CASES</th>
                 <th colspan="{{ $statusColCount }}" class="section-header">STATUS</th>
             </tr>
             <tr>
@@ -373,6 +414,20 @@
     </table>
     </div>
     
+    @if($isSwdOfficerReport)
+    <table class="swd-signatures"><tr>
+        <td>
+            <div class="swd-sign-label" data-print-locked>PREPARED BY:</div>
+            <div class="swd-sign-name" data-print-locked>{{ $user->first_name ?? '' }} {{ $user->last_name ?? '' }}</div>
+            <div class="swd-sign-role">VAWC DESK OFFICER</div>
+        </td>
+        <td class="approval">
+            <div class="swd-sign-label" data-print-locked>APPROVED / NOTED BY:</div>
+            <div class="swd-sign-name">____________________________</div>
+            <div class="swd-sign-role">Punong Barangay</div>
+        </td>
+    </tr></table>
+    @else
     <!-- Signature Section -->
     <table class="signature-table">
         <tr>
@@ -396,6 +451,7 @@
             </td>
         </tr>
     </table>
+    @endif
 <div class="footer">Quarterly Compliance Monitoring Report | {{ !empty($reportData['is_bcpc_report']) ? 'Barangay Council for the Protection of Children' : 'Women and Children Protection Unit' }} | Generated by iServe Silang Case Management System</div>
     </div>
 @if($printEditControls ?? true)

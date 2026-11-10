@@ -1622,8 +1622,8 @@ public function create()
             ->whereHas('case', function($q) use ($barangay, $includeArchivedSingleDepartmentCase) {
                 if ($includeArchivedSingleDepartmentCase) $q->withTrashed();
                 $q->where('case_designation', $barangay->id);
-                $this->applyCaseDepartmentScope($q);
             })
+            ->forRecipientDepartments($user->caseDepartments(), $includeArchivedSingleDepartmentCase)
             ->findOrFail($id);
 
         return view('admin-tailwind.referrals.print', compact('referral'));
