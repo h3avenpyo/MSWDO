@@ -38,7 +38,6 @@
         html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card {
             position: relative;
         }
-        html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card > div:first-child > div:first-child,
         html body.portal-ui.case-profiles-admin-mobile-nav .case-profiles-mobile-cards .case-profile-card > .grid > div:not(:last-child) {
             display: none !important;
         }
@@ -234,9 +233,6 @@
             margin-bottom: 0 !important;
         }
 
-        .case-profiles-mobile-cards .case-profile-card-identity {
-            display: none !important;
-        }
 
         .case-profiles-mobile-cards .case-profile-card-count {
             position: absolute;
@@ -408,9 +404,6 @@
             margin-bottom: 0 !important;
         }
 
-        .case-profile-card-identity {
-            display: none !important;
-        }
 
         .case-profile-card-count {
             position: absolute;
@@ -997,6 +990,20 @@
             display: none !important;
         }
     }
+    /* Keep profile names visible in the mobile and tablet cards. */
+    @media (max-width: 85.375rem) {
+        html body.portal-ui .case-profiles-mobile-cards .case-profile-card > .case-profile-card-heading:first-child {
+            position: relative !important;
+            top: auto !important;
+            right: auto !important;
+            justify-content: flex-start !important;
+            margin-bottom: .75rem !important;
+            padding-right: 4.5rem;
+        }
+        html body.portal-ui .case-profiles-mobile-cards .case-profile-card .case-profile-card-identity {
+            display: block !important;
+        }
+    }
 </style>
 @endpush
 
@@ -1115,14 +1122,15 @@
                 <table class="case-profiles-table w-full min-w-[900px] table-fixed text-sm text-left">
                     <colgroup>
                         <col style="width: 18%">
-                        <col style="width: 27%">
-                        <col style="width: 10%">
-                        <col style="width: 25%">
-                        <col style="width: 20%">
+                        <col style="width: 12%">
+                        <col style="width: 23%">
+                        <col style="width: 7%">
+                        <col style="width: 22%">
+                        <col style="width: 18%">
                     </colgroup>
                     <thead class="bg-purple-700 text-white">
                         <tr>
-                            @foreach(['Cases', 'Type of Case', 'Age', 'Address', 'Guardian Information'] as $column)
+                            @foreach(['Name', 'Cases', 'Type of Case', 'Age', 'Address', 'Guardian Information'] as $column)
                                 <th class="px-5 py-3 {{ $loop->last ? 'text-center align-middle' : '' }}">{{ $column }}</th>
                             @endforeach
                         </tr>
@@ -1131,6 +1139,7 @@
                         @forelse($profiles as $records)
                             @php $person = $records->first(); @endphp
                             <tr class="align-top hover:bg-purple-50" data-profile-name="{{ $isVictim ? $person->victim_name : $person->abuser_name }}" data-profile-age="{{ ($isVictim ? $person->victim_age : $person->abuser_age) ?? 'Not recorded' }}">
+                                <td class="px-5 py-4 font-semibold text-gray-800 break-words">{{ $isVictim ? $person->victim_name : $person->abuser_name }}</td>
                                 <td class="px-5 py-4">
                                     <details>
                                         <summary class="cursor-pointer text-purple-700">{{ $records->count() }} {{ $records->count() === 1 ? 'case' : 'cases' }}</summary>
@@ -1217,7 +1226,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="px-5 py-8 text-center text-gray-500">No profiles found.</td></tr>
+                            <tr><td colspan="6" class="px-5 py-8 text-center text-gray-500">No profiles found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
