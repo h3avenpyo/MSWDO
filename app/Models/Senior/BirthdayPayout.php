@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BirthdayPayout extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $table = 'birthday_payouts';
 
     protected $fillable = [

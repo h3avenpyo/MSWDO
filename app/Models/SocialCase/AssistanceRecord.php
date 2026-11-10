@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AssistanceRecord extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     use HasFactory;
 
     protected $fillable = [

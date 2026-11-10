@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PasswordResetRequest extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $fillable = [
         'email',
         'token',

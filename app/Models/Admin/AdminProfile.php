@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class AdminProfile extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $fillable = [
         'user_id',
         'position',

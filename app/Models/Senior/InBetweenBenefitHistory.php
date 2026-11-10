@@ -9,6 +9,8 @@ use Carbon\Carbon;
 
 class InBetweenBenefitHistory extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $table = 'in_between_benefit_history';
 
     protected $fillable = [

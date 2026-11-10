@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BirthdayPayoutHistory extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $table = 'birthday_payout_history';
 
     protected $fillable = [

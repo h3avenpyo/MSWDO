@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'MSWDO Admin')</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/IserveIcon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -883,6 +884,14 @@
                     <span class="menu-text">Password Resets</span>
                 </a>
             </li>
+            @if(session('auth_source') === 'mswdo' && session('admin_user_role') === 'admin')
+            <li>
+                <a href="{{ route('admin.activity-logs.index') }}" class="{{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}" data-tooltip="User Logs" title="User Logs">
+                    <i data-lucide="scroll-text"></i>
+                    <span class="menu-text">User Logs</span>
+                </a>
+            </li>
+            @endif
             <li class="sidebar-menu-header" style="border-top:1px solid rgba(255,255,255,.18);margin-top:.75rem;padding-top:.75rem;padding-left:1.5rem;padding-right:1.5rem;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:rgba(255,255,255,0.85);">
                 Pre-Record Data Entry
             </li>

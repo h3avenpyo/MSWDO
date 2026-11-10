@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [\App\Http\Middleware\LogMswdoImportantAction::class]);
         // Preserve raw contact input so validation rejects surrounding spaces too.
         $middleware->trimStrings(except: [
             'contact_number', 'phone', 'phone_number', 'mobile', 'mobile_number',

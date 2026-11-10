@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class OnlineRequest extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $fillable = [
         'request_for',
         'first_name',

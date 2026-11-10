@@ -124,6 +124,8 @@ class EmailCodeController extends Controller
             'auth_source' => 'mswdo',
         ]);
 
+        app(\App\Services\MswdoActivityLogger::class)->record('login', 'Authentication', 'Logged in using email code');
+
         return route(DashboardRedirector::routeFor($user->role));
     }
 

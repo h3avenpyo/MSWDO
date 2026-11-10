@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FinancialPayrollRecord extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $table = 'financial_payroll_records';
 
     protected $fillable = [

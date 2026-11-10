@@ -48,6 +48,8 @@ class AuthController extends Controller
                 'auth_source' => 'mswdo',
             ]);
 
+            app(\App\Services\MswdoActivityLogger::class)->record('login', 'Authentication', 'Logged in');
+
             return redirect()->route(DashboardRedirector::routeFor($mswdoUser->role));
         }
 
@@ -217,6 +219,8 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        app(\App\Services\MswdoActivityLogger::class)->record('logout', 'Authentication', 'Logged out');
+
         if (Auth::guard('wcpu')->check()) {
             $user = Auth::guard('wcpu')->user();
             if ($user) {
@@ -294,6 +298,8 @@ class AuthController extends Controller
      */
     protected function invalidateAdminSession(Request $request): void
     {
+        app(\App\Services\MswdoActivityLogger::class)->record('logout', 'Authentication', 'Session ended because the account is no longer active');
+
         if (Auth::guard('wcpu')->check()) {
             Auth::guard('wcpu')->logout();
         }

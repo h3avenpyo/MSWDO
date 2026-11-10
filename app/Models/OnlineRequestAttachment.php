@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class OnlineRequestAttachment extends Model
 {
+    use \App\Models\Concerns\LogsMswdoActivity;
+
     protected $fillable = [
         'online_request_id',
         'file_name',
